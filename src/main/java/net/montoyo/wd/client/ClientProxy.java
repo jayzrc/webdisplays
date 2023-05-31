@@ -85,10 +85,10 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
 
         public IBrowser view;
         private boolean isInHotbar;
-        private final int id;
+        private final UUID id;
         private long lastURLSent;
 
-        private PadData(String url, int id) {
+        private PadData(String url, UUID id) {
             String webUrl;
             try {
                 webUrl = TileEntityScreen.url(url);
@@ -130,7 +130,7 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
     private int lastTracked = 0;
 
     //MinePads Management
-    private final HashMap<Integer, PadData> padMap = new HashMap<>();
+    private final HashMap<UUID, PadData> padMap = new HashMap<>();
     private final ArrayList<PadData> padList = new ArrayList<>();
     private int minePadTickCounter = 0;
 
@@ -268,8 +268,8 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
     }
 
     @Override
-    public void displaySetPadURLGui(String padURL) {
-        mc.setScreen(new GuiSetURL2(padURL));
+    public void displaySetPadURLGui(ItemStack is, String padURL) {
+        mc.setScreen(new GuiSetURL2(is, padURL));
     }
 
     @Override
@@ -729,13 +729,13 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
                     CompoundTag tag = item.getTag();
 
                     if (tag != null && tag.contains("PadID"))
-                        updatePad(tag.getInt("PadID"), tag, item == heldStack);
+                        updatePad(tag.getUUID("PadID"), tag, item == heldStack);
                 }
             }
         }
     }
 
-    private void updatePad(int id, CompoundTag tag, boolean isSelected) {
+    private void updatePad(UUID id, CompoundTag tag, boolean isSelected) {
         PadData pd = padMap.get(id);
 
         if(pd != null)
@@ -751,7 +751,7 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
         return minePadRenderer;
     }
 
-    public PadData getPadByID(int id) {
+    public PadData getPadByID(UUID id) {
         return padMap.get(id);
     }
 

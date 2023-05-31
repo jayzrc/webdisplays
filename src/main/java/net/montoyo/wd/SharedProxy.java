@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
@@ -75,7 +76,7 @@ public class SharedProxy {
     public void screenUpdateAutoVolumeInGui(Vector3i pos, BlockSide side, boolean av) {
     }
 
-    public void displaySetPadURLGui(String padURL) {
+    public void displaySetPadURLGui(ItemStack is, String padURL) {
         Log.error("Called SharedProxy.displaySetPadURLGui() on server side...");
     }
 

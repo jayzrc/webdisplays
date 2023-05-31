@@ -4,10 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.montoyo.wd.net.client_bound.*;
-import net.montoyo.wd.net.server_bound.C2SMessageACQuery;
-import net.montoyo.wd.net.server_bound.C2SMessageMiniservConnect;
-import net.montoyo.wd.net.server_bound.C2SMessageRedstoneCtrl;
-import net.montoyo.wd.net.server_bound.C2SMessageScreenCtrl;
+import net.montoyo.wd.net.server_bound.*;
 
 import java.util.ArrayList;
 
@@ -52,6 +49,9 @@ public class WDNetworkRegistry {
 		
 		// jsquery
 		entries.add(new NetworkEntry<>(S2CMessageJSResponse.class, S2CMessageJSResponse::new));
+		
+		// minepad
+		entries.add(new NetworkEntry<>(C2SMinepadUrl.class, C2SMinepadUrl::new));
 		
 		for (int i = 0; i < entries.size(); i++) entries.get(i).register(i, INSTANCE);
 	}

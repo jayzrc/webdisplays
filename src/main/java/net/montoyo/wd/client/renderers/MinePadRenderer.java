@@ -6,11 +6,8 @@ package net.montoyo.wd.client.renderers;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -19,8 +16,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.client.ClientProxy;
-
-import static org.lwjgl.opengl.GL12.GL_RESCALE_NORMAL;
 
 @OnlyIn(Dist.CLIENT)
 public final class MinePadRenderer implements IItemRenderer {
@@ -94,7 +89,7 @@ public final class MinePadRenderer implements IItemRenderer {
 
         //Render web view
         if(is.getTag() != null && is.getTag().contains("PadID")) {
-            ClientProxy.PadData pd = clientProxy.getPadByID(is.getTag().getInt("PadID"));
+            ClientProxy.PadData pd = clientProxy.getPadByID(is.getTag().getUUID("PadID"));
 
             if(pd != null) {
                 stack.translate(0.063f, 0.28f, 0.001f);
