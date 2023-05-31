@@ -17,7 +17,6 @@ import org.lwjgl.glfw.GLFW;
 import java.util.Optional;
 
 import static net.minecraftforge.api.distmarker.Dist.CLIENT;
-import static org.lwjgl.opengl.GL11.glColor4f;
 
 @OnlyIn(CLIENT)
 public class GuiMinePad extends WDScreen {
@@ -48,10 +47,10 @@ public class GuiMinePad extends WDScreen {
     }
 
     private static void addRect(BufferBuilder bb, double x, double y, double w, double h) {
-        bb.vertex(x, y, 0.0).endVertex();
-        bb.vertex(x + w, y, 0.0).endVertex();
-        bb.vertex(x + w, y + h, 0.0).endVertex();
-        bb.vertex(x, y + h, 0.0).endVertex();
+        bb.vertex(x, y, 0.0).color(255, 255, 255, 255).endVertex();
+        bb.vertex(x + w, y, 0.0).color(255, 255, 255, 255).endVertex();
+        bb.vertex(x + w, y + h, 0.0).color(255, 255, 255, 255).endVertex();
+        bb.vertex(x, y + h, 0.0).color(255, 255, 255, 255).endVertex();
     }
 
     @Override
@@ -64,7 +63,7 @@ public class GuiMinePad extends WDScreen {
 
         Tesselator t = Tesselator.getInstance();
         BufferBuilder bb = t.getBuilder();
-        bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
+        bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         addRect(bb, vx, vy - 16, vw, 16);
         addRect(bb, vx, vy + vh, vw, 16);
         addRect(bb, vx - 16, vy, 16, vh);
@@ -74,7 +73,6 @@ public class GuiMinePad extends WDScreen {
         RenderSystem.enableTexture();
 
         if (pad.view != null) {
-            glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
             pad.view.draw(poseStack, vx, vy + vh, vx + vw, vy);
         }
 

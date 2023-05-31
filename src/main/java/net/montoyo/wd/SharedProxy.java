@@ -24,6 +24,7 @@ import net.montoyo.wd.entity.TileEntityScreen;
 import net.montoyo.wd.utilities.*;
 
 import javax.annotation.Nonnull;
+import java.util.UUID;
 
 public class SharedProxy {
     public void preInit() {
@@ -80,7 +81,7 @@ public class SharedProxy {
         Log.error("Called SharedProxy.displaySetPadURLGui() on server side...");
     }
 
-    public void openMinePadGui(int padId) {
+    public void openMinePadGui(UUID padId) {
         Log.error("Called SharedProxy.openMinePadGui() on server side...");
     }
 

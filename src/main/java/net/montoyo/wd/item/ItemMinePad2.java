@@ -55,7 +55,7 @@ public class ItemMinePad2 extends Item implements WDItem {
 			ok = true;
 		} else if (is.getTag() != null && is.getTag().contains("PadID")) {
 			if (world.isClientSide)
-				WebDisplays.PROXY.openMinePadGui(is.getTag().getInt("PadID"));
+				WebDisplays.PROXY.openMinePadGui(is.getTag().getUUID("PadID"));
 			
 			ok = true;
 		} else

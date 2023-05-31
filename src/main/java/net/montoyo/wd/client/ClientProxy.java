@@ -273,7 +273,7 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
     }
 
     @Override
-    public void openMinePadGui(int padId) {
+    public void openMinePadGui(UUID padId) {
         PadData pd = padMap.get(padId);
 
         if(pd != null && pd.view != null)
