@@ -184,7 +184,6 @@ public class GuiMinePad extends WDScreen {
                 pad.view.injectMouseMove(sx, sy, 0, sy < 0);
             else
                 pad.view.injectMouseButton(sx, sy, 0, btn + 1, pressed, 1);
-
         }
     }
 

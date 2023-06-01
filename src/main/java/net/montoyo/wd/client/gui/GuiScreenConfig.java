@@ -20,6 +20,7 @@ import net.montoyo.wd.item.WDItem;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.server_bound.C2SMessageScreenCtrl;
 import net.montoyo.wd.utilities.*;
+import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -501,6 +502,17 @@ public class GuiScreenConfig extends WDScreen {
         }
 
         return "Screen_Configurator";
+    }
+    
+    // reason: allow closing the UI, lol
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            Minecraft.getInstance().setScreen(null);
+            return true;
+        }
+        
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
 }

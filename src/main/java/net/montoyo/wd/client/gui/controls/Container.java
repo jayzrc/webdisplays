@@ -8,7 +8,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.montoyo.wd.client.gui.loading.GuiLoader;
 import net.montoyo.wd.client.gui.loading.JsonAWrapper;
 import net.montoyo.wd.client.gui.loading.JsonOWrapper;
-import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 
@@ -67,8 +66,10 @@ public abstract class Container extends BasicControl {
             mouseX -= x + paddingX;
             mouseY -= y + paddingY;
 
-            for(Control ctrl : childs)
-                clicked = clicked || ctrl.mouseClicked(mouseX, mouseY, mouseButton);
+            for(Control ctrl : childs) {
+                clicked = ctrl.mouseClicked(mouseX, mouseY, mouseButton);
+                if (clicked) break; // don't assume compiler optimizations
+            }
         }
 
         return clicked;

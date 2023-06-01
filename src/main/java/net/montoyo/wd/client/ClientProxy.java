@@ -34,6 +34,8 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -41,6 +43,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RenderHandEvent;
+import net.minecraftforge.client.event.RenderHighlightEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.level.LevelEvent;
@@ -80,7 +83,7 @@ import java.util.stream.Stream;
 
 @Mod.EventBusSubscriber(modid = "webdisplays", value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQueryHandler, ResourceManagerReloadListener {
-
+    
     public class PadData {
 
         public IBrowser view;
@@ -608,7 +611,7 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
             //Laser pointer raycast
             if(mc.player != null && mc.level != null && ItemInit.itemLaserPointer.isPresent() && mc.player.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(ItemInit.itemLaserPointer.get())
                                                      && mc.options.keyUse.isDown()
-                                                     && (mc.hitResult == null || mc.hitResult.getType() == HitResult.Type.BLOCK)) {
+                                                     && (mc.hitResult == null || mc.hitResult.getType() == HitResult.Type.BLOCK || mc.hitResult.getType() == HitResult.Type.MISS)) {
                 laserPointerRenderer.isOn = true;
                 BlockHitResult result = raycast(64.0); //TODO: Make that distance configurable
 
@@ -669,8 +672,9 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
             if (ev.getHand() == InteractionHand.OFF_HAND)
                 handSide = handSide.getOpposite();
 
-            renderer.render(ev.getPoseStack(), ev.getItemStack(), (handSide == HumanoidArm.RIGHT) ? 1.0f : -1.0f, ev.getSwingProgress(), ev.getEquipProgress(), ev.getMultiBufferSource(), ev.getPackedLight());
-            ev.setCanceled(true);
+            if (renderer.render(ev.getPoseStack(), ev.getItemStack(), (handSide == HumanoidArm.RIGHT) ? 1.0f : -1.0f, ev.getSwingProgress(), ev.getEquipProgress(), ev.getMultiBufferSource(), ev.getPackedLight())) {
+                ev.setCanceled(true);
+            }
         }
     }
 
@@ -805,5 +809,29 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
         BlockGetter senderLevel = super.getWorld(context);
         if (senderLevel == null) return Minecraft.getInstance().level;
         return senderLevel;
+    }
+    
+    public static void onDrawSelection(RenderHighlightEvent event) {
+        if (event.getTarget() instanceof BlockHitResult bhr) {
+            BlockState state = Minecraft.getInstance().level.getBlockState(bhr.getBlockPos());
+            if (state.getBlock() instanceof BlockScreen screen) {
+                Vector3i vec = new Vector3i(bhr.getBlockPos().getX(), bhr.getBlockPos().getY(), bhr.getBlockPos().getZ());
+                BlockSide side = BlockSide.fromInt(bhr.getDirection().ordinal());
+                Multiblock.findOrigin(
+                        Minecraft.getInstance().level, vec,
+                        side, null
+                );
+                
+                BlockPos pos = new BlockPos(vec.x, vec.y, vec.z);
+                BlockEntity be = Minecraft.getInstance().level.getBlockEntity(
+                        pos
+                );
+                if (be instanceof TileEntityScreen tes) {
+                    if (tes.getScreen(side) != null) {
+                        event.setCanceled(true);
+                    }
+                }
+            }
+        }
     }
 }

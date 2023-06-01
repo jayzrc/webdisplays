@@ -45,7 +45,7 @@ public final class MinePadRenderer implements IItemRenderer {
 //    }
 
     @Override
-    public final void render(PoseStack stack, ItemStack is, float handSideSign, float swingProgress, float equipProgress, MultiBufferSource multiBufferSource, int packedLight) {
+    public final boolean render(PoseStack stack, ItemStack is, float handSideSign, float swingProgress, float equipProgress, MultiBufferSource multiBufferSource, int packedLight) {
         //Pre-compute values
         float sqrtSwingProg = (float) Math.sqrt(swingProgress);
         sinSqrtSwingProg1 = (float) Math.sin(sqrtSwingProg * PI);
@@ -97,6 +97,8 @@ public final class MinePadRenderer implements IItemRenderer {
 
         stack.popPose();
         RenderSystem.enableCull();
+        
+        return false;
     }
 
     private void renderArmFirstPerson(PoseStack stack, MultiBufferSource buffer, int combinedLight, float equipProgress, float handSideSign) {

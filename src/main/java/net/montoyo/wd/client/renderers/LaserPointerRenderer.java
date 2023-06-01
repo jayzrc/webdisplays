@@ -23,7 +23,7 @@ public final class LaserPointerRenderer implements IItemRenderer {
     public LaserPointerRenderer() {}
 
     @Override
-    public void render(PoseStack poseStack, ItemStack is, float handSideSign, float swingProgress, float equipProgress, MultiBufferSource multiBufferSource, int packedLight) {
+    public boolean render(PoseStack poseStack, ItemStack is, float handSideSign, float swingProgress, float equipProgress, MultiBufferSource multiBufferSource, int packedLight) {
         RenderSystem.disableCull();
         RenderSystem.disableTexture();
         RenderSystem.enableDepthTest();
@@ -78,6 +78,8 @@ public final class LaserPointerRenderer implements IItemRenderer {
         RenderSystem.enableTexture(); //Fix for shitty minecraft fire
         RenderSystem.enableCull();
         poseStack.popPose();
+        
+        return true;
     }
 
     private static void drawLineBetween(BufferBuilder bb, Matrix4f matrix, Vec3 local, Vec3 target)

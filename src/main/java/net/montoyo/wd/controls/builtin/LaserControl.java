@@ -18,7 +18,7 @@ import java.util.function.Function;
 public class LaserControl extends ScreenControl {
 	public static final ResourceLocation id = new ResourceLocation("webdisplays:laser");
 	
-	public static enum ControlType {
+	public enum ControlType {
 		MOVE, DOWN, UP
 	}
 	

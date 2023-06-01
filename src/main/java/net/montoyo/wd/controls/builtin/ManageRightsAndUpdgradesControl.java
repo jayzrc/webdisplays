@@ -23,7 +23,7 @@ import java.util.function.Function;
 public class ManageRightsAndUpdgradesControl extends ScreenControl {
 	public static final ResourceLocation id = new ResourceLocation("webdisplays:mod_rights_upgrades");
 	
-	public static enum ControlType {
+	public enum ControlType {
 		RIGHTS, UPGRADES
 	}
 	
@@ -41,6 +41,7 @@ public class ManageRightsAndUpdgradesControl extends ScreenControl {
 	
 	public ManageRightsAndUpdgradesControl(int friendRights, int otherRights) {
 		super(id);
+		type = ControlType.RIGHTS;
 		this.friendRights = friendRights;
 		this.otherRights = otherRights;
 	}

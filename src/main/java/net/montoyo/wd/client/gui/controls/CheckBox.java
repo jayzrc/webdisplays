@@ -66,9 +66,9 @@ public class CheckBox extends BasicControl {
                 checked = !checked;
                 mc.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 parent.actionPerformed(new CheckedEvent(this));
+                
+                return true;
             }
-
-            return true;
         }
 
         return false;

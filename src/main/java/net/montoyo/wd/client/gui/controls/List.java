@@ -13,7 +13,8 @@ import net.montoyo.wd.client.gui.loading.JsonOWrapper;
 
 import java.util.ArrayList;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_NEAREST;
 
 public class List extends BasicControl {
 
@@ -240,13 +241,16 @@ public class List extends BasicControl {
             if(isInScrollbar(mouseX, mouseY)) {
                 scrolling = true;
                 scrollGrab = mouseY - (y + 1 + scrollPos);
-            } else if(selected >= 0)
-                parent.actionPerformed(new EntryClick(this));
+                return true;
+            } else if(selected >= 0) {
+                System.out.println(parent.actionPerformed(new EntryClick(this)));
+                return true;
+            }
 
-            return true;
+            return false;
         }
 
-        return true;
+        return false;
     }
 
     @Override

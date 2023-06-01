@@ -8,7 +8,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.montoyo.wd.client.gui.loading.JsonOWrapper;
 
 import java.util.ArrayList;
@@ -103,9 +102,15 @@ public class UpgradeGroup extends BasicControl {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         if(mouseButton == 0) {
-            clickStack = overStack;
-
-            return true;
+            // don't process the click if it's not inbounds, lol
+            if (
+                    mouseX >= x && mouseX <= x + width &&
+                    mouseY >= y && mouseX <= y + height
+            ) {
+                    clickStack = overStack;
+        
+                    return true;
+            }
         }
 
         return false;

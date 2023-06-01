@@ -19,7 +19,7 @@ import java.util.function.Function;
 public class ScreenModifyControl extends ScreenControl {
 	public static final ResourceLocation id = new ResourceLocation("webdisplays:mod_screen");
 	
-	public static enum ControlType {
+	public enum ControlType {
 		RESOLUTION, ROTATION
 	}
 	
