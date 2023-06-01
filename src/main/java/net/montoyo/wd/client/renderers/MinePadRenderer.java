@@ -53,9 +53,6 @@ public final class MinePadRenderer implements IItemRenderer {
         sinSwingProg1 = (float) Math.sin(swingProgress * PI);
         sinSwingProg2 = (float) Math.sin(swingProgress * swingProgress * PI);
 
-        RenderSystem.disableCull();
-//        glEnable(GL_RESCALE_NORMAL);
-
         //Render arm
         stack.pushPose();
         renderArmFirstPerson(stack, multiBufferSource, packedLight, equipProgress, handSideSign);
@@ -93,13 +90,12 @@ public final class MinePadRenderer implements IItemRenderer {
 
             if(pd != null) {
                 stack.translate(0.063f, 0.28f, 0.001f);
-                RenderSystem.disableTexture();
+                RenderSystem.setShaderTexture(0, tex);
                 pd.view.draw(stack,0.0, 0.0, 27.65 / 32.0 + 0.01, 14.0 / 32.0 + 0.002);
             }
         }
 
         stack.popPose();
-//        glDisable(GL_RESCALE_NORMAL);
         RenderSystem.enableCull();
     }
 

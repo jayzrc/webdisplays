@@ -20,7 +20,7 @@ logoFile= "" #optional
 
 credits="" #optional
 
-authors="Mysticpasta1, WaterPicker, Montoyo" #optional
+authors="Mysticpasta1, WaterPicker, Montoyo, GiantLuigi4" #optional
 
 description='''
 '''
@@ -43,5 +43,12 @@ side="BOTH"
 modId="forgecef"
 mandatory=true
 versionRange="[1.0.0, )"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.webdisplays]]
+modId="cloth_config"
+mandatory=true
+versionRange="[8.2.88, )"
 ordering="NONE"
 side="BOTH"

@@ -11,6 +11,8 @@ import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -23,7 +25,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.client.event.ClientChatEvent;
+import net.minecraftforge.client.event.RenderHighlightEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.ServerChatEvent;
@@ -40,18 +46,18 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.montoyo.wd.block.BlockScreen;
 import net.montoyo.wd.config.ModConfig;
 import net.montoyo.wd.controls.ScreenControlRegistry;
 import net.montoyo.wd.core.*;
+import net.montoyo.wd.entity.TileEntityScreen;
 import net.montoyo.wd.init.BlockInit;
 import net.montoyo.wd.init.ItemInit;
 import net.montoyo.wd.init.TileInit;
 import net.montoyo.wd.miniserv.server.Server;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.client_bound.S2CMessageServerInfo;
-import net.montoyo.wd.utilities.DistSafety;
-import net.montoyo.wd.utilities.Log;
-import net.montoyo.wd.utilities.Util;
+import net.montoyo.wd.utilities.*;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -166,6 +172,8 @@ public class WebDisplays {
         ItemInit.registerComponents();
         TileInit.init(bus);
 
+        MinecraftForge.EVENT_BUS.addListener(WebDisplays::onDrawSelection);
+        
         PROXY.preInit();
         
         MinecraftForge.EVENT_BUS.register(this);
@@ -189,6 +197,30 @@ public class WebDisplays {
         
         if (!FMLEnvironment.production) {
             ScreenControlRegistry.init();
+        }
+    }
+    
+    private static void onDrawSelection(RenderHighlightEvent event) {
+        if (event.getTarget() instanceof BlockHitResult bhr) {
+            BlockState state = Minecraft.getInstance().level.getBlockState(bhr.getBlockPos());
+            if (state.getBlock() instanceof BlockScreen screen) {
+                Vector3i vec = new Vector3i(bhr.getBlockPos().getX(), bhr.getBlockPos().getY(), bhr.getBlockPos().getZ());
+                BlockSide side = BlockSide.fromInt(bhr.getDirection().ordinal());
+                Multiblock.findOrigin(
+                        Minecraft.getInstance().level, vec,
+                        side, null
+                );
+                
+                BlockPos pos = new BlockPos(vec.x, vec.y, vec.z);
+                BlockEntity be = Minecraft.getInstance().level.getBlockEntity(
+                        pos
+                );
+                if (be instanceof TileEntityScreen tes) {
+                    if (tes.getScreen(side) != null) {
+                        event.setCanceled(true);
+                    }
+                }
+            }
         }
     }
 
