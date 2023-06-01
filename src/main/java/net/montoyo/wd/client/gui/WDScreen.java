@@ -149,7 +149,7 @@ public abstract class WDScreen extends Screen {
         for(Control ctrl: controls)
             mouseReleased = mouseReleased || ctrl.mouseReleased(mouseX, mouseY, button);
 
-        return mouseReleased || mouseClicked(mouseX, mouseY, button);
+        return mouseReleased;
     }
 
     @Override
