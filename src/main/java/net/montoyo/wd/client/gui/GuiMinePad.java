@@ -180,7 +180,7 @@ public class GuiMinePad extends WDScreen {
     
             if (wheel != 0)
                 pad.view.injectMouseWheel(sx, sy, (hasControlDown() && ! hasAltDown() && !hasShiftDown()) ? GLFW.GLFW_MOD_CONTROL : 0, wheel, 0);
-            else if (btn == -1)
+            if (btn == -1)
                 pad.view.injectMouseMove(sx, sy, 0, sy < 0);
             else
                 pad.view.injectMouseButton(sx, sy, 0, btn + 1, pressed, 1);
