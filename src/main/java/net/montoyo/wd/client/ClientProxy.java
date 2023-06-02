@@ -179,7 +179,7 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
             throw new RuntimeException("MCEF is missing");
         
         mcef.registerDisplayHandler(this);
-        //mcef.registerJSQueryHandler(this); //TODO why crashing on this method!
+        mcef.registerJSQueryHandler(this);
         findAdvancementToProgressField();
     }
 
@@ -698,13 +698,17 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
 
             if(t - lastPointPacket >= 100) {
                 lastPointPacket = t;
-                WDNetworkRegistry.INSTANCE.sendToServer(C2SMessageScreenCtrl.laserMove(tes, side, hit));
+                if (Minecraft.getInstance().player.isShiftKeyDown()) {
+                    WDNetworkRegistry.INSTANCE.sendToServer(C2SMessageScreenCtrl.laserDown(tes, side, hit));
+                } else {
+                    WDNetworkRegistry.INSTANCE.sendToServer(C2SMessageScreenCtrl.laserMove(tes, side, hit));
+                }
             }
         } else {
             deselectScreen();
             pointedScreen = tes;
             pointedScreenSide = side;
-            WDNetworkRegistry.INSTANCE.sendToServer(C2SMessageScreenCtrl.laserDown(tes, side, hit));
+//            WDNetworkRegistry.INSTANCE.sendToServer(C2SMessageScreenCtrl.laserDown(tes, side, hit));
         }
     }
 

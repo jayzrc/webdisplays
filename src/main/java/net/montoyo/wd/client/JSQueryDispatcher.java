@@ -218,6 +218,8 @@ public final class JSQueryDispatcher {
     }
 
     private void registerDefaults() {
+        VideoType.registerQueries(this);
+        
         register("GetSize", (cb, tes, side, args) -> {
             Vector2i size = tes.getScreen(side).size;
             cb.success("{\"x\":" + size.x + ",\"y\":" + size.y + "}");

@@ -107,7 +107,7 @@ public class C2SMessageScreenCtrl extends Packet {
 	
 	public static C2SMessageScreenCtrl laserDown(TileEntityScreen tes, BlockSide side, Vector2i vec) {
 		C2SMessageScreenCtrl ret = base(tes, side);
-		ret.control = new LaserControl(LaserControl.ControlType.MOVE, vec);
+		ret.control = new LaserControl(LaserControl.ControlType.DOWN, vec);
 		return ret;
 	}
 	

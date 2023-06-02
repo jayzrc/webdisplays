@@ -1074,11 +1074,12 @@ public class TileEntityScreen extends BlockEntity {
         if (scr != null) {
             if (down) {
                 //Try to acquire laser lock
-                if (getLaserUser(scr) == null) {
+//                if (getLaserUser(scr) == null) {
                     scr.laserUser = ply;
-                    WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, S2CMessageScreenUpdate.MOUSE_DOWN, pos));
-                }
-            } else if (getLaserUser(scr) == ply)
+                    WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, S2CMessageScreenUpdate.MOUSE_CLICK, pos));
+//                }
+            } else
+//                if (getLaserUser(scr) == ply)
                 WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, S2CMessageScreenUpdate.MOUSE_MOVE, pos));
         }
     }
