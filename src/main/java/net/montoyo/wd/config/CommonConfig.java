@@ -35,9 +35,10 @@ public class CommonConfig {
 	@Comment("Options for the browsers (both the minePad and the screens)")
 	@CFGSegment("browser_options")
 	public static class Browser {
-		@Name("home_page")
+		@Name("blacklist")
 		@Comment("The page which screens should open up to when turning on")
 		@Translation("config.webdisplays.blacklist")
+		@Default(valueStr = "")
 		public static String[] blacklist = new String[0];
 		
 		@Name("home_page")

@@ -224,7 +224,7 @@ public class TileEntityScreen extends BlockEntity {
         public void createBrowser(boolean doAnim) {
             if (WebDisplays.PROXY instanceof ClientProxy clientProxy) {
                 browser = clientProxy.getMCEF().createBrowser(WebDisplays.applyBlacklist(url != null ? url : "https://www.google.com"));
-        
+                
                 if (rotation.isVertical)
                     browser.resize(resolution.y, resolution.x);
                 else

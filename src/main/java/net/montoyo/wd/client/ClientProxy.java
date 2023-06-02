@@ -104,7 +104,6 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
             isInHotbar = true;
             this.id = id;
         }
-
     }
 
     private Minecraft mc;

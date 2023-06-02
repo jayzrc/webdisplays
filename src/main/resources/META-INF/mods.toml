@@ -45,10 +45,3 @@ mandatory=true
 versionRange="[1.0.0, )"
 ordering="NONE"
 side="BOTH"
-
-[[dependencies.webdisplays]]
-modId="cloth_config"
-mandatory=true
-versionRange="[8.2.88, )"
-ordering="NONE"
-side="BOTH"

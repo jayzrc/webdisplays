@@ -100,11 +100,12 @@ public class GuiSetURL2 extends WDScreen {
 			validate(tfURL.getText());
 		else if (ev.getSource() == btnShutDown) {
 			if (isPad) {
+				stack.getTag().remove("PadURL");
+				stack.getTag().remove("PadID");
 				WDNetworkRegistry.INSTANCE.sendToServer(new C2SMinepadUrl(
 						getUUID(),
 						""
 				));
-				stack.getTag().remove("PadURL");
 			}
 			
 			minecraft.setScreen(null);

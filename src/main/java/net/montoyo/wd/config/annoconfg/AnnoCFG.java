@@ -138,10 +138,13 @@ public class AnnoCFG {
 						case OTHER -> {
 							Class<?> fieldType = field.getType();
 							if (fieldType.equals(String[].class)) {
-								value = builder.define(nameStr, new String[0]);
+								Supplier<String> sup = builder.define(nameStr, defaultValue.valueStr());
+								value = () -> {
+									String v = sup.get();
+									return v.split(",");
+								};
 							} else if (fieldType.equals(String.class)) {
-								String def = defaultValue.valueStr();
-								value = builder.define(nameStr, def);
+								value = builder.define(nameStr, defaultValue.valueStr());
 							} else
 								throw new RuntimeException("NYI " + field.getType());
 						}
@@ -149,7 +152,8 @@ public class AnnoCFG {
 					}
 				} catch (NullPointerException npe) {
 					String inf = "";
-					if (npe.getMessage().contains("\"value.Default\"")) inf = " this is likely due to a missing default.";
+					if (npe.getMessage().contains("\"value.Default\""))
+						inf = " this is likely due to a missing default.";
 					throw new RuntimeException("A null pointer occurred on " + field.getName() + inf, npe);
 				}
 				

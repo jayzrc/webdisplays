@@ -30,13 +30,40 @@ public class C2SMinepadUrl extends Packet {
 		buf.writeUtf(url);
 	}
 	
+	protected void merge(ItemStack stack) {
+		if (url.equals("")) {
+			stack.getOrCreateTag().remove("PadID");
+			stack.getOrCreateTag().remove("PadURL");
+		} else {
+			stack.getOrCreateTag().putUUID("PadID", id);
+			stack.getOrCreateTag().putString("PadURL", url);
+		}
+	}
+	
 	@Override
 	public void handle(NetworkEvent.Context ctx) {
+		// check if the player is holding a minePad with the requested id
+		// if the player is, then update that pad
 		for (InteractionHand value : InteractionHand.values()) {
 			ItemStack stack = ctx.getSender().getItemInHand(value);
-			if (stack.getItem() instanceof ItemMinePad2 pad) {
-				stack.getOrCreateTag().putUUID("PadID", id);
-				stack.getOrCreateTag().putString("PadURL", url);
+			if (stack.getItem() instanceof ItemMinePad2 && stack.getOrCreateTag().contains("PadID")) {
+				UUID padId = stack.getTag().getUUID("PadID");
+				if (padId.equals(id)) {
+					merge(stack);
+					return;
+				}
+			}
+		}
+		
+		// if the player is not holding the requested minePad, update the first one that does not already have an ID
+		for (InteractionHand value : InteractionHand.values()) {
+			ItemStack stack = ctx.getSender().getItemInHand(value);
+			if (stack.getItem() instanceof ItemMinePad2 && stack.getOrCreateTag().contains("PadID")) {
+				if (stack.getOrCreateTag().contains("PadID"))
+					continue;
+				
+				merge(stack);
+				return;
 			}
 		}
 	}
