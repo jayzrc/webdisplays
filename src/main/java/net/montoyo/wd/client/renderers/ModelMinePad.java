@@ -18,7 +18,7 @@ public final class ModelMinePad {
 		// TODO: this needs completing
 		// TODO: I'd like this to be able to load a model from a JSON if possible
 		
-		double x1 = 1.0;
+		double x1 = 0.0;
 		double y1 = 0.0;
 		double x2 = 27.65 / 32.0 + 0.01;
 		double y2 = 14.0 / 32.0 + 0.002;
