@@ -60,8 +60,6 @@ public class BlockScreen extends BaseEntityBlock {
 
     public BlockScreen(Properties properties) {
         super(properties.strength(1.5f, 10.f));
-//        setCreativeTab(WebDisplays.CREATIVE_TAB);
-//        setName("screen");
         this.registerDefaultState(this.defaultBlockState().setValue(hasTE, false).setValue(emitting, false));
     }
 
@@ -79,7 +77,6 @@ public class BlockScreen extends BaseEntityBlock {
         return world.getBlockState(pos.toBlock()).getBlock() != BlockInit.blockScreen.get();
     }
 
-
     @org.jetbrains.annotations.Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
@@ -90,31 +87,6 @@ public class BlockScreen extends BaseEntityBlock {
     public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos currentPos, BlockPos neighborPos) {
         return super.updateShape(state, direction, neighborState, level, currentPos, neighborPos);
     }
-
-   /* @Override
-    @Nonnull
-    public BlockState getExtendedState(@Nonnull BlockState ret, Level world, BlockPos bpos) {
-        Vector3i pos = new Vector3i(bpos);
-
-        for(BlockSide side : BlockSide.values()) {
-            int icon = 0;
-            if(isntScreenBlock(world, side.up.clone().add(pos)))    icon |= BAR_TOP;
-            if(isntScreenBlock(world, side.down.clone().add(pos)))  icon |= BAR_BOT;
-            if(isntScreenBlock(world, side.left.clone().add(pos)))  icon |= BAR_LEFT;
-            if(isntScreenBlock(world, side.right.clone().add(pos))) icon |= BAR_RIGHT;
-
-            ret = ret.setValue(sideFlags[side.ordinal()], icon);
-        }
-
-        return ret;
-    }*/
-
-//    @Override
-//    @Nonnull
-//    public IBlockState getStateFromMeta(int meta) {
-//        return getDefaultState().withProperty(hasTE, (meta & 1) != 0).withProperty(emitting, (meta & 2) != 0);
-//    }
-//
 
     public int getMetaFromState(BlockState state) {
         int ret = 0;
@@ -216,54 +188,54 @@ public class BlockScreen extends BaseEntityBlock {
 //            return InteractionResult.SUCCESS;
 //        }
 
-            Vector2i size = Multiblock.measure(world, pos, side);
-            if (size.x < 2 && size.y < 2) {
-                Util.toast(player, "tooSmall");
-                return InteractionResult.SUCCESS;
-            }
-
-            if (size.x > CommonConfig.Screen.maxScreenSizeX || size.y > CommonConfig.Screen.maxScreenSizeY) {
-                Util.toast(player, "tooBig", CommonConfig.Screen.maxScreenSizeX, CommonConfig.Screen.maxScreenSizeY);
-                return InteractionResult.SUCCESS;
-            }
-
-            Vector3i err = Multiblock.check(world, pos, size, side);
-            if (err != null) {
-                Util.toast(player, "invalid", err.toString());
-                return InteractionResult.SUCCESS;
-            }
-
-            boolean created = false;
-            Log.info("Player %s (UUID %s) created a screen at %s of size %dx%d", player.getName(), player.getGameProfile().getId().toString(), pos.toString(), size.x, size.y);
-
-            if (te == null) {
-                BlockPos bp = pos.toBlock();
-                world.setBlockAndUpdate(bp, world.getBlockState(bp).setValue(hasTE, true));
-                te = (TileEntityScreen) world.getBlockEntity(bp);
-                created = true;
-            }
-
-            te.addScreen(side, size, null, player, true);
+        Vector2i size = Multiblock.measure(world, pos, side);
+        if (size.x < 2 && size.y < 2) {
+            Util.toast(player, "tooSmall");
             return InteractionResult.SUCCESS;
         }
 
-        @Override
-        public void neighborChanged (BlockState state, Level world, BlockPos pos, Block block, BlockPos source,
-        boolean isMoving){
-            if (block != this && !world.isClientSide && !state.getValue(emitting)) {
-                for (BlockSide side : BlockSide.values()) {
-                    Vector3i vec = new Vector3i(pos);
-                    Multiblock.findOrigin(world, vec, side, null);
+        if (size.x > CommonConfig.Screen.maxScreenSizeX || size.y > CommonConfig.Screen.maxScreenSizeY) {
+            Util.toast(player, "tooBig", CommonConfig.Screen.maxScreenSizeX, CommonConfig.Screen.maxScreenSizeY);
+            return InteractionResult.SUCCESS;
+        }
 
-                    TileEntityScreen tes = (TileEntityScreen) world.getBlockEntity(vec.toBlock());
-                    if (tes != null && tes.hasUpgrade(side, DefaultUpgrade.REDINPUT)) {
-                        Direction facing = Direction.from2DDataValue(side.reverse().ordinal()); //Opposite face
-                        vec.sub(pos.getX(), pos.getY(), pos.getZ()).neg();
-                        tes.updateJSRedstone(side, new Vector2i(vec.dot(side.right), vec.dot(side.up)), world.getSignal(pos, facing));
-                    }
+        Vector3i err = Multiblock.check(world, pos, size, side);
+        if (err != null) {
+            Util.toast(player, "invalid", err.toString());
+            return InteractionResult.SUCCESS;
+        }
+
+        boolean created = false;
+        Log.info("Player %s (UUID %s) created a screen at %s of size %dx%d", player.getName(), player.getGameProfile().getId().toString(), pos.toString(), size.x, size.y);
+
+        if (te == null) {
+            BlockPos bp = pos.toBlock();
+            world.setBlockAndUpdate(bp, world.getBlockState(bp).setValue(hasTE, true));
+            te = (TileEntityScreen) world.getBlockEntity(bp);
+            created = true;
+        }
+
+        te.addScreen(side, size, null, player, true);
+        return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos source,
+    boolean isMoving){
+        if (block != this && !world.isClientSide && !state.getValue(emitting)) {
+            for (BlockSide side : BlockSide.values()) {
+                Vector3i vec = new Vector3i(pos);
+                Multiblock.findOrigin(world, vec, side, null);
+
+                TileEntityScreen tes = (TileEntityScreen) world.getBlockEntity(vec.toBlock());
+                if (tes != null && tes.hasUpgrade(side, DefaultUpgrade.REDINPUT)) {
+                    Direction facing = Direction.from2DDataValue(side.reverse().ordinal()); //Opposite face
+                    vec.sub(pos.getX(), pos.getY(), pos.getZ()).neg();
+                    tes.updateJSRedstone(side, new Vector2i(vec.dot(side.right), vec.dot(side.up)), world.getSignal(pos, facing));
                 }
             }
         }
+    }
     
     public static boolean hit2pixels(BlockSide side, BlockPos bpos, Vector3i pos, TileEntityScreen.Screen scr, float hitX, float hitY, float hitZ, Vector2i dst) {
         if(side.right.x < 0)
@@ -323,104 +295,98 @@ public class BlockScreen extends BaseEntityBlock {
         return false;
     }
 
-        @org.jetbrains.annotations.Nullable
-        @Override
-        public BlockEntity newBlockEntity (BlockPos pos, BlockState state){
-            int meta = getMetaFromState(state);
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public BlockEntity newBlockEntity (BlockPos pos, BlockState state){
+        int meta = getMetaFromState(state);
 
-            if ((meta & 1) == 0)
-                return null;
+        if ((meta & 1) == 0)
+            return null;
 
-            return ((meta & 1) == 0) ? null : new TileEntityScreen(pos, state);
+        return ((meta & 1) == 0) ? null : new TileEntityScreen(pos, state);
+    }
+
+    /************************************************* DESTRUCTION HANDLING *************************************************/
+
+    private void onDestroy (Level world, BlockPos pos, Player ply){
+        if (!world.isClientSide) {
+            Vector3i bp = new Vector3i(pos);
+            Multiblock.BlockOverride override = new Multiblock.BlockOverride(bp, Multiblock.OverrideAction.SIMULATE);
+
+            for (BlockSide bs : BlockSide.values())
+                destroySide(world, bp.clone(), bs, override, ply);
         }
+    }
 
-        /************************************************* DESTRUCTION HANDLING *************************************************/
+    private void destroySide (Level world, Vector3i pos, BlockSide side, Multiblock.BlockOverride override, Player
+    source){
+        Multiblock.findOrigin(world, pos, side, override);
+        BlockPos bp = pos.toBlock();
+        BlockEntity te = world.getBlockEntity(bp);
 
-        private void onDestroy (Level world, BlockPos pos, Player ply){
-            if (!world.isClientSide) {
-                Vector3i bp = new Vector3i(pos);
-                Multiblock.BlockOverride override = new Multiblock.BlockOverride(bp, Multiblock.OverrideAction.SIMULATE);
+        if (te != null && te instanceof TileEntityScreen) {
+            ((TileEntityScreen) te).onDestroy(source);
+            world.setBlock(bp, world.getBlockState(bp).setValue(hasTE, false), Block.UPDATE_ALL_IMMEDIATE); //Destroy tile entity.
+        }
+    }
 
+    @Override
+    public boolean onDestroyedByPlayer (BlockState state, Level level, BlockPos pos, Player player,
+    boolean willHarvest, FluidState fluid){
+        onDestroy(level, pos, player);
+        return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
+    }
+
+    @Override
+    public void setPlacedBy (Level world, @NotNull BlockPos pos, @NotNull BlockState
+    state, @org.jetbrains.annotations.Nullable LivingEntity whoDidThisShit, @NotNull ItemStack stack){
+        if (world.isClientSide)
+            return;
+
+        Multiblock.BlockOverride override = new Multiblock.BlockOverride(new Vector3i(pos), Multiblock.OverrideAction.IGNORE);
+        Vector3i[] neighbors = new Vector3i[6];
+
+        neighbors[0] = new Vector3i(pos.getX() + 1, pos.getY(), pos.getZ());
+        neighbors[1] = new Vector3i(pos.getX() - 1, pos.getY(), pos.getZ());
+        neighbors[2] = new Vector3i(pos.getX(), pos.getY() + 1, pos.getZ());
+        neighbors[3] = new Vector3i(pos.getX(), pos.getY() - 1, pos.getZ());
+        neighbors[4] = new Vector3i(pos.getX(), pos.getY(), pos.getZ() + 1);
+        neighbors[5] = new Vector3i(pos.getX(), pos.getY(), pos.getZ() - 1);
+
+        for (Vector3i neighbor : neighbors) {
+            if (world.getBlockState(neighbor.toBlock()).getBlock() instanceof BlockScreen) {
                 for (BlockSide bs : BlockSide.values())
-                    destroySide(world, bp.clone(), bs, override, ply);
+                    destroySide(world, neighbor.clone(), bs, override, (whoDidThisShit instanceof Player) ? ((Player) whoDidThisShit) : null);
             }
         }
+    }
 
-        private void destroySide (Level world, Vector3i pos, BlockSide side, Multiblock.BlockOverride override, Player
-        source){
-            Multiblock.findOrigin(world, pos, side, override);
-            BlockPos bp = pos.toBlock();
-            BlockEntity te = world.getBlockEntity(bp);
+    @Override
+    public @NotNull PushReaction getPistonPushReaction (BlockState state){
+        return PushReaction.IGNORE;
+    }
 
-            if (te != null && te instanceof TileEntityScreen) {
-                ((TileEntityScreen) te).onDestroy(source);
-                world.setBlock(bp, world.getBlockState(bp).setValue(hasTE, false), Block.UPDATE_ALL_IMMEDIATE); //Destroy tile entity.
-            }
+    @Override
+    public int getSignal (BlockState state, BlockGetter level, BlockPos pos, Direction direction){
+        return state.getValue(emitting) ? 15 : 0;
+    }
+
+    @Override
+    public boolean isSignalSource (BlockState state){
+        return state.getValue(emitting);
+    }
+
+    private static class ItemBlockScreen extends BlockItem implements WDItem {
+
+        public ItemBlockScreen(BlockScreen screen) {
+            super(screen, new Properties());
         }
 
+        @Nullable
         @Override
-        public boolean onDestroyedByPlayer (BlockState state, Level level, BlockPos pos, Player player,
-        boolean willHarvest, FluidState fluid){
-            onDestroy(level, pos, player);
-            return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
-        }
-
-        @Override
-        public void setPlacedBy (Level world, @NotNull BlockPos pos, @NotNull BlockState
-        state, @org.jetbrains.annotations.Nullable LivingEntity whoDidThisShit, @NotNull ItemStack stack){
-            if (world.isClientSide)
-                return;
-
-            Multiblock.BlockOverride override = new Multiblock.BlockOverride(new Vector3i(pos), Multiblock.OverrideAction.IGNORE);
-            Vector3i[] neighbors = new Vector3i[6];
-
-            neighbors[0] = new Vector3i(pos.getX() + 1, pos.getY(), pos.getZ());
-            neighbors[1] = new Vector3i(pos.getX() - 1, pos.getY(), pos.getZ());
-            neighbors[2] = new Vector3i(pos.getX(), pos.getY() + 1, pos.getZ());
-            neighbors[3] = new Vector3i(pos.getX(), pos.getY() - 1, pos.getZ());
-            neighbors[4] = new Vector3i(pos.getX(), pos.getY(), pos.getZ() + 1);
-            neighbors[5] = new Vector3i(pos.getX(), pos.getY(), pos.getZ() - 1);
-
-            for (Vector3i neighbor : neighbors) {
-                if (world.getBlockState(neighbor.toBlock()).getBlock() instanceof BlockScreen) {
-                    for (BlockSide bs : BlockSide.values())
-                        destroySide(world, neighbor.clone(), bs, override, (whoDidThisShit instanceof Player) ? ((Player) whoDidThisShit) : null);
-                }
-            }
-        }
-
-        @Override
-        public @NotNull PushReaction getPistonPushReaction (BlockState state){
-            return PushReaction.IGNORE;
-        }
-
-        @Override
-        public int getSignal (BlockState state, BlockGetter level, BlockPos pos, Direction direction){
-            return state.getValue(emitting) ? 15 : 0;
-        }
-
-        @Override
-        public boolean isSignalSource (BlockState state){
-            return state.getValue(emitting);
-        }
-
-//    @Override //TODO: Add this
-//    protected BlockItem createItemBlock() {
-//        return new ItemBlockScreen(this);
-//    }
-
-        private static class ItemBlockScreen extends BlockItem implements WDItem {
-
-            public ItemBlockScreen(BlockScreen screen) {
-                super(screen, new Properties());
-            }
-
-            @Nullable
-            @Override
-            public String getWikiName(@Nonnull ItemStack is) {
-                return is.getItem().getName(is).getString();
-            }
-
+        public String getWikiName(@Nonnull ItemStack is) {
+            return is.getItem().getName(is).getString();
         }
 
     }
+}

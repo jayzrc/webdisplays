@@ -157,6 +157,7 @@ public class GuiKeyboard extends WDScreen {
         evStack.add(new TypeData(TypeData.Action.PRESS, keyCode, modifiers));
         if (!evStack.isEmpty() && !syncRequested())
             requestSync();
+        sync();
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
     
@@ -165,6 +166,7 @@ public class GuiKeyboard extends WDScreen {
         evStack.add(new TypeData(TypeData.Action.TYPE, codePoint, modifiers));
         if (!evStack.isEmpty() && !syncRequested())
             requestSync();
+        sync();
         return super.charTyped(codePoint, modifiers);
     }
     
@@ -173,6 +175,7 @@ public class GuiKeyboard extends WDScreen {
         evStack.add(new TypeData(TypeData.Action.RELEASE, keyCode, modifiers));
         if (!evStack.isEmpty() && !syncRequested())
             requestSync();
+        sync();
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 

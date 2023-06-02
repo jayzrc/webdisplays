@@ -53,44 +53,6 @@ public class BlockServer extends WDBlockContainer{
         builder.add(properties);
     }
 
-    //    @Nullable TODO: Fix
-//    @Override
-//    public BlockState getStateForPlacement(BlockPlaceContext context) {
-//        Direction rot = Direction.fromYRot(placer.getYHeadRot());
-//        return defaultBlockState().setValue(type, DefaultPeripheral.fromMetadata(meta)).setValue(facing, rot);
-//
-//
-//        return getStateForPlacement(context);
-//    }
-//
-//    public BlockState getStateForPlacement(@Nonnull Level world, @Nonnull BlockPos pos, @Nonnull Direction nocare, float hitX,
-//                                            float hitY, float hitZ, int meta, @Nonnull LivingEntity placer, InteractionHand hand) {
-//    }
-
-//    @Override
-//    public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> list) {
-//        for(DefaultPeripheral dp : DefaultPeripheral.values())
-//            list.add(new ItemStack(getItem(), 1, dp.toMetadata(0)));
-//    }
-
-//    @Override
-//    @Nonnull
-//    public IBlockState getStateFromMeta(int meta) {
-//        DefaultPeripheral dp = DefaultPeripheral.fromMetadata(meta);
-//        IBlockState state = getDefaultState().withProperty(type, dp);
-//
-//        if(dp.hasFacing())
-//            state = state.withProperty(facing, (meta >> 2) & 3);
-//
-//        return state;
-//    }
-//
-//    @Override
-//    public int getMetaFromState(IBlockState state) {
-//        return state.getValue(type).toMetadata(state.getValue(facing));
-//    }
-
-
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
@@ -101,12 +63,6 @@ public class BlockServer extends WDBlockContainer{
     public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
-
-//    @Override
-//    public int damageDropped(IBlockState state) {
-//        return state.getValue(type).toMetadata(0);
-//    }
-
 
     @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
@@ -124,31 +80,6 @@ public class BlockServer extends WDBlockContainer{
         } else
             return InteractionResult.FAIL;
     }
-
-//    @Override
-//    public boolean isFullCube(IBlockState state) { TODO: FIx.
-//        return state.getValue(type) != DefaultPeripheral.KEYBOARD;
-//    }
-//
-//    @Override
-//    public boolean isFullBlock(IBlockState state) {
-//        return state.getValue(type) != DefaultPeripheral.KEYBOARD;
-//    }
-//
-//    @Override
-//    public boolean isNormalCube(IBlockState state, IBlockAccess world, BlockPos pos) {
-//        return state.getValue(type) != DefaultPeripheral.KEYBOARD;
-//    }
-//
-//    @Override
-//    public boolean isOpaqueCube(IBlockState state) {
-//        return state.getValue(type) != DefaultPeripheral.KEYBOARD;
-//    }
-//
-//    @Override
-//    public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face) {
-//        return state.getValue(type) != DefaultPeripheral.KEYBOARD;
-//    }
 
     @Override
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
@@ -180,7 +111,6 @@ public class BlockServer extends WDBlockContainer{
 
         if(neighbor.getX() == pos.getX() && neighbor.getY() == pos.getY() - 1 && neighbor.getZ() == pos.getZ() && world.isEmptyBlock(neighbor)) {
             world.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
-//            dropBlockAsItem(world, pos, state, 0); //TODO Loottable
             WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(world, pos)), new S2CMessageCloseGui(pos));
         }
     }
@@ -190,6 +120,7 @@ public class BlockServer extends WDBlockContainer{
         if(!world.isClientSide) {
             WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(world, pos)), new S2CMessageCloseGui(pos));
         }
+        super.playerDestroy(world, player, pos, state, blockEntity, tool);
     }
 
     @Override
@@ -214,5 +145,4 @@ public class BlockServer extends WDBlockContainer{
     public static PacketDistributor.TargetPoint point(Level world, BlockPos bp) {
         return new PacketDistributor.TargetPoint(bp.getX(), bp.getY(), bp.getZ(), 64.0, world.dimension());
     }
-
 }

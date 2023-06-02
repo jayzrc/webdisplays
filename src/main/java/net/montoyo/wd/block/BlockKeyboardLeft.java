@@ -130,9 +130,6 @@ public class BlockKeyboardLeft extends BlockPeripheral {
     public static void remove(BlockState state, Level world, BlockPos pos, boolean setState, boolean drop) {
         removeRightPiece(state, world, pos);
         if (setState) {
-            if (drop) {
-                // TODO: force drop item
-            }
             world.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
         }
         WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(world, pos)), new S2CMessageCloseGui(pos));

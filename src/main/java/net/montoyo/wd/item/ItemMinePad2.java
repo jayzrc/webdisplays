@@ -20,6 +20,8 @@ import net.minecraft.world.level.Level;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.config.CommonConfig;
 import net.montoyo.wd.core.CraftComponent;
+import net.montoyo.wd.net.WDNetworkRegistry;
+import net.montoyo.wd.net.server_bound.C2SMinepadUrl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -59,8 +61,15 @@ public class ItemMinePad2 extends Item implements WDItem {
 				WebDisplays.PROXY.openMinePadGui(is.getTag().getUUID("PadID"));
 			
 			ok = true;
-		} else
-			ok = false;
+		} else {
+			UUID uuid = UUID.randomUUID();
+			String url = CommonConfig.Browser.homepage;
+			WDNetworkRegistry.INSTANCE.sendToServer(new C2SMinepadUrl(uuid, url));
+			is.getOrCreateTag().putUUID("PadID", uuid);
+			is.getTag().putString("PadURL", url);
+			
+			ok = true;
+		}
 		
 		return new InteractionResultHolder<>(ok ? InteractionResult.SUCCESS : InteractionResult.PASS, is);
 	}

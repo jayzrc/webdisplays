@@ -40,7 +40,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderHighlightEvent;
@@ -48,6 +47,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.network.NetworkEvent;
@@ -533,125 +533,142 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
        registerItemMultiModels(wd.itemAdvIcon);
     } */
 
-    @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
-    public void onTick(TickEvent.ClientTickEvent ev) {
-        if(ev.phase == TickEvent.Phase.END) {
-            //Help
-            if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_F1)) {
-                if(!isF1Down) {
-                    isF1Down = true;
-
-                    String wikiName = null;
-                    if(mc.screen instanceof WDScreen)
-                        wikiName = ((WDScreen) mc.screen).getWikiPageName();
-                    else if(mc.screen instanceof ContainerScreen) {
-                        Slot slot = ((ContainerScreen) mc.screen).getSlotUnderMouse();
-
-                        if(slot != null && slot.hasItem() && slot.getItem().getItem() instanceof WDItem)
-                            wikiName = ((WDItem) slot.getItem().getItem()).getWikiName(slot.getItem());
-                    }
-
-                    if(wikiName != null)
-                        mcef.openExampleBrowser("https://montoyo.net/wdwiki/index.php/" + wikiName);
-                }
-            } else if(isF1Down)
-                isF1Down = false;
-
-            //Workaround cuz chat sux
-            if(nextScreen != null && mc.screen == null) {
-                mc.setScreen(nextScreen);
-                nextScreen = null;
-            }
-
-            //Unload/load screens depending on client player distance
-            if(mc.player != null && !screenTracking.isEmpty()) {
-                int id = lastTracked % screenTracking.size();
-                lastTracked++;
-
-                TileEntityScreen tes = screenTracking.get(id);
-                double dist2 = mc.player.distanceToSqr(tes.getBlockPos().getX(), tes.getBlockPos().getY(), tes.getBlockPos().getZ());
-
-                if(tes.isLoaded()) {
-                    if(dist2 >  WebDisplays.INSTANCE.unloadDistance2)
-                        tes.unload();
-                    else if(ClientConfig.AutoVolumeControl.enableAutoVolume)
-                        tes.updateTrackDistance(dist2, 80); //ToDo find master volume
-                } else if(dist2 <=  WebDisplays.INSTANCE.loadDistance2)
-                    tes.load();
-            }
-
-            //Load/unload minePads depending on which item is in the player's hand
-            if(++minePadTickCounter >= 10) {
-                minePadTickCounter = 0;
-                Player ep = mc.player;
-
-                for(PadData pd: padList)
-                    pd.isInHotbar = false;
-
-                if(ep != null) {
-                    updateInventory(ep.getInventory().items, ep.getItemInHand(InteractionHand.MAIN_HAND), 9);
-                    updateInventory(ep.getInventory().offhand, ep.getItemInHand(InteractionHand.OFF_HAND), 1); //Is this okay?
-                }
-
-                //TODO: Check for GuiContainer.draggedStack
-
-                for(int i = padList.size() - 1; i >= 0; i--) {
-                    PadData pd = padList.get(i);
-
-                    if(!pd.isInHotbar) {
-                        pd.view.close();
-                        pd.view = null; //This is for GuiMinePad, in case the player dies with the GUI open
-                        padList.remove(i);
-                        padMap.remove(pd.id);
-                    }
-                }
-            }
-
-            //Laser pointer raycast
-            if(mc.player != null && mc.level != null && ItemInit.itemLaserPointer.isPresent() && mc.player.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(ItemInit.itemLaserPointer.get())
-                                                     && mc.options.keyUse.isDown()
-                                                     && (mc.hitResult == null || mc.hitResult.getType() == HitResult.Type.BLOCK || mc.hitResult.getType() == HitResult.Type.MISS)) {
-                laserPointerRenderer.isOn = true;
-                BlockHitResult result = raycast(64.0); //TODO: Make that distance configurable
-
-                BlockPos bpos = result.getBlockPos();
-
-                if(result.getType() == HitResult.Type.BLOCK && mc.level.getBlockState(bpos).getBlock() == BlockInit.blockScreen.get()) {
-                    Vector3i pos = new Vector3i(result.getBlockPos());
-                    BlockSide side = BlockSide.values()[result.getDirection().ordinal()];
-
-                    Multiblock.findOrigin(mc.level, pos, side, null);
-                    TileEntityScreen te = (TileEntityScreen) mc.level.getBlockEntity(pos.toBlock());
-
-                    if(te != null && te.hasUpgrade(side, DefaultUpgrade.LASERMOUSE)) { //hasUpgrade returns false is there's no screen on side 'side'
-                        //Since rights aren't synchronized, let the server check them for us...
-                        TileEntityScreen.Screen scr = te.getScreen(side);
-
-                        if(scr.browser != null) {
-                            float hitX = ((float) result.getLocation().x) - (float) bpos.getX();
-                            float hitY = ((float) result.getLocation().y) - (float) bpos.getY();
-                            float hitZ = ((float) result.getLocation().z) - (float) bpos.getZ();
-                            Vector2i tmp = new Vector2i();
+	@SubscribeEvent
+	public void onLevelTick(TickEvent.LevelTickEvent ev) {
+	    if (!ev.side.equals(LogicalSide.CLIENT)) return;
+        if(ev.phase != TickEvent.Phase.END) return;
+		
+		//Unload/load screens depending on client player distance
+		if (mc.player != null || !screenTracking.isEmpty())
+			return;
+		
+		int id = lastTracked % screenTracking.size();
+	
+		TileEntityScreen tes = screenTracking.get(id);
+	
+		if (!tes.getLevel().equals(ev.level))
+			return;
+	
+		lastTracked++;
+		if (tes.getLevel() != mc.player.level) {
+			// TODO: properly handle this
+			// probably gonna want a helper class for cross-dimensional distances
+			if (!tes.isLoaded())
+				tes.load();
+		} else {
+			double dist2 = mc.player.distanceToSqr(tes.getBlockPos().getX(), tes.getBlockPos().getY(), tes.getBlockPos().getZ());
+		
+			if (tes.isLoaded()) {
+				if (dist2 > WebDisplays.INSTANCE.unloadDistance2)
+					tes.unload();
+				else if (ClientConfig.AutoVolumeControl.enableAutoVolume)
+					tes.updateTrackDistance(dist2, 80); //ToDo find master volume
+			} else if (dist2 <= WebDisplays.INSTANCE.loadDistance2)
+				tes.load();
+		}
+	}
     
-                            if(BlockScreen.hit2pixels(side, bpos, new Vector3i(result.getBlockPos()), scr, hitX, hitY, hitZ, tmp)) {
-                                laserClick(te, side, scr, tmp);
-                            }
+    @SubscribeEvent
+    public void onTick(TickEvent.ClientTickEvent ev) {
+        if(ev.phase != TickEvent.Phase.END) return;
+        
+        //Help
+        if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_F1)) {
+            if(!isF1Down) {
+                isF1Down = true;
+
+                String wikiName = null;
+                if(mc.screen instanceof WDScreen)
+                    wikiName = ((WDScreen) mc.screen).getWikiPageName();
+                else if(mc.screen instanceof ContainerScreen) {
+                    Slot slot = ((ContainerScreen) mc.screen).getSlotUnderMouse();
+
+                    if(slot != null && slot.hasItem() && slot.getItem().getItem() instanceof WDItem)
+                        wikiName = ((WDItem) slot.getItem().getItem()).getWikiName(slot.getItem());
+                }
+
+                if(wikiName != null)
+                    mcef.openExampleBrowser("https://montoyo.net/wdwiki/index.php/" + wikiName);
+            }
+        } else if(isF1Down)
+            isF1Down = false;
+
+        //Workaround cuz chat sux
+        if(nextScreen != null && mc.screen == null) {
+            mc.setScreen(nextScreen);
+            nextScreen = null;
+        }
+
+        //Load/unload minePads depending on which item is in the player's hand
+        if(++minePadTickCounter >= 10) {
+            minePadTickCounter = 0;
+            Player ep = mc.player;
+
+            for(PadData pd: padList)
+                pd.isInHotbar = false;
+
+            if(ep != null) {
+                updateInventory(ep.getInventory().items, ep.getItemInHand(InteractionHand.MAIN_HAND), 9);
+                updateInventory(ep.getInventory().offhand, ep.getItemInHand(InteractionHand.OFF_HAND), 1); //Is this okay?
+            }
+
+            //TODO: Check for GuiContainer.draggedStack
+
+            for(int i = padList.size() - 1; i >= 0; i--) {
+                PadData pd = padList.get(i);
+
+                if(!pd.isInHotbar) {
+                    pd.view.close();
+                    pd.view = null; //This is for GuiMinePad, in case the player dies with the GUI open
+                    padList.remove(i);
+                    padMap.remove(pd.id);
+                }
+            }
+        }
+
+        //Laser pointer raycast
+        if(mc.player != null && mc.level != null && ItemInit.itemLaserPointer.isPresent() && mc.player.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(ItemInit.itemLaserPointer.get())
+                                                 && mc.options.keyUse.isDown()
+                                                 && (mc.hitResult == null || mc.hitResult.getType() == HitResult.Type.BLOCK || mc.hitResult.getType() == HitResult.Type.MISS)) {
+            laserPointerRenderer.isOn = true;
+            BlockHitResult result = raycast(64.0); //TODO: Make that distance configurable
+
+            BlockPos bpos = result.getBlockPos();
+
+            if(result.getType() == HitResult.Type.BLOCK && mc.level.getBlockState(bpos).getBlock() == BlockInit.blockScreen.get()) {
+                Vector3i pos = new Vector3i(result.getBlockPos());
+                BlockSide side = BlockSide.values()[result.getDirection().ordinal()];
+
+                Multiblock.findOrigin(mc.level, pos, side, null);
+                TileEntityScreen te = (TileEntityScreen) mc.level.getBlockEntity(pos.toBlock());
+
+                if(te != null && te.hasUpgrade(side, DefaultUpgrade.LASERMOUSE)) { //hasUpgrade returns false is there's no screen on side 'side'
+                    //Since rights aren't synchronized, let the server check them for us...
+                    TileEntityScreen.Screen scr = te.getScreen(side);
+
+                    if(scr.browser != null) {
+                        float hitX = ((float) result.getLocation().x) - (float) bpos.getX();
+                        float hitY = ((float) result.getLocation().y) - (float) bpos.getY();
+                        float hitZ = ((float) result.getLocation().z) - (float) bpos.getZ();
+                        Vector2i tmp = new Vector2i();
+
+                        if(BlockScreen.hit2pixels(side, bpos, new Vector3i(result.getBlockPos()), scr, hitX, hitY, hitZ, tmp)) {
+                            laserClick(te, side, scr, tmp);
                         }
                     }
                 }
-            } else {
-                laserPointerRenderer.isOn = false;
-                deselectScreen();
+            }
+        } else {
+            laserPointerRenderer.isOn = false;
+            deselectScreen();
 
-                //Handle JS queries
-                jsDispatcher.handleQueries();
+            //Handle JS queries
+            jsDispatcher.handleQueries();
 
-                //Miniserv
-                if (msClientStarted && mc.player == null) {
-                    msClientStarted = false;
-                    Client.getInstance().stop();
-                }
+            //Miniserv
+            if (msClientStarted && mc.player == null) {
+                msClientStarted = false;
+                Client.getInstance().stop();
             }
         }
     }
