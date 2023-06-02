@@ -12,7 +12,7 @@ modId="webdisplays" #mandatory
 
 version="1.0.0" #mandatory
 
-displayName="MCEF" #mandatory
+displayName="WebDisplays" #mandatory
 
 displayURL="https://github.com/Mysticpasta1/webdisplays" #optional
 

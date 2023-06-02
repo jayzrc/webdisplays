@@ -29,6 +29,7 @@ import net.montoyo.mcef.api.IBrowser;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.block.BlockScreen;
 import net.montoyo.wd.client.ClientProxy;
+import net.montoyo.wd.config.CommonConfig;
 import net.montoyo.wd.core.DefaultUpgrade;
 import net.montoyo.wd.core.IUpgrade;
 import net.montoyo.wd.core.JSServerRequest;
@@ -207,16 +208,16 @@ public class TileEntityScreen extends BlockEntity {
 
 
         public void clampResolution() {
-            if (resolution.x > WebDisplays.INSTANCE.maxResX) {
-                float newY = ((float) resolution.y) * ((float) WebDisplays.INSTANCE.maxResX) / ((float) resolution.x);
-                resolution.x = WebDisplays.INSTANCE.maxResX;
+            if (resolution.x > CommonConfig.Screen.maxResolutionX) {
+                float newY = ((float) resolution.y) * ((float) CommonConfig.Screen.maxResolutionX) / ((float) resolution.x);
+                resolution.x = CommonConfig.Screen.maxResolutionX;
                 resolution.y = (int) newY;
             }
 
-            if (resolution.y > WebDisplays.INSTANCE.maxResY) {
-                float newX = ((float) resolution.x) * ((float) WebDisplays.INSTANCE.maxResY) / ((float) resolution.y);
+            if (resolution.y > CommonConfig.Screen.maxResolutionY) {
+                float newX = ((float) resolution.x) * ((float) CommonConfig.Screen.maxResolutionY) / ((float) resolution.y);
                 resolution.x = (int) newX;
-                resolution.y = WebDisplays.INSTANCE.maxResY;
+                resolution.y = CommonConfig.Screen.maxResolutionY;
             }
         }
     
@@ -303,7 +304,7 @@ public class TileEntityScreen extends BlockEntity {
         Screen ret = new Screen();
         ret.side = side;
         ret.size = size;
-        ret.url = WebDisplays.INSTANCE.homePage;
+        ret.url = CommonConfig.Browser.homepage;
         ret.friends = new ArrayList<>();
         ret.friendRights = ScreenRights.DEFAULTS;
         ret.otherRights = ScreenRights.DEFAULTS;

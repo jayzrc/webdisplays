@@ -18,6 +18,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.montoyo.wd.WebDisplays;
+import net.montoyo.wd.config.CommonConfig;
 import net.montoyo.wd.core.CraftComponent;
 
 import javax.annotation.Nonnull;
@@ -37,7 +38,7 @@ public class ItemMinePad2 extends Item implements WDItem {
 	
 	private static String getURL(ItemStack is) {
 		if (is.getTag() == null || !is.getTag().contains("PadURL"))
-			return WebDisplays.INSTANCE.homePage;
+			return CommonConfig.Browser.homepage;
 		else
 			return is.getTag().getString("PadURL");
 	}

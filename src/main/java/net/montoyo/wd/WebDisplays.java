@@ -5,9 +5,6 @@
 package net.montoyo.wd;
 
 import com.google.gson.Gson;
-import me.shedaniel.autoconfig.AutoConfig;
-import me.shedaniel.autoconfig.ConfigHolder;
-import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -41,7 +38,8 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.montoyo.wd.client.ClientProxy;
-import net.montoyo.wd.config.ModConfig;
+import net.montoyo.wd.config.ClientConfig;
+import net.montoyo.wd.config.CommonConfig;
 import net.montoyo.wd.controls.ScreenControlRegistry;
 import net.montoyo.wd.core.*;
 import net.montoyo.wd.init.BlockInit;
@@ -58,15 +56,11 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 @Mod("webdisplays")
 public class WebDisplays {
-
-    public static final String MOD_VERSION = "1.1";
-
     public static WebDisplays INSTANCE;
 
     public static SharedProxy PROXY = null;
@@ -93,27 +87,20 @@ public class WebDisplays {
 
     //Config
     public static final double PAD_RATIO = 59.0 / 30.0;
-    public String homePage;
     public double padResX;
     public double padResY;
     private int lastPadId = 0;
-    public boolean doHardRecipe;
-    private boolean hasOC;
-    private boolean hasCC;
-    private List<String> blacklist;
-    public boolean disableOwnershipThief;
     public double unloadDistance2;
     public double loadDistance2;
-    public int maxResX;
-    public int maxResY;
-    public int maxScreenX;
-    public int maxScreenY;
     public int miniservPort;
     public long miniservQuota;
-    public boolean enableSoundDistance;
     public float ytVolume;
     public float avDist100;
     public float avDist0;
+    
+    // mod detection
+    private boolean hasOC;
+    private boolean hasCC;
 
     public WebDisplays() {
         INSTANCE = this;
@@ -122,27 +109,14 @@ public class WebDisplays {
         } else {
             PROXY = new SharedProxy();
         }
-        AutoConfig.register(ModConfig.class, Toml4jConfigSerializer::new);
-        ConfigHolder<ModConfig> configHolder = AutoConfig.getConfigHolder(ModConfig.class);
-        ModConfig config = configHolder.getConfig();
-        configHolder.save();
-
-        this.blacklist = config.main.blacklist;
-        doHardRecipe = config.main.hardRecipes;
-        this.homePage = config.main.homepage;
-        disableOwnershipThief = config.main.disableOwnershipThief;
-        unloadDistance2 = config.client.unloadDistance * config.client.unloadDistance;
-        loadDistance2 = config.client.loadDistance * config.client.loadDistance;
-        this.maxResX = config.main.maxResolutionX;
-        this.maxResY = config.main.maxResolutionY;
-        this.miniservPort = config.main.miniservPort;
-        this.miniservQuota = config.main.miniservQuota * 1024L;
-        this.maxScreenX = config.main.maxScreenSizeX;
-        this.maxScreenY = config.main.maxScreenSizeY;
-        enableSoundDistance = config.client.autoVolumeControl.enableAutoVolume;
-        this.ytVolume = (float) config.client.autoVolumeControl.ytVolume;
-        avDist100 = (float) config.client.autoVolumeControl.dist100;
-        avDist0 = (float) config.client.autoVolumeControl.dist0;
+    
+        if (FMLEnvironment.dist.isClient()) {
+            // proxies are annoying, so from now on, I'mma be just registering stuff in here
+            MinecraftForge.EVENT_BUS.addListener(ClientProxy::onDrawSelection);
+            ClientConfig.init();
+        }
+        
+        CommonConfig.init();
 
         CREATIVE_TAB = new WDCreativeTab();
 
@@ -153,10 +127,6 @@ public class WebDisplays {
         criterionKeyboardCat = new Criterion("keyboard_cat");
         registerTrigger(criterionPadBreak, criterionUpgradeScreen, criterionLinkPeripheral, criterionKeyboardCat);
 
-        //Read configuration
-        padResY = config.main.padHeight;
-        padResX = padResY * PAD_RATIO;
-
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         WDNetworkRegistry.init();
         SOUNDS.register(bus);
@@ -166,11 +136,6 @@ public class WebDisplays {
         ItemInit.registerUpgrade();
         ItemInit.registerComponents();
         TileInit.init(bus);
-
-        if (FMLEnvironment.dist.isClient()) {
-            // proxies are annoying, so from now on, I'mma be just registering stuff in here
-            MinecraftForge.EVENT_BUS.addListener(ClientProxy::onDrawSelection);
-        }
         
         PROXY.preInit();
         
@@ -308,7 +273,7 @@ public class WebDisplays {
 
     @SubscribeEvent
     public void onPlayerCraft(PlayerEvent.ItemCraftedEvent ev) {
-        if(doHardRecipe && ev.getCrafting().getItem() == ItemInit.itemCraftComp.get() && (CraftComponent.EXTCARD.makeItemStack().is(ev.getCrafting().getItem()))) {
+        if(CommonConfig.hardRecipes && ev.getCrafting().getItem() == ItemInit.itemCraftComp.get() && (CraftComponent.EXTCARD.makeItemStack().is(ev.getCrafting().getItem()))) {
             if((ev.getEntity() instanceof ServerPlayer && !hasPlayerAdvancement((ServerPlayer) ev.getEntity(), ADV_PAD_BREAK)) || PROXY.hasClientPlayerAdvancement(ADV_PAD_BREAK) != HasAdvancement.YES) {
                 ev.getCrafting().setDamageValue(CraftComponent.BADEXTCARD.ordinal());
 
@@ -437,7 +402,9 @@ public class WebDisplays {
     public static boolean isSiteBlacklisted(String url) {
         try {
             URL url2 = new URL(Util.addProtocol(url));
-            return new ModConfig.Main().blacklist.stream().anyMatch(str -> str.equalsIgnoreCase(url2.getHost()));
+            for (String str : CommonConfig.Browser.blacklist)
+                if (str.equalsIgnoreCase(url2.getHost())) return true;
+            return false;
         } catch(MalformedURLException ex) {
             return false;
         }
@@ -446,6 +413,5 @@ public class WebDisplays {
     public static String applyBlacklist(String url) {
         return isSiteBlacklisted(url) ? BLACKLIST_URL : url;
     }
-
 }
 

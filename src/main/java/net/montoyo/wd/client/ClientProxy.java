@@ -58,6 +58,7 @@ import net.montoyo.wd.block.BlockScreen;
 import net.montoyo.wd.client.gui.*;
 import net.montoyo.wd.client.gui.loading.GuiLoader;
 import net.montoyo.wd.client.renderers.*;
+import net.montoyo.wd.config.ClientConfig;
 import net.montoyo.wd.core.DefaultUpgrade;
 import net.montoyo.wd.core.HasAdvancement;
 import net.montoyo.wd.core.JSServerRequest;
@@ -575,7 +576,7 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
                 if(tes.isLoaded()) {
                     if(dist2 >  WebDisplays.INSTANCE.unloadDistance2)
                         tes.unload();
-                    else if(WebDisplays.INSTANCE.enableSoundDistance)
+                    else if(ClientConfig.AutoVolumeControl.enableAutoVolume)
                         tes.updateTrackDistance(dist2, 80); //ToDo find master volume
                 } else if(dist2 <=  WebDisplays.INSTANCE.loadDistance2)
                     tes.load();

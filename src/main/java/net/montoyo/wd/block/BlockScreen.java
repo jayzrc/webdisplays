@@ -32,6 +32,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.montoyo.wd.WebDisplays;
+import net.montoyo.wd.config.CommonConfig;
 import net.montoyo.wd.core.DefaultUpgrade;
 import net.montoyo.wd.core.IUpgrade;
 import net.montoyo.wd.core.ScreenRights;
@@ -221,8 +222,8 @@ public class BlockScreen extends BaseEntityBlock {
                 return InteractionResult.SUCCESS;
             }
 
-            if (size.x > WebDisplays.INSTANCE.maxScreenX || size.y > WebDisplays.INSTANCE.maxScreenY) {
-                Util.toast(player, "tooBig", WebDisplays.INSTANCE.maxScreenX, WebDisplays.INSTANCE.maxScreenY);
+            if (size.x > CommonConfig.Screen.maxScreenSizeX || size.y > CommonConfig.Screen.maxScreenSizeY) {
+                Util.toast(player, "tooBig", CommonConfig.Screen.maxScreenSizeX, CommonConfig.Screen.maxScreenSizeY);
                 return InteractionResult.SUCCESS;
             }
 
