@@ -22,7 +22,7 @@ public class ClientConfig {
 	@Comment("How far (in blocks) you can be before a screen starts rendering")
 	@Translation("config.webdisplays.load_distance")
 	@DoubleRange(minV = 0, maxV = Double.MAX_VALUE)
-	@Default(valueD = 32)
+	@Default(valueD = 30)
 	public static double loadDistance = 30.0;
 	
 	@Name("unload_distance")

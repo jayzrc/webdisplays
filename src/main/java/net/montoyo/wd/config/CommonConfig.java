@@ -62,7 +62,7 @@ public class CommonConfig {
 		@Comment("The maximum value screen's vertical resolution, in pixels")
 		@Translation("config.webdisplays.max_res_y")
 		@IntRange(minV = 0, maxV = Integer.MAX_VALUE)
-		@Default(valueI = 1920)
+		@Default(valueI = 1080)
 		public static int maxResolutionY = 1080;
 		
 		@Name("max_width")
