@@ -13,6 +13,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.client.ClientProxy;
 import net.montoyo.wd.utilities.BlockSide;
+import org.cef.browser.CefBrowserOsr;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Optional;
@@ -35,6 +36,10 @@ public class GuiMinePad extends WDScreen {
     public GuiMinePad(ClientProxy.PadData pad) {
         this();
         this.pad = pad;
+    
+        if (pad.view instanceof CefBrowserOsr osr) {
+            osr.allowCursorChanges(true);
+        }
     }
 
     @Override
@@ -212,5 +217,22 @@ public class GuiMinePad extends WDScreen {
     public boolean isForBlock(BlockPos bp, BlockSide side) {
         return false;
     }
-
+    
+    @Override
+    public void removed() {
+        super.removed();
+        if (pad.view instanceof CefBrowserOsr osr) {
+            osr.allowCursorChanges(true);
+            osr.onCursorChange(null, 0);
+        }
+    }
+    
+    @Override
+    public void onClose() {
+        super.onClose();
+        if (pad.view instanceof CefBrowserOsr osr) {
+            osr.allowCursorChanges(true);
+            osr.onCursorChange(null, 0);
+        }
+    }
 }
