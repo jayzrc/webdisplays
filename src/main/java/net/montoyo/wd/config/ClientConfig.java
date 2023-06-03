@@ -46,6 +46,15 @@ public class ClientConfig {
 	@Default(valueI = 720)
 	public static int padResolution = 720;
 	
+	@Name("side_pad")
+	@Comment({
+			"When this is true, the minePad is placed off to the side of the screen when held, so it's visible but doesn't take up too much of the screen",
+			"When this is false, the minePad is placed closer to the center of the screen, allow it to be seen better, but taking up more of your view",
+	})
+	@Translation("config.webdisplays.side_pad")
+	@Default(valueBoolean = true)
+	public static boolean sidePad = true;
+	
 	@Comment({
 			"AutoVolume makes audio fade off based on distance",
 			"Currently, this seems to not work"

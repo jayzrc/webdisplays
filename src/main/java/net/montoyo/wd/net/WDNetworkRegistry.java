@@ -17,6 +17,10 @@ public class WDNetworkRegistry {
 			(s) -> s.equals(networkingVersion)
 	);
 	
+	public static void sendToNearExcept() {
+	
+	}
+	
 	// if an old packet needs to be ported, refer to the following link
 	// https://github.com/Mysticpasta1/webdisplays/tree/ff55cbf1b27773c15f44f17ad3364da3a16b6ed9/src/main/java/net/montoyo/wd/net
 	// however, I think I got all the essentials

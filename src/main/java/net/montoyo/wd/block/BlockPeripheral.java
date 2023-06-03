@@ -6,6 +6,7 @@ package net.montoyo.wd.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -181,6 +182,10 @@ public class BlockPeripheral extends WDBlockContainer {
         }
     }
 
+    public static PacketDistributor.TargetPoint point(Player exclude, Level world, BlockPos bp) {
+        return new PacketDistributor.TargetPoint((ServerPlayer) exclude, bp.getX(), bp.getY(), bp.getZ(), 64.0, world.dimension());
+    }
+    
     public static PacketDistributor.TargetPoint point(Level world, BlockPos bp) {
         return new PacketDistributor.TargetPoint(bp.getX(), bp.getY(), bp.getZ(), 64.0, world.dimension());
     }

@@ -70,6 +70,7 @@ import net.montoyo.wd.init.TileInit;
 import net.montoyo.wd.item.WDItem;
 import net.montoyo.wd.miniserv.client.Client;
 import net.montoyo.wd.net.WDNetworkRegistry;
+import net.montoyo.wd.net.client_bound.S2CMessageScreenUpdate;
 import net.montoyo.wd.net.server_bound.C2SMessageScreenCtrl;
 import net.montoyo.wd.net.server_bound.C2SMinepadUrl;
 import net.montoyo.wd.utilities.*;
@@ -648,9 +649,9 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
                     TileEntityScreen.Screen scr = te.getScreen(side);
 
                     if(scr.browser != null) {
-                        float hitX = ((float) result.getLocation().x) - (float) bpos.getX();
-                        float hitY = ((float) result.getLocation().y) - (float) bpos.getY();
-                        float hitZ = ((float) result.getLocation().z) - (float) bpos.getZ();
+                        float hitX = ((float) result.getLocation().x) - (float) pos.x;
+                        float hitY = ((float) result.getLocation().y) - (float) pos.y;
+                        float hitZ = ((float) result.getLocation().z) - (float) pos.z;
                         Vector2i tmp = new Vector2i();
 
                         if(BlockScreen.hit2pixels(side, bpos, new Vector3i(result.getBlockPos()), scr, hitX, hitY, hitZ, tmp)) {
@@ -717,8 +718,10 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
             if(t - lastPointPacket >= 100) {
                 lastPointPacket = t;
                 if (Minecraft.getInstance().player.isShiftKeyDown()) {
+                    tes.handleMouseEvent(side, S2CMessageScreenUpdate.MOUSE_CLICK, hit);
                     WDNetworkRegistry.INSTANCE.sendToServer(C2SMessageScreenCtrl.laserDown(tes, side, hit));
                 } else {
+                    tes.handleMouseEvent(side, S2CMessageScreenUpdate.MOUSE_MOVE, hit);
                     WDNetworkRegistry.INSTANCE.sendToServer(C2SMessageScreenCtrl.laserMove(tes, side, hit));
                 }
             }

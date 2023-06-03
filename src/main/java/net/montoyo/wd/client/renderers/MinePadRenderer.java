@@ -17,6 +17,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.client.ClientProxy;
+import net.montoyo.wd.config.ClientConfig;
 import net.montoyo.wd.item.ItemMinePad2;
 
 @OnlyIn(Dist.CLIENT)
@@ -58,7 +59,7 @@ public final class MinePadRenderer implements IItemRenderer {
 		// by default, the player holds the device off to the side
 		// if they are crouching, they hold it infront of them
 		// however, if they are holding two at once, then it once again should just be held off to the side
-		boolean sideHold = !Minecraft.getInstance().player.isShiftKeyDown();
+		boolean sideHold = Minecraft.getInstance().player.isShiftKeyDown() != ClientConfig.sidePad;
 		if (
 				(handSideSign < 0 && Minecraft.getInstance().player.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof ItemMinePad2) ||
 				(handSideSign > 0 && Minecraft.getInstance().player.getItemInHand(InteractionHand.OFF_HAND).getItem() instanceof ItemMinePad2)

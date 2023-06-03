@@ -39,6 +39,7 @@ import net.montoyo.wd.core.ScreenRights;
 import net.montoyo.wd.data.SetURLData;
 import net.montoyo.wd.entity.TileEntityScreen;
 import net.montoyo.wd.init.BlockInit;
+import net.montoyo.wd.item.ItemLaserPointer;
 import net.montoyo.wd.item.WDItem;
 import net.montoyo.wd.utilities.*;
 import org.jetbrains.annotations.NotNull;
@@ -121,9 +122,16 @@ public class BlockScreen extends BaseEntityBlock {
     @Override
     public InteractionResult use(BlockState state, Level world, BlockPos position, Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack heldItem = player.getItemInHand(hand);
+        boolean isUpgrade = false;
         if (heldItem.isEmpty())
             heldItem = null; //Easier to work with
-        else if (!(heldItem.getItem() instanceof IUpgrade))
+        else if (!(isUpgrade = heldItem.getItem() instanceof IUpgrade))
+            return InteractionResult.FAIL;
+        else if (heldItem.getItem() instanceof ItemLaserPointer)
+            return InteractionResult.FAIL; // laser pointer already handles stuff
+        
+        // handling the off hand leads to double clicking
+        if (!isUpgrade && hand == InteractionHand.OFF_HAND)
             return InteractionResult.FAIL;
 
         if (world.isClientSide)
@@ -151,7 +159,7 @@ public class BlockScreen extends BaseEntityBlock {
                 if (!te.hasUpgrade(side, heldItem)) {
                     if ((scr.rightsFor(player) & ScreenRights.MANAGE_UPGRADES) == 0) {
                         Util.toast(player, "restrictions");
-                        return InteractionResult.SUCCESS;
+                        return InteractionResult.CONSUME;
                     }
 
                     if (te.addUpgrade(side, heldItem, player, false)) {
@@ -164,12 +172,12 @@ public class BlockScreen extends BaseEntityBlock {
                     } else
                         Util.toast(player, "upgradeError");
 
-                    return InteractionResult.SUCCESS;
+                    return InteractionResult.CONSUME;
                 }
             } else {
                 if ((scr.rightsFor(player) & ScreenRights.INTERACT) == 0) {
                     Util.toast(player, "restrictions");
-                    return InteractionResult.SUCCESS;
+                    return InteractionResult.CONSUME;
                 }
 
                 Vector2i tmp = new Vector2i();
@@ -180,7 +188,7 @@ public class BlockScreen extends BaseEntityBlock {
                 
                 if (hit2pixels(side, hit.getBlockPos(), new Vector3i(hit.getBlockPos()), scr, hitX, hitY, hitZ, tmp))
                     te.click(side, tmp);
-                return InteractionResult.SUCCESS;
+                return InteractionResult.CONSUME;
             }
         }
 //        else if(sneaking) {
