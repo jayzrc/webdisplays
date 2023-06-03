@@ -36,7 +36,7 @@ public class ItemUpgrade extends ItemMulti implements IUpgrade, WDItem {
 
     @Override
     public boolean isSameUpgrade(@Nonnull ItemStack myStack, @Nonnull ItemStack otherStack) {
-        return otherStack.getItem() == this && otherStack == myStack;
+        return otherStack.getItem() == this;
     }
 
     @Override

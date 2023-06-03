@@ -102,7 +102,7 @@ public class BlockPeripheral extends WDBlockContainer {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return state.getValue(type) == DefaultPeripheral.KEYBOARD ? BlockKeyboardRight.KEYBOARD_AABB : Shapes.block();
+        return Shapes.block();
     }
 
     @Override

@@ -40,6 +40,13 @@ public class BlockKeyboardLeft extends BlockPeripheral {
     public static final DirectionProperty FACING = DirectionProperty.create("facing", Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
 //    public static final DirectionProperty HALF = DirectionProperty.create("facing", Direction.EAST, Direction.WEST);
     
+    public static final VoxelShape[] KEYBOARD_AABBS = new VoxelShape[]{
+            Shapes.box(0.0, 0.0, 3.0 / 16, 1.0, 1.0 / 16.0, 1.0),
+            Shapes.box(0.0, 0.0, 0.0, 1.0, 1.0 / 16.0, 13 / 16.0),
+            Shapes.box(3.0 / 16, 0.0, 0.0, 1.0, 1.0 / 16.0, 1.0),
+            Shapes.box(0.0, 0.0, 0.0, 13 / 16.0, 1.0 / 16.0, 1.0),
+    };
+    
     private static final Property<?>[] properties = new Property<?>[] {TYPE, FACING};
 
     public BlockKeyboardLeft() {
@@ -110,7 +117,7 @@ public class BlockKeyboardLeft extends BlockPeripheral {
     
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return state.getValue(TYPE) == DefaultPeripheral.KEYBOARD ? BlockKeyboardRight.KEYBOARD_AABB : Shapes.block();
+        return KEYBOARD_AABBS[state.getValue(FACING).ordinal() - 2];
     }
     
     @Override

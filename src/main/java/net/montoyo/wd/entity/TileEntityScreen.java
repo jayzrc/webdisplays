@@ -18,7 +18,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -126,7 +125,7 @@ public class TileEntityScreen extends BlockEntity {
             ret.upgrades = new ArrayList<>();
 
             for (int i = 0; i < upgrades.size(); i++)
-                ret.upgrades.add(new ItemStack((ItemLike) upgrades.getCompound(i)));
+                ret.upgrades.add(ItemStack.of(upgrades.getCompound(i)));
 
             if (tag.contains("AutoVolume"))
                 ret.autoVolume = tag.getBoolean("AutoVolume");

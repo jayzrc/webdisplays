@@ -32,11 +32,12 @@ import net.montoyo.wd.utilities.BlockSide;
 import net.montoyo.wd.utilities.Vector3i;
 import org.jetbrains.annotations.NotNull;
 
+import static net.montoyo.wd.block.BlockKeyboardLeft.KEYBOARD_AABBS;
+
 // TODO: merge into KeyboardLeft
 public class BlockKeyboardRight extends Block implements IPeripheral {
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-    public static final VoxelShape KEYBOARD_AABB = Shapes.box(0.0, 0.0, 0.0, 1.0, 1.0 / 16.0, 1.0);
 
     public BlockKeyboardRight() {
         super(Properties.of(Material.STONE)
@@ -80,7 +81,7 @@ public class BlockKeyboardRight extends Block implements IPeripheral {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return KEYBOARD_AABB;
+        return KEYBOARD_AABBS[state.getValue(FACING).ordinal() - 2];
     }
 
     @Override
