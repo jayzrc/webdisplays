@@ -63,10 +63,9 @@ public class ItemMinePad2 extends Item implements WDItem {
 			ok = true;
 		} else {
 			UUID uuid = UUID.randomUUID();
-			String url = CommonConfig.Browser.homepage;
+			String url = getURL(is);
 			WDNetworkRegistry.INSTANCE.sendToServer(new C2SMinepadUrl(uuid, url));
 			is.getOrCreateTag().putUUID("PadID", uuid);
-			is.getTag().putString("PadURL", url);
 			
 			ok = true;
 		}

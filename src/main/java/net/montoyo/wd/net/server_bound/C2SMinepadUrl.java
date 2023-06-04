@@ -33,7 +33,6 @@ public class C2SMinepadUrl extends Packet {
 	protected void merge(ItemStack stack) {
 		if (url.equals("")) {
 			stack.getOrCreateTag().remove("PadID");
-			stack.getOrCreateTag().remove("PadURL");
 		} else {
 			stack.getOrCreateTag().putUUID("PadID", id);
 			stack.getOrCreateTag().putString("PadURL", url);
@@ -58,10 +57,7 @@ public class C2SMinepadUrl extends Packet {
 		// if the player is not holding the requested minePad, update the first one that does not already have an ID
 		for (InteractionHand value : InteractionHand.values()) {
 			ItemStack stack = ctx.getSender().getItemInHand(value);
-			if (stack.getItem() instanceof ItemMinePad2 && stack.getOrCreateTag().contains("PadID")) {
-				if (stack.getOrCreateTag().contains("PadID"))
-					continue;
-				
+			if (stack.getItem() instanceof ItemMinePad2 && !stack.getOrCreateTag().contains("PadID")) {
 				merge(stack);
 				return;
 			}

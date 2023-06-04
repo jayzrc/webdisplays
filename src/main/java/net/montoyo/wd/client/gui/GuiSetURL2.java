@@ -86,7 +86,7 @@ public class GuiSetURL2 extends WDScreen {
 	protected UUID getUUID() {
 		if (stack == null || !(stack.getItem() instanceof ItemMinePad2))
 			throw new RuntimeException("Get UUID is being called for a non-minepad UI");
-		if (!stack.hasTag())
+		if (!stack.hasTag() || !stack.getTag().contains("PadID"))
 			stack.getOrCreateTag().putUUID("PadID", UUID.randomUUID());
 		
 		return stack.getTag().getUUID("PadID");
@@ -100,12 +100,11 @@ public class GuiSetURL2 extends WDScreen {
 			validate(tfURL.getText());
 		else if (ev.getSource() == btnShutDown) {
 			if (isPad) {
-				stack.getTag().remove("PadURL");
-				stack.getTag().remove("PadID");
 				WDNetworkRegistry.INSTANCE.sendToServer(new C2SMinepadUrl(
 						getUUID(),
 						""
 				));
+				stack.getTag().remove("PadID");
 			}
 			
 			minecraft.setScreen(null);

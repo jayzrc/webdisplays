@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -42,10 +43,27 @@ public final class MinePadRenderer implements IItemRenderer {
 		sinSwingProg1 = (float) Math.sin(swingProgress * PI);
 		sinSwingProg2 = (float) Math.sin(swingProgress * swingProgress * PI);
 		
+		float relSide = handSideSign;
+		if (Minecraft.getInstance().player.getMainArm() == HumanoidArm.LEFT) relSide *= -1;
+		
+		// by default, the player holds the device off to the side
+		// if they are crouching, they hold it infront of them
+		// however, if they are holding two at once, then it once again should just be held off to the side
+		boolean sideHold = Minecraft.getInstance().player.isShiftKeyDown() != ClientConfig.sidePad;
+		if (
+				(relSide < 0 && Minecraft.getInstance().player.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof ItemMinePad2) ||
+						(relSide > 0 && Minecraft.getInstance().player.getItemInHand(InteractionHand.OFF_HAND).getItem() instanceof ItemMinePad2)
+		) sideHold = true;
+		
 		//Render arm
 		stack.pushPose();
 		renderArmFirstPerson(stack, multiBufferSource, packedLight, equipProgress, handSideSign);
 		stack.popPose();
+//		if (!sideHold && handSideSign == 1 && mc.player.getItemInHand(InteractionHand.OFF_HAND).isEmpty()) {
+//			stack.pushPose();
+//			renderArmFirstPerson(stack, multiBufferSource, packedLight, 0, -handSideSign);
+//			stack.popPose();
+//		}
 		
 		//Prepare minePad transform
 		stack.pushPose();
@@ -55,15 +73,6 @@ public final class MinePadRenderer implements IItemRenderer {
 		stack.mulPose(Vector3f.ZP.rotationDegrees(handSideSign * sinSqrtSwingProg1 * -20.0f));
 		stack.mulPose(Vector3f.XP.rotationDegrees(sinSqrtSwingProg1 * -80.0f));
 		stack.mulPose(Vector3f.YP.rotationDegrees(handSideSign * -45.0f));
-		
-		// by default, the player holds the device off to the side
-		// if they are crouching, they hold it infront of them
-		// however, if they are holding two at once, then it once again should just be held off to the side
-		boolean sideHold = Minecraft.getInstance().player.isShiftKeyDown() != ClientConfig.sidePad;
-		if (
-				(handSideSign < 0 && Minecraft.getInstance().player.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof ItemMinePad2) ||
-				(handSideSign > 0 && Minecraft.getInstance().player.getItemInHand(InteractionHand.OFF_HAND).getItem() instanceof ItemMinePad2)
-		) sideHold = true;
 		
 		if (sideHold) {
 			stack.translate(0.0f, 0.0f, -0.2f);
