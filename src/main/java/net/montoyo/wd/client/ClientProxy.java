@@ -141,42 +141,36 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
         
         Minecraft mc = Minecraft.getInstance();
         
-        if (
-                mc.player != null && mc.level != null && ItemInit.itemLaserPointer.isPresent() && mc.player.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(ItemInit.itemLaserPointer.get()) &&
-                        mc.options.keyUse.isDown() &&
-                        (mc.hitResult == null || mc.hitResult.getType() == HitResult.Type.BLOCK || mc.hitResult.getType() == HitResult.Type.MISS)
-        ) {
-            BlockHitResult result = raycast(64.0); //TODO: Make that distance configurable
-        
-            BlockPos bpos = result.getBlockPos();
-        
-            if (result.getType() != HitResult.Type.BLOCK || mc.level.getBlockState(bpos).getBlock() != BlockInit.blockScreen.get())
-                return;
-        
-            Vector3i pos = new Vector3i(result.getBlockPos());
-            BlockSide side = BlockSide.values()[result.getDirection().ordinal()];
-        
-            Multiblock.findOrigin(mc.level, pos, side, null);
-            TileEntityScreen te = (TileEntityScreen) mc.level.getBlockEntity(pos.toBlock());
-        
-            TileEntityScreen.Screen sc = te.getScreen(side);
-            
-            if (sc == null) return;
-//            if (sc.mouseType == 1) return;
+        BlockHitResult result = raycast(64.0); //TODO: Make that distance configurable
     
-            int coordX = sc.mouseType * 15;
-            int coordY = coordX / 256;
-            coordX -= coordY * 256;
+        BlockPos bpos = result.getBlockPos();
     
-            RenderSystem.setShaderTexture(0, new ResourceLocation(
-                    "webdisplays:textures/gui/cursors.png"
-            ));
-            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            
-            blit(poseStack, (screenWidth - 15) / 2, (screenHeight - 15) / 2, coordX, coordY, 15, 15, offset);
-            
-            ci.cancel();
-        }
+        if (result.getType() != HitResult.Type.BLOCK || mc.level.getBlockState(bpos).getBlock() != BlockInit.blockScreen.get())
+            return;
+        
+        Vector3i pos = new Vector3i(result.getBlockPos());
+        BlockSide side = BlockSide.values()[result.getDirection().ordinal()];
+    
+        Multiblock.findOrigin(mc.level, pos, side, null);
+        TileEntityScreen te = (TileEntityScreen) mc.level.getBlockEntity(pos.toBlock());
+    
+        TileEntityScreen.Screen sc = te.getScreen(side);
+        
+        if (sc == null) return;
+//        if (sc.mouseType == 1) return;
+
+        int coordX = sc.mouseType * 15;
+        int coordY = coordX / 256;
+        coordX -= coordY * 256;
+
+        RenderSystem.setShaderTexture(0, new ResourceLocation(
+                "webdisplays:textures/gui/cursors.png"
+        ));
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        
+        blit(poseStack, (screenWidth - 15) / 2, (screenHeight - 15) / 2, coordX, coordY, 15, 15, offset);
+        
+        ci.cancel();
     }
     
     public class PadData {
