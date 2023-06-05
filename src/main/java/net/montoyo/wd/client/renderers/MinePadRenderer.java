@@ -34,15 +34,7 @@ public final class MinePadRenderer implements IItemRenderer {
 	private float sinSwingProg1;
 	private float sinSwingProg2;
 	
-	@Override
-	public final boolean render(PoseStack stack, ItemStack is, float handSideSign, float swingProgress, float equipProgress, MultiBufferSource multiBufferSource, int packedLight) {
-		//Pre-compute values
-		float sqrtSwingProg = (float) Math.sqrt(swingProgress);
-		sinSqrtSwingProg1 = (float) Math.sin(sqrtSwingProg * PI);
-		sinSqrtSwingProg2 = (float) Math.sin(sqrtSwingProg * PI * 2.0f);
-		sinSwingProg1 = (float) Math.sin(swingProgress * PI);
-		sinSwingProg2 = (float) Math.sin(swingProgress * swingProgress * PI);
-		
+	public static boolean renderAtSide(float handSideSign) {
 		float relSide = handSideSign;
 		if (Minecraft.getInstance().player.getMainArm() == HumanoidArm.LEFT) relSide *= -1;
 		
@@ -54,6 +46,20 @@ public final class MinePadRenderer implements IItemRenderer {
 				(relSide < 0 && Minecraft.getInstance().player.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof ItemMinePad2) ||
 						(relSide > 0 && Minecraft.getInstance().player.getItemInHand(InteractionHand.OFF_HAND).getItem() instanceof ItemMinePad2)
 		) sideHold = true;
+		
+		return sideHold;
+	}
+	
+	@Override
+	public final boolean render(PoseStack stack, ItemStack is, float handSideSign, float swingProgress, float equipProgress, MultiBufferSource multiBufferSource, int packedLight) {
+		//Pre-compute values
+		float sqrtSwingProg = (float) Math.sqrt(swingProgress);
+		sinSqrtSwingProg1 = (float) Math.sin(sqrtSwingProg * PI);
+		sinSqrtSwingProg2 = (float) Math.sin(sqrtSwingProg * PI * 2.0f);
+		sinSwingProg1 = (float) Math.sin(swingProgress * PI);
+		sinSwingProg2 = (float) Math.sin(swingProgress * swingProgress * PI);
+		
+		boolean sideHold = renderAtSide(handSideSign);
 		
 		//Render arm
 		stack.pushPose();

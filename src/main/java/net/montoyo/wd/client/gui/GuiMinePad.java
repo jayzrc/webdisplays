@@ -37,9 +37,8 @@ public class GuiMinePad extends WDScreen {
         this();
         this.pad = pad;
     
-        if (pad.view instanceof CefBrowserOsr osr) {
-            osr.allowCursorChanges(true);
-        }
+        if (WebDisplays.cursorSupport)
+            pad.view.allowCursorChanges(true);
     }
 
     @Override
@@ -230,9 +229,10 @@ public class GuiMinePad extends WDScreen {
     @Override
     public void onClose() {
         super.onClose();
-        if (pad.view instanceof CefBrowserOsr osr) {
-            osr.allowCursorChanges(true);
-            osr.onCursorChange(null, 0);
+        if (WebDisplays.cursorSupport) {
+            pad.view.allowCursorChanges(false);
+            if (pad.view instanceof CefBrowserOsr osr)
+                osr.onCursorChange(null, 0);
         }
     }
 }

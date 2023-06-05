@@ -6,6 +6,7 @@
   "mixins": [
   ],
   "client": [
+    "OverlayMixin"
   ],
   "injectors": {
     "defaultRequire": 1

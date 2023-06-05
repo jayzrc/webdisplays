@@ -84,6 +84,8 @@ public class TileEntityScreen extends BlockEntity {
         public NibbleArray redstoneStatus; //null on client
         public boolean autoVolume = true;
 
+        public int mouseType;
+        
         public static Screen deserialize(CompoundTag tag) {
             Screen ret = new Screen();
             ret.side = BlockSide.values()[tag.getByte("Side")];
@@ -228,7 +230,10 @@ public class TileEntityScreen extends BlockEntity {
                     browser.resize(resolution.y, resolution.x);
                 else
                     browser.resize(resolution.x, resolution.y);
-        
+    
+                if (WebDisplays.cursorSupport)
+                    browser.addCursorChangeListener((type) -> mouseType = type);
+                
                 doTurnOnAnim = doAnim;
                 turnOnTime = System.currentTimeMillis();
             }

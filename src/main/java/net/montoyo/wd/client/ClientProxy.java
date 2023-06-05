@@ -5,10 +5,15 @@
 package net.montoyo.wd.client;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.ContainerScreen;
 import net.minecraft.client.multiplayer.ClientAdvancements;
@@ -67,6 +72,8 @@ import net.montoyo.wd.entity.TileEntityScreen;
 import net.montoyo.wd.init.BlockInit;
 import net.montoyo.wd.init.ItemInit;
 import net.montoyo.wd.init.TileInit;
+import net.montoyo.wd.item.ItemLaserPointer;
+import net.montoyo.wd.item.ItemMinePad2;
 import net.montoyo.wd.item.WDItem;
 import net.montoyo.wd.miniserv.client.Client;
 import net.montoyo.wd.net.WDNetworkRegistry;
@@ -75,6 +82,7 @@ import net.montoyo.wd.net.server_bound.C2SMessageScreenCtrl;
 import net.montoyo.wd.net.server_bound.C2SMinepadUrl;
 import net.montoyo.wd.utilities.*;
 import org.lwjgl.glfw.GLFW;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -86,6 +94,93 @@ import java.util.stream.Stream;
 
 @Mod.EventBusSubscriber(modid = "webdisplays", value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQueryHandler, ResourceManagerReloadListener {
+    
+    private static ClientProxy INSTANCE;
+    
+    public ClientProxy() {
+        INSTANCE = this;
+    }
+    
+    public static void blit(PoseStack p_93229_, int p_93230_, int p_93231_, int p_93232_, int p_93233_, int p_93234_, int p_93235_, int offset) {
+        Gui.blit(p_93229_, p_93230_, p_93231_, offset, (float)p_93232_, (float)p_93233_, p_93234_, p_93235_, 256, 256);
+    }
+    
+    public static void renderCrosshair(Options options, int screenWidth, int screenHeight, int offset, PoseStack poseStack, CallbackInfo ci) {
+        ItemStack stack = Minecraft.getInstance().player.getItemInHand(InteractionHand.MAIN_HAND);
+        ItemStack stack1 = Minecraft.getInstance().player.getItemInHand(InteractionHand.OFF_HAND);
+        
+        if (stack.getItem() instanceof ItemMinePad2) {
+            float sign = 1;
+            if (Minecraft.getInstance().player.getMainArm() == HumanoidArm.LEFT) sign = -1;
+            if (!MinePadRenderer.renderAtSide(sign)) {
+                ci.cancel();
+                return;
+            }
+        } else {
+            if (stack1.getItem() instanceof ItemMinePad2) {
+                float sign = -1;
+                if (Minecraft.getInstance().player.getMainArm() == HumanoidArm.LEFT) sign = 1;
+                if (!MinePadRenderer.renderAtSide(sign)) {
+                    ci.cancel();
+                    return;
+                }
+            }
+        }
+        
+        if (!(stack.getItem() instanceof ItemLaserPointer ||
+                stack1.getItem() instanceof ItemLaserPointer))
+            return;
+        
+        if (!INSTANCE.laserPointerRenderer.isOn) {
+            RenderSystem.setShaderTexture(0, new ResourceLocation(
+                    "webdisplays:textures/gui/cursors.png"
+            ));
+            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+            
+            blit(poseStack, (screenWidth - 15) / 2, (screenHeight - 15) / 2, 240, 240, 15, 15, offset);
+            ci.cancel();
+            return;
+        }
+        
+        Minecraft mc = Minecraft.getInstance();
+        
+        if (
+                mc.player != null && mc.level != null && ItemInit.itemLaserPointer.isPresent() && mc.player.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(ItemInit.itemLaserPointer.get()) &&
+                        mc.options.keyUse.isDown() &&
+                        (mc.hitResult == null || mc.hitResult.getType() == HitResult.Type.BLOCK || mc.hitResult.getType() == HitResult.Type.MISS)
+        ) {
+            BlockHitResult result = raycast(64.0); //TODO: Make that distance configurable
+        
+            BlockPos bpos = result.getBlockPos();
+        
+            if (result.getType() != HitResult.Type.BLOCK || mc.level.getBlockState(bpos).getBlock() != BlockInit.blockScreen.get())
+                return;
+        
+            Vector3i pos = new Vector3i(result.getBlockPos());
+            BlockSide side = BlockSide.values()[result.getDirection().ordinal()];
+        
+            Multiblock.findOrigin(mc.level, pos, side, null);
+            TileEntityScreen te = (TileEntityScreen) mc.level.getBlockEntity(pos.toBlock());
+        
+            TileEntityScreen.Screen sc = te.getScreen(side);
+            
+            if (sc == null) return;
+//            if (sc.mouseType == 1) return;
+    
+            int coordX = sc.mouseType * 15;
+            int coordY = coordX / 256;
+            coordX -= coordY * 256;
+    
+            RenderSystem.setShaderTexture(0, new ResourceLocation(
+                    "webdisplays:textures/gui/cursors.png"
+            ));
+            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+            
+            blit(poseStack, (screenWidth - 15) / 2, (screenHeight - 15) / 2, coordX, coordY, 15, 15, offset);
+            
+            ci.cancel();
+        }
+    }
     
     public class PadData {
 
@@ -632,12 +727,13 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
         if(mc.player != null && mc.level != null && ItemInit.itemLaserPointer.isPresent() && mc.player.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(ItemInit.itemLaserPointer.get())
                                                  && mc.options.keyUse.isDown()
                                                  && (mc.hitResult == null || mc.hitResult.getType() == HitResult.Type.BLOCK || mc.hitResult.getType() == HitResult.Type.MISS)) {
-            laserPointerRenderer.isOn = true;
             BlockHitResult result = raycast(64.0); //TODO: Make that distance configurable
 
             BlockPos bpos = result.getBlockPos();
 
             if(result.getType() == HitResult.Type.BLOCK && mc.level.getBlockState(bpos).getBlock() == BlockInit.blockScreen.get()) {
+                laserPointerRenderer.isOn = true;
+                
                 Vector3i pos = new Vector3i(result.getBlockPos());
                 BlockSide side = BlockSide.values()[result.getDirection().ordinal()];
 
@@ -712,6 +808,7 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
     /**************************************** OTHER METHODS ****************************************/
 
     private void laserClick(TileEntityScreen tes, BlockSide side, TileEntityScreen.Screen scr, Vector2i hit) {
+        tes.handleMouseEvent(side, S2CMessageScreenUpdate.MOUSE_MOVE, hit);
         if(pointedScreen == tes && pointedScreenSide == side) {
             long t = System.currentTimeMillis();
 
@@ -721,7 +818,6 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
                     tes.handleMouseEvent(side, S2CMessageScreenUpdate.MOUSE_CLICK, hit);
                     WDNetworkRegistry.INSTANCE.sendToServer(C2SMessageScreenCtrl.laserDown(tes, side, hit));
                 } else {
-                    tes.handleMouseEvent(side, S2CMessageScreenUpdate.MOUSE_MOVE, hit);
                     WDNetworkRegistry.INSTANCE.sendToServer(C2SMessageScreenCtrl.laserMove(tes, side, hit));
                 }
             }
@@ -741,7 +837,9 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
         }
     }
 
-    private BlockHitResult raycast(double dist) {
+    private static BlockHitResult raycast(double dist) {
+        Minecraft mc = Minecraft.getInstance();
+        
         Vec3 start = mc.player.getEyePosition(1.0f);
         Vec3 lookVec = mc.player.getLookAngle();
         Vec3 end = start.add(lookVec.x * dist, lookVec.y * dist, lookVec.z * dist);

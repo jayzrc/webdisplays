@@ -22,7 +22,7 @@
     ]
   },
   "mixins": [
-    "webdisplays.mixin.json"
+    "webdisplays.mixins.json"
   ],
 
   "depends": {
