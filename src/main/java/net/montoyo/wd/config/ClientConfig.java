@@ -13,7 +13,6 @@ import net.montoyo.wd.config.annoconfg.annotation.value.IntRange;
 public class ClientConfig {
 	@SuppressWarnings("unused")
 	private static final AnnoCFG CFG = new AnnoCFG(FMLJavaModLoadingContext.get().getModEventBus(), ClientConfig.class);
-	
 	public static void init() {
 		// loads the class
 	}
@@ -54,6 +53,13 @@ public class ClientConfig {
 	@Translation("config.webdisplays.side_pad")
 	@Default(valueBoolean = true)
 	public static boolean sidePad = true;
+	
+	@Name("switch_buttons")
+	@Comment("If the left and right buttons should be swapped when using a laser")
+	@Translation("config.webdisplays.switch_buttons")
+	@DoubleRange(minV = 0, maxV = Double.MAX_VALUE)
+	@Default(valueD = 30)
+	public static boolean switchButtons = true;
 	
 	@Comment({
 			"AutoVolume makes audio fade off based on distance",

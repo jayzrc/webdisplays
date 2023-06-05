@@ -4,8 +4,6 @@
 
 package net.montoyo.wd.entity;
 
-import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -44,7 +42,6 @@ import net.montoyo.wd.net.client_bound.S2CMessageCloseGui;
 import net.montoyo.wd.net.client_bound.S2CMessageJSResponse;
 import net.montoyo.wd.net.client_bound.S2CMessageScreenUpdate;
 import net.montoyo.wd.utilities.*;
-import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -517,17 +514,17 @@ public class TileEntityScreen extends BlockEntity {
         if (level.isClientSide)
             Log.warning("TileEntityScreen.click() from client side is useless...");
         else if (getLaserUser(scr) == null)
-            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, S2CMessageScreenUpdate.MOUSE_CLICK, vec));
+            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, S2CMessageScreenUpdate.MOUSE_CLICK, vec, 1));
     }
 
     void clickUnsafe(BlockSide side, int action, int x, int y) {
         if (level.isClientSide) {
             Vector2i vec = (action == S2CMessageScreenUpdate.MOUSE_UP) ? null : new Vector2i(x, y);
-            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, action, vec));
+            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, action, vec, 1));
         }
     }
 
-    public void handleMouseEvent(BlockSide side, int event, @Nullable Vector2i vec) {
+    public void handleMouseEvent(BlockSide side, int event, @Nullable Vector2i vec, int button) {
         Screen scr = getScreen(side);
         if (scr == null) {
             Log.error("Attempt inject mouse events on non-existing screen of side %s", side.toString());
@@ -536,23 +533,16 @@ public class TileEntityScreen extends BlockEntity {
 
         if (scr.browser != null) {
             if (event == S2CMessageScreenUpdate.MOUSE_CLICK) {
-                if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_ALT)
-                        || InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_RIGHT_ALT)) {
-                    scr.browser.injectMouseMove(vec.x, vec.y, 0, false);                                            //Move to target
-                    scr.browser.injectMouseButton(vec.x, vec.y, 0, 3, true, 1);                              //Press
-                    scr.browser.injectMouseButton(vec.x, vec.y, 0, 3, false, 1);                            //Release
-                } else {
-                    scr.browser.injectMouseMove(vec.x, vec.y, 0, false);                                            //Move to target
-                    scr.browser.injectMouseButton(vec.x, vec.y, 0, 1, true, 1);                              //Press
-                    scr.browser.injectMouseButton(vec.x, vec.y, 0, 1, false, 1);                            //Release
-                }
+                scr.browser.injectMouseMove(vec.x, vec.y, 0, false);                                            //Move to target
+                scr.browser.injectMouseButton(vec.x, vec.y, 0, button, true, 1);                              //Press
+                scr.browser.injectMouseButton(vec.x, vec.y, 0, button, false, 1);                            //Release
             } else if (event == S2CMessageScreenUpdate.MOUSE_DOWN) {
                 scr.browser.injectMouseMove(vec.x, vec.y, 0, false);                                            //Move to target
-                scr.browser.injectMouseButton(vec.x, vec.y, 0, 1, true, 1);                              //Press
+                scr.browser.injectMouseButton(vec.x, vec.y, 0, button, true, 1);                              //Press
             } else if (event == S2CMessageScreenUpdate.MOUSE_MOVE)
                 scr.browser.injectMouseMove(vec.x, vec.y, 0, false);                                            //Move
             else if (event == S2CMessageScreenUpdate.MOUSE_UP)
-                scr.browser.injectMouseButton(scr.lastMousePos.x, scr.lastMousePos.y, 0, 1, false, 1);  //Release
+                scr.browser.injectMouseButton(scr.lastMousePos.x, scr.lastMousePos.y, 0, button, false, 1);  //Release
             if (vec != null) {
                 scr.lastMousePos.x = vec.x;
                 scr.lastMousePos.y = vec.y;
@@ -1073,29 +1063,26 @@ public class TileEntityScreen extends BlockEntity {
         return scr; //Okay, go for it...
     }
 
-    public void laserDownMove(BlockSide side, Player ply, Vector2i pos, boolean down) {
+    public void laserDownMove(BlockSide side, Player ply, Vector2i pos, boolean down, int button) {
         Screen scr = getScreenForLaserOp(side, ply);
 
         if (scr != null) {
-            if (down) {
-                //Try to acquire laser lock
-//                if (getLaserUser(scr) == null) {
-                    scr.laserUser = ply;
-                    WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(ply, level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, S2CMessageScreenUpdate.MOUSE_CLICK, pos));
-//                }
-            } else
-//                if (getLaserUser(scr) == ply)
-                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(ply, level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, S2CMessageScreenUpdate.MOUSE_MOVE, pos));
+            if (button == -1)
+                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(ply, level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, S2CMessageScreenUpdate.MOUSE_MOVE, pos, button));
+            else if (down)
+                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(ply, level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, S2CMessageScreenUpdate.MOUSE_DOWN, pos, button));
+            else
+                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(ply, level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, S2CMessageScreenUpdate.MOUSE_UP, pos, button));
         }
     }
 
-    public void laserUp(BlockSide side, Player ply) {
+    public void laserUp(BlockSide side, Player ply, int button) {
         Screen scr = getScreenForLaserOp(side, ply);
 
         if (scr != null) {
             if (getLaserUser(scr) == ply) {
                 scr.laserUser = null;
-                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(ply, level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, S2CMessageScreenUpdate.MOUSE_UP, null));
+                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(ply, level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, S2CMessageScreenUpdate.MOUSE_UP, null, button));
             }
         }
     }

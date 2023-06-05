@@ -45,6 +45,7 @@ public class S2CMessageScreenUpdate extends Packet  {
     private String string;
     private Vector2i vec2i;
     private int mouseEvent;
+    private int button;
     private ItemStack[] upgrades;
     private int redstoneLevel;
     private NameUUIDPair owner;
@@ -74,13 +75,15 @@ public class S2CMessageScreenUpdate extends Packet  {
         return ret;
     }
 
-    public static S2CMessageScreenUpdate click(TileEntityScreen tes, BlockSide side, int mouseEvent, @Nullable Vector2i pos) {
+    public static S2CMessageScreenUpdate click(TileEntityScreen tes, BlockSide side, int mouseEvent, @Nullable Vector2i pos, int button) {
         S2CMessageScreenUpdate ret = new S2CMessageScreenUpdate();
         ret.pos = new Vector3i(tes.getBlockPos());
         ret.side = side;
         ret.action = UPDATE_MOUSE;
         ret.mouseEvent = mouseEvent;
         ret.vec2i = pos;
+        
+        ret.button = button;
 
         return ret;
     }
@@ -185,6 +188,8 @@ public class S2CMessageScreenUpdate extends Packet  {
                 message.mouseEvent = buf.readByte();
                 if (message.mouseEvent != MOUSE_UP)
                     message.vec2i = new Vector2i(buf);
+                if (message.mouseEvent != MOUSE_MOVE)
+                    message.button = buf.readInt();
             }
             case UPDATE_RESOLUTION -> message.vec2i = new Vector2i(buf);
             case UPDATE_UPGRADES -> {
@@ -215,6 +220,8 @@ public class S2CMessageScreenUpdate extends Packet  {
 
             if(mouseEvent != MOUSE_UP)
                 vec2i.writeTo(buf);
+            if (mouseEvent != MOUSE_MOVE)
+                buf.writeInt(button);
         } else if(action == UPDATE_RESOLUTION)
             vec2i.writeTo(buf);
         else if(action == UPDATE_UPGRADES) {
@@ -259,7 +266,7 @@ public class S2CMessageScreenUpdate extends Packet  {
                             throw new RuntimeException(e);
                         }
                     }
-                    case UPDATE_MOUSE -> tes.handleMouseEvent(side, mouseEvent, vec2i);
+                    case UPDATE_MOUSE -> tes.handleMouseEvent(side, mouseEvent, vec2i, button);
                     case UPDATE_DELETE -> tes.removeScreen(side);
                     case UPDATE_RESOLUTION -> tes.setResolution(side, vec2i);
                     case UPDATE_TYPE -> tes.type(side, string, null);

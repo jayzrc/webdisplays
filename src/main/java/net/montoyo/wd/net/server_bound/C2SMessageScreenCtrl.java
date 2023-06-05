@@ -105,16 +105,16 @@ public class C2SMessageScreenCtrl extends Packet {
 		return ret;
 	}
 	
-	public static C2SMessageScreenCtrl laserDown(TileEntityScreen tes, BlockSide side, Vector2i vec) {
+	public static C2SMessageScreenCtrl laserDown(TileEntityScreen tes, BlockSide side, Vector2i vec, int button) {
 		C2SMessageScreenCtrl ret = base(tes, side);
-		ret.control = new LaserControl(LaserControl.ControlType.DOWN, vec);
+		ret.control = new LaserControl(LaserControl.ControlType.DOWN, vec, button);
 		return ret;
 	}
 	
 	@Deprecated(forRemoval = true)
-	public static C2SMessageScreenCtrl laserUp(TileEntityScreen tes, BlockSide side) {
+	public static C2SMessageScreenCtrl laserUp(TileEntityScreen tes, BlockSide side, int button) {
 		C2SMessageScreenCtrl ret = base(tes, side);
-		ret.control = new LaserControl(LaserControl.ControlType.UP, null);
+		ret.control = new LaserControl(LaserControl.ControlType.UP, null, button);
 		return ret;
 	}
 	

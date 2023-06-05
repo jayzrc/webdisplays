@@ -64,7 +64,6 @@ import net.montoyo.wd.client.gui.*;
 import net.montoyo.wd.client.gui.loading.GuiLoader;
 import net.montoyo.wd.client.renderers.*;
 import net.montoyo.wd.config.ClientConfig;
-import net.montoyo.wd.core.DefaultUpgrade;
 import net.montoyo.wd.core.HasAdvancement;
 import net.montoyo.wd.core.JSServerRequest;
 import net.montoyo.wd.data.GuiData;
@@ -77,8 +76,6 @@ import net.montoyo.wd.item.ItemMinePad2;
 import net.montoyo.wd.item.WDItem;
 import net.montoyo.wd.miniserv.client.Client;
 import net.montoyo.wd.net.WDNetworkRegistry;
-import net.montoyo.wd.net.client_bound.S2CMessageScreenUpdate;
-import net.montoyo.wd.net.server_bound.C2SMessageScreenCtrl;
 import net.montoyo.wd.net.server_bound.C2SMinepadUrl;
 import net.montoyo.wd.utilities.*;
 import org.lwjgl.glfw.GLFW;
@@ -130,8 +127,8 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
         if (!(stack.getItem() instanceof ItemLaserPointer ||
                 stack1.getItem() instanceof ItemLaserPointer))
             return;
-        
-        if (!INSTANCE.laserPointerRenderer.isOn) {
+    
+        if (!LaserPointerRenderer.isOn()) {
             RenderSystem.setShaderTexture(0, new ResourceLocation(
                     "webdisplays:textures/gui/cursors.png"
             ));
@@ -219,11 +216,6 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
     private final Field advancementToProgressField = findAdvancementToProgressField();
     private ClientAdvancements lastAdvMgr;
     private Map advancementToProgress;
-
-    //Laser pointer
-    private TileEntityScreen pointedScreen;
-    private BlockSide pointedScreenSide;
-    private long lastPointPacket;
 
     //Tracking
     private final ArrayList<TileEntityScreen> screenTracking = new ArrayList<>();
@@ -667,54 +659,54 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
     
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent ev) {
-        if(ev.phase != TickEvent.Phase.END) return;
-        
+        if (ev.phase != TickEvent.Phase.END) return;
+    
         //Help
-        if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_F1)) {
-            if(!isF1Down) {
+        if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_F1)) {
+            if (!isF1Down) {
                 isF1Down = true;
-
+    
                 String wikiName = null;
-                if(mc.screen instanceof WDScreen)
+                if (mc.screen instanceof WDScreen)
                     wikiName = ((WDScreen) mc.screen).getWikiPageName();
-                else if(mc.screen instanceof ContainerScreen) {
+                else if (mc.screen instanceof ContainerScreen) {
                     Slot slot = ((ContainerScreen) mc.screen).getSlotUnderMouse();
-
-                    if(slot != null && slot.hasItem() && slot.getItem().getItem() instanceof WDItem)
+    
+                    if (slot != null && slot.hasItem() && slot.getItem().getItem() instanceof WDItem)
                         wikiName = ((WDItem) slot.getItem().getItem()).getWikiName(slot.getItem());
                 }
-
-                if(wikiName != null)
+    
+                if (wikiName != null)
                     mcef.openExampleBrowser("https://montoyo.net/wdwiki/index.php/" + wikiName);
             }
-        } else if(isF1Down)
+        } else if (isF1Down)
             isF1Down = false;
-
+    
         //Workaround cuz chat sux
-        if(nextScreen != null && mc.screen == null) {
+        if (nextScreen != null && mc.screen == null) {
             mc.setScreen(nextScreen);
             nextScreen = null;
         }
-
+    
         //Load/unload minePads depending on which item is in the player's hand
-        if(++minePadTickCounter >= 10) {
+        if (++minePadTickCounter >= 10) {
             minePadTickCounter = 0;
             Player ep = mc.player;
-
-            for(PadData pd: padList)
+    
+            for (PadData pd : padList)
                 pd.isInHotbar = false;
-
-            if(ep != null) {
+    
+            if (ep != null) {
                 updateInventory(ep.getInventory().items, ep.getItemInHand(InteractionHand.MAIN_HAND), 9);
                 updateInventory(ep.getInventory().offhand, ep.getItemInHand(InteractionHand.OFF_HAND), 1); //Is this okay?
             }
-
+    
             //TODO: Check for GuiContainer.draggedStack
-
-            for(int i = padList.size() - 1; i >= 0; i--) {
+    
+            for (int i = padList.size() - 1; i >= 0; i--) {
                 PadData pd = padList.get(i);
-
-                if(!pd.isInHotbar) {
+        
+                if (!pd.isInHotbar) {
                     pd.view.close();
                     pd.view = null; //This is for GuiMinePad, in case the player dies with the GUI open
                     padList.remove(i);
@@ -722,52 +714,21 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
                 }
             }
         }
-
+    
         //Laser pointer raycast
-        if(mc.player != null && mc.level != null && ItemInit.itemLaserPointer.isPresent() && mc.player.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(ItemInit.itemLaserPointer.get())
-                                                 && mc.options.keyUse.isDown()
-                                                 && (mc.hitResult == null || mc.hitResult.getType() == HitResult.Type.BLOCK || mc.hitResult.getType() == HitResult.Type.MISS)) {
-            BlockHitResult result = raycast(64.0); //TODO: Make that distance configurable
-
-            BlockPos bpos = result.getBlockPos();
-
-            if(result.getType() == HitResult.Type.BLOCK && mc.level.getBlockState(bpos).getBlock() == BlockInit.blockScreen.get()) {
-                laserPointerRenderer.isOn = true;
-                
-                Vector3i pos = new Vector3i(result.getBlockPos());
-                BlockSide side = BlockSide.values()[result.getDirection().ordinal()];
-
-                Multiblock.findOrigin(mc.level, pos, side, null);
-                TileEntityScreen te = (TileEntityScreen) mc.level.getBlockEntity(pos.toBlock());
-
-                if(te != null && te.hasUpgrade(side, DefaultUpgrade.LASERMOUSE)) { //hasUpgrade returns false is there's no screen on side 'side'
-                    //Since rights aren't synchronized, let the server check them for us...
-                    TileEntityScreen.Screen scr = te.getScreen(side);
-
-                    if(scr.browser != null) {
-                        float hitX = ((float) result.getLocation().x) - (float) pos.x;
-                        float hitY = ((float) result.getLocation().y) - (float) pos.y;
-                        float hitZ = ((float) result.getLocation().z) - (float) pos.z;
-                        Vector2i tmp = new Vector2i();
-
-                        if(BlockScreen.hit2pixels(side, bpos, new Vector3i(result.getBlockPos()), scr, hitX, hitY, hitZ, tmp)) {
-                            laserClick(te, side, scr, tmp);
-                        }
-                    }
-                }
-            }
+        if (LaserPointerRenderer.isOn()) {
+            ItemLaserPointer.tick(mc);
         } else {
-            laserPointerRenderer.isOn = false;
-            deselectScreen();
-
-            //Handle JS queries
-            jsDispatcher.handleQueries();
-
-            //Miniserv
-            if (msClientStarted && mc.player == null) {
-                msClientStarted = false;
-                Client.getInstance().stop();
-            }
+            ItemLaserPointer.deselect(mc, jsDispatcher);
+        }
+    
+        //Handle JS queries
+        jsDispatcher.handleQueries();
+    
+        //Miniserv
+        if (msClientStarted && mc.player == null) {
+            msClientStarted = false;
+            Client.getInstance().stop();
         }
     }
 
@@ -805,39 +766,7 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
         }
     }
 
-    /**************************************** OTHER METHODS ****************************************/
-
-    private void laserClick(TileEntityScreen tes, BlockSide side, TileEntityScreen.Screen scr, Vector2i hit) {
-        tes.handleMouseEvent(side, S2CMessageScreenUpdate.MOUSE_MOVE, hit);
-        if(pointedScreen == tes && pointedScreenSide == side) {
-            long t = System.currentTimeMillis();
-
-            if(t - lastPointPacket >= 100) {
-                lastPointPacket = t;
-                if (Minecraft.getInstance().player.isShiftKeyDown()) {
-                    tes.handleMouseEvent(side, S2CMessageScreenUpdate.MOUSE_CLICK, hit);
-                    WDNetworkRegistry.INSTANCE.sendToServer(C2SMessageScreenCtrl.laserDown(tes, side, hit));
-                } else {
-                    WDNetworkRegistry.INSTANCE.sendToServer(C2SMessageScreenCtrl.laserMove(tes, side, hit));
-                }
-            }
-        } else {
-            deselectScreen();
-            pointedScreen = tes;
-            pointedScreenSide = side;
-//            WDNetworkRegistry.INSTANCE.sendToServer(C2SMessageScreenCtrl.laserDown(tes, side, hit));
-        }
-    }
-
-    private void deselectScreen() {
-        if(pointedScreen != null && pointedScreenSide != null) {
-            WDNetworkRegistry.INSTANCE.sendToServer(C2SMessageScreenCtrl.laserUp(pointedScreen, pointedScreenSide));
-            pointedScreen = null;
-            pointedScreenSide = null;
-        }
-    }
-
-    private static BlockHitResult raycast(double dist) {
+    public static BlockHitResult raycast(double dist) {
         Minecraft mc = Minecraft.getInstance();
         
         Vec3 start = mc.player.getEyePosition(1.0f);

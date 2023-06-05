@@ -24,11 +24,17 @@ public class LaserControl extends ScreenControl {
 	
 	ControlType type;
 	Vector2i coord;
+	int button;
 	
 	public LaserControl(ControlType type, Vector2i coord) {
+		this(type, coord, -1);
+	}
+	
+	public LaserControl(ControlType type, Vector2i coord, int button) {
 		super(id);
 		this.type = type;
 		this.coord = coord;
+		this.button = button;
 	}
 	
 	public LaserControl(FriendlyByteBuf buf) {
@@ -36,12 +42,15 @@ public class LaserControl extends ScreenControl {
 		type = ControlType.values()[buf.readByte()];
 		if (!type.equals(ControlType.UP))
 			coord = new Vector2i(buf);
+		if (!type.equals(ControlType.MOVE))
+			button = buf.readInt();
 	}
 	
 	@Override
 	public void write(FriendlyByteBuf buf) {
 		buf.writeByte(type.ordinal());
 		if (coord != null) coord.writeTo(buf);
+		if (type != ControlType.MOVE) buf.writeInt(button);
 	}
 	
 	@Override
@@ -50,9 +59,9 @@ public class LaserControl extends ScreenControl {
 //		checkPerms(ScreenRights.INTERACT, permissionChecker, ctx.getSender());
 		ServerPlayer sender = ctx.getSender();
 		switch (type) {
-			case UP -> tes.laserUp(side, sender);
-			case DOWN -> tes.laserDownMove(side, sender, coord, true);
-			case MOVE -> tes.laserDownMove(side, sender, coord, false);
+			case UP -> tes.laserUp(side, sender, button);
+			case DOWN -> tes.laserDownMove(side, sender, coord, true, button);
+			case MOVE -> tes.laserDownMove(side, sender, coord, false, button);
 		}
 	}
 	
