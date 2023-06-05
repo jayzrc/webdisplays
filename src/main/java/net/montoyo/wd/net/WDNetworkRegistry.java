@@ -55,7 +55,7 @@ public class WDNetworkRegistry {
 		entries.add(new NetworkEntry<>(S2CMessageJSResponse.class, S2CMessageJSResponse::new));
 		
 		// minepad
-		entries.add(new NetworkEntry<>(C2SMinepadUrl.class, C2SMinepadUrl::new));
+		entries.add(new NetworkEntry<>(C2SMessageMinepadUrl.class, C2SMessageMinepadUrl::new));
 		
 		for (int i = 0; i < entries.size(); i++) entries.get(i).register(i, INSTANCE);
 	}

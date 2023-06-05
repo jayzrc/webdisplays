@@ -18,8 +18,8 @@ import net.montoyo.wd.client.gui.loading.FillControl;
 import net.montoyo.wd.entity.TileEntityScreen;
 import net.montoyo.wd.item.ItemMinePad2;
 import net.montoyo.wd.net.WDNetworkRegistry;
+import net.montoyo.wd.net.server_bound.C2SMessageMinepadUrl;
 import net.montoyo.wd.net.server_bound.C2SMessageScreenCtrl;
-import net.montoyo.wd.net.server_bound.C2SMinepadUrl;
 import net.montoyo.wd.utilities.BlockSide;
 import net.montoyo.wd.utilities.Util;
 import net.montoyo.wd.utilities.Vector3i;
@@ -100,7 +100,7 @@ public class GuiSetURL2 extends WDScreen {
 			validate(tfURL.getText());
 		else if (ev.getSource() == btnShutDown) {
 			if (isPad) {
-				WDNetworkRegistry.INSTANCE.sendToServer(new C2SMinepadUrl(
+				WDNetworkRegistry.INSTANCE.sendToServer(new C2SMessageMinepadUrl(
 						getUUID(),
 						""
 				));
@@ -130,7 +130,7 @@ public class GuiSetURL2 extends WDScreen {
 			
 			if (isPad) {
 				UUID uuid = getUUID();
-				WDNetworkRegistry.INSTANCE.sendToServer(new C2SMinepadUrl(uuid, url));
+				WDNetworkRegistry.INSTANCE.sendToServer(new C2SMessageMinepadUrl(uuid, url));
 				stack.getTag().putString("PadURL", url);
 				
 				ClientProxy.PadData pd = ((ClientProxy) WebDisplays.PROXY).getPadByID(uuid);

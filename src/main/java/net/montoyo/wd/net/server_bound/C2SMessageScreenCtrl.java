@@ -72,7 +72,7 @@ public class C2SMessageScreenCtrl extends Packet {
 	
 	@Deprecated(forRemoval = true)
 	public C2SMessageScreenCtrl(TileEntityScreen tes, BlockSide side, ItemStack toRem) {
-		this(tes, side, new ManageRightsAndUpdgradesControl(toRem));
+		this(tes, side, new ManageRightsAndUpdgradesControl(false, toRem));
 	}
 	
 	@Deprecated(forRemoval = true)
@@ -173,6 +173,8 @@ public class C2SMessageScreenCtrl extends Packet {
 						});
 					}
 				} catch (MissingPermissionException e) {
+					e.printStackTrace();
+				} catch (Throwable ignored) {
 				}
 			});
 			ctx.setPacketHandled(true);

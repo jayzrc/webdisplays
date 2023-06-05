@@ -68,6 +68,12 @@ public class LaserControl extends ScreenControl {
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public void handleClient(BlockPos pos, BlockSide side, TileEntityScreen tes, NetworkEvent.Context ctx) {
-		throw new RuntimeException("TODO");
+		if (coord != null)
+			tes.handleMouseEvent(side, ClickControl.ControlType.MOVE, coord, -1);
+		
+		switch (type) {
+			case UP -> tes.handleMouseEvent(side, ClickControl.ControlType.UP, coord, button);
+			case DOWN -> tes.handleMouseEvent(side, ClickControl.ControlType.DOWN, coord, button);
+		}
 	}
 }

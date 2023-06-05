@@ -76,7 +76,7 @@ import net.montoyo.wd.item.ItemMinePad2;
 import net.montoyo.wd.item.WDItem;
 import net.montoyo.wd.miniserv.client.Client;
 import net.montoyo.wd.net.WDNetworkRegistry;
-import net.montoyo.wd.net.server_bound.C2SMinepadUrl;
+import net.montoyo.wd.net.server_bound.C2SMessageMinepadUrl;
 import net.montoyo.wd.utilities.*;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -517,7 +517,7 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
                         pd.view.loadURL(WebDisplays.BLACKLIST_URL);
                     else {
                         pd.lastURLSent = t; //Avoid spamming the server with porn URLs
-                        WDNetworkRegistry.INSTANCE.sendToServer(new C2SMinepadUrl(pd.id, url));
+                        WDNetworkRegistry.INSTANCE.sendToServer(new C2SMessageMinepadUrl(pd.id, url));
                     }
 
                     break;

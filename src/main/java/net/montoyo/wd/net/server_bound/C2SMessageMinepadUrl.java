@@ -9,16 +9,16 @@ import net.montoyo.wd.net.Packet;
 
 import java.util.UUID;
 
-public class C2SMinepadUrl extends Packet {
+public class C2SMessageMinepadUrl extends Packet {
 	UUID id;
 	String url;
 	
-	public C2SMinepadUrl(UUID id, String url) {
+	public C2SMessageMinepadUrl(UUID id, String url) {
 		this.id = id;
 		this.url = url;
 	}
 	
-	public C2SMinepadUrl(FriendlyByteBuf buf) {
+	public C2SMessageMinepadUrl(FriendlyByteBuf buf) {
 		super(buf);
 		this.id = buf.readUUID();
 		this.url = buf.readUtf();

@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.montoyo.wd.WebDisplays;
@@ -15,11 +16,11 @@ import net.montoyo.wd.block.BlockScreen;
 import net.montoyo.wd.client.ClientProxy;
 import net.montoyo.wd.client.JSQueryDispatcher;
 import net.montoyo.wd.config.ClientConfig;
+import net.montoyo.wd.controls.builtin.ClickControl;
 import net.montoyo.wd.core.DefaultUpgrade;
 import net.montoyo.wd.entity.TileEntityScreen;
 import net.montoyo.wd.init.BlockInit;
 import net.montoyo.wd.net.WDNetworkRegistry;
-import net.montoyo.wd.net.client_bound.S2CMessageScreenUpdate;
 import net.montoyo.wd.net.server_bound.C2SMessageScreenCtrl;
 import net.montoyo.wd.utilities.BlockSide;
 import net.montoyo.wd.utilities.Multiblock;
@@ -83,7 +84,7 @@ public class ItemLaserPointer extends Item implements WDItem {
 	}
 	
 	private static void laserClick(TileEntityScreen tes, BlockSide side, TileEntityScreen.Screen scr, Vector2i hit) {
-		tes.handleMouseEvent(side, S2CMessageScreenUpdate.MOUSE_MOVE, hit, -1);
+		tes.handleMouseEvent(side, ClickControl.ControlType.MOVE, hit, -1);
 		if (pointedScreen == tes && pointedScreenSide == side) {
 			long t = System.currentTimeMillis();
 			
@@ -125,16 +126,20 @@ public class ItemLaserPointer extends Item implements WDItem {
 		float hitZ = ((float) result.getLocation().z) - (float) pos.z;
 		Vector2i tmp = new Vector2i();
 		
-		TileEntityScreen te = (TileEntityScreen) mc.level.getBlockEntity(pos.toBlock());
+		BlockEntity be = mc.level.getBlockEntity(pos.toBlock());
+		if (!(be instanceof TileEntityScreen)) return;
 		
-		if (te != null && te.hasUpgrade(side, DefaultUpgrade.LASERMOUSE)) { //hasUpgrade returns false is there's no screen on side 'side'
+		//noinspection PatternVariableCanBeUsed
+		TileEntityScreen te = (TileEntityScreen) be;
+		
+		if (te.hasUpgrade(side, DefaultUpgrade.LASERMOUSE)) { //hasUpgrade returns false is there's no screen on side 'side'
 			//Since rights aren't synchronized, let the server check them for us...
 			TileEntityScreen.Screen scr = te.getScreen(side);
 			
 			if (scr.browser != null) {
 				if (BlockScreen.hit2pixels(side, result.getBlockPos(), new Vector3i(result.getBlockPos()), scr, hitX, hitY, hitZ, tmp)) {
-					te.handleMouseEvent(side, S2CMessageScreenUpdate.MOUSE_MOVE, tmp, -1);
-					te.handleMouseEvent(side, press ? S2CMessageScreenUpdate.MOUSE_DOWN : S2CMessageScreenUpdate.MOUSE_UP, tmp, button);
+					te.handleMouseEvent(side, ClickControl.ControlType.MOVE, tmp, -1);
+					te.handleMouseEvent(side, press ? ClickControl.ControlType.DOWN : ClickControl.ControlType.UP, tmp, button);
 					
 					if (press)
 						WDNetworkRegistry.INSTANCE.sendToServer(C2SMessageScreenCtrl.laserDown(te, side, tmp, button));

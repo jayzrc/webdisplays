@@ -50,7 +50,8 @@ public class ScreenControlRegistry {
 	}
 	
 	// if needed, the old code
-	// https://github.com/Mysticpasta1/webdisplays/blob/ff55cbf1b27773c15f44f17ad3364da3a16b6ed9/src/main/java/net/montoyo/wd/net/server/SMessageScreenCtrl.java
+	// https://github.com/Mysticpasta1/webdisplays/blob/ff55cbf1b27773c15f44f17ad3364da3a16b6ed9/src/main/java/net/montoyo/wd/net/server/SMessageScreenCtrl.java#L281-L364
+	// https://github.com/Mysticpasta1/webdisplays/blob/5ce9e4574df356910645b0382628f74d1401e26d/src/main/java/net/montoyo/wd/net/client_bound/S2CMessageScreenUpdate.java#L261-L284
 	static {
 		register(SetURLControl.id, new ScreenControlType<>(SetURLControl.class, SetURLControl::new));
 		register(KeyTypedControl.id, new ScreenControlType<>(KeyTypedControl.class, KeyTypedControl::new));
@@ -60,6 +61,8 @@ public class ScreenControlRegistry {
 		register(ScreenModifyControl.id, new ScreenControlType<>(ScreenModifyControl.class, ScreenModifyControl::new));
 		register(ModifyFriendListControl.id, new ScreenControlType<>(ModifyFriendListControl.class, ModifyFriendListControl::new));
 		register(ManageRightsAndUpdgradesControl.id, new ScreenControlType<>(ManageRightsAndUpdgradesControl.class, ManageRightsAndUpdgradesControl::new));
+		register(ClickControl.id, new ScreenControlType<>(ClickControl.class, ClickControl::new));
+		register(OwnerControl.id, new ScreenControlType<>(OwnerControl.class, OwnerControl::new));
 	}
 	
 	public static ScreenControl parse(FriendlyByteBuf buf) {

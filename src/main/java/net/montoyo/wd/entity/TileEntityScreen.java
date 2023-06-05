@@ -27,6 +27,7 @@ import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.block.BlockScreen;
 import net.montoyo.wd.client.ClientProxy;
 import net.montoyo.wd.config.CommonConfig;
+import net.montoyo.wd.controls.builtin.ClickControl;
 import net.montoyo.wd.core.DefaultUpgrade;
 import net.montoyo.wd.core.IUpgrade;
 import net.montoyo.wd.core.JSServerRequest;
@@ -460,7 +461,7 @@ public class TileEntityScreen extends BlockEntity {
                 screens.get(idx).browser.close();
                 screens.get(idx).browser = null;
             }
-        } else WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), new S2CMessageScreenUpdate(this, side)); //Delete the screen
+        } else WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), new S2CMessageScreenUpdate(this.getBlockPos(), side)); //Delete the screen
 
         screens.remove(idx);
 
@@ -531,17 +532,17 @@ public class TileEntityScreen extends BlockEntity {
         if (level.isClientSide)
             Log.warning("TileEntityScreen.click() from client side is useless...");
         else if (getLaserUser(scr) == null)
-            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, S2CMessageScreenUpdate.MOUSE_CLICK, vec, 1));
+            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, ClickControl.ControlType.CLICK, vec));
     }
 
-    void clickUnsafe(BlockSide side, int action, int x, int y) {
+    void clickUnsafe(BlockSide side, ClickControl.ControlType action, int x, int y) {
         if (level.isClientSide) {
-            Vector2i vec = (action == S2CMessageScreenUpdate.MOUSE_UP) ? null : new Vector2i(x, y);
-            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, action, vec, 1));
+            Vector2i vec = (action == ClickControl.ControlType.UP) ? null : new Vector2i(x, y);
+            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, action, vec));
         }
     }
 
-    public void handleMouseEvent(BlockSide side, int event, @Nullable Vector2i vec, int button) {
+    public void handleMouseEvent(BlockSide side, ClickControl.ControlType event, @Nullable Vector2i vec, int button) {
         Screen scr = getScreen(side);
         if (scr == null) {
             Log.error("Attempt inject mouse events on non-existing screen of side %s", side.toString());
@@ -549,16 +550,16 @@ public class TileEntityScreen extends BlockEntity {
         }
 
         if (scr.browser != null) {
-            if (event == S2CMessageScreenUpdate.MOUSE_CLICK) {
+            if (event == ClickControl.ControlType.CLICK) {
                 scr.browser.injectMouseMove(vec.x, vec.y, 0, false);                                            //Move to target
                 scr.browser.injectMouseButton(vec.x, vec.y, 0, button, true, 1);                              //Press
                 scr.browser.injectMouseButton(vec.x, vec.y, 0, button, false, 1);                            //Release
-            } else if (event == S2CMessageScreenUpdate.MOUSE_DOWN) {
+            } else if (event == ClickControl.ControlType.DOWN) {
                 scr.browser.injectMouseMove(vec.x, vec.y, 0, false);                                            //Move to target
                 scr.browser.injectMouseButton(vec.x, vec.y, 0, button, true, 1);                              //Press
-            } else if (event == S2CMessageScreenUpdate.MOUSE_MOVE)
+            } else if (event == ClickControl.ControlType.MOVE)
                 scr.browser.injectMouseMove(vec.x, vec.y, 0, false);                                            //Move
-            else if (event == S2CMessageScreenUpdate.MOUSE_UP)
+            else if (event == ClickControl.ControlType.UP)
                 scr.browser.injectMouseButton(scr.lastMousePos.x, scr.lastMousePos.y, 0, button, false, 1);  //Release
             if (vec != null) {
                 scr.lastMousePos.x = vec.x;
@@ -592,8 +593,8 @@ public class TileEntityScreen extends BlockEntity {
                 }
             }
 
-            if (sendMsg)
-                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.jsRedstone(this, side, vec, redstoneLevel));
+//            if (sendMsg)
+//                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.jsRedstone(this, side, vec, redstoneLevel));
         }
     }
 
@@ -926,8 +927,16 @@ public class TileEntityScreen extends BlockEntity {
 
     //If equal is null, no duplicate check is preformed
     public boolean addUpgrade(BlockSide side, ItemStack is, @Nullable Player player, boolean abortIfExisting) {
-        if (level.isClientSide)
+        if (level.isClientSide) {
+            IUpgrade itemAsUpgrade = (IUpgrade) is.getItem();
+            Screen scr = getScreen(side);
+//            if (abortIfExisting && scr.upgrades.stream().anyMatch(otherStack -> itemAsUpgrade.isSameUpgrade(is, otherStack)))
+//                return false; //Upgrade already exists
+            ItemStack isCopy = is.copy(); //FIXME: Duct tape fix, because the original stack will be shrinked
+            scr.upgrades.add(isCopy);
+            itemAsUpgrade.onInstall(this, side, player, isCopy);
             return false;
+        }
 
         Screen scr = getScreen(side);
         if (scr == null) {
@@ -953,9 +962,11 @@ public class TileEntityScreen extends BlockEntity {
         isCopy.setCount(1);
 
         scr.upgrades.add(isCopy);
-        WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.upgrade(this, side));
-        itemAsUpgrade.onInstall(this, side, player, isCopy);
-        playSoundAt(WebDisplays.INSTANCE.soundUpgradeAdd, getBlockPos(), 1.0f, 1.0f);
+        if (player != null && !player.level.isClientSide) {
+            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.upgrade(this, side, true, is));
+            itemAsUpgrade.onInstall(this, side, player, isCopy);
+            playSoundAt(WebDisplays.INSTANCE.soundUpgradeAdd, getBlockPos(), 1.0f, 1.0f);
+        }
         setChanged();
         return true;
     }
@@ -1015,8 +1026,10 @@ public class TileEntityScreen extends BlockEntity {
         if (idxToRemove >= 0) {
             dropUpgrade(scr.upgrades.get(idxToRemove), side, player);
             scr.upgrades.remove(idxToRemove);
-            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.upgrade(this, side));
-            playSoundAt(WebDisplays.INSTANCE.soundUpgradeDel, getBlockPos(), 1.0f, 1.0f);
+            if (player != null && !player.level.isClientSide) {
+                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.upgrade(this, side, false, is));
+                playSoundAt(WebDisplays.INSTANCE.soundUpgradeDel, getBlockPos(), 1.0f, 1.0f);
+            }
             setChanged();
         } else
             Log.warning("Tried to remove non-existing upgrade %s to screen %s at %s", safeName(is), side.toString(), getBlockPos().toString());
@@ -1068,11 +1081,11 @@ public class TileEntityScreen extends BlockEntity {
 
         if (scr != null) {
             if (button == -1)
-                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(ply, level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, S2CMessageScreenUpdate.MOUSE_MOVE, pos, button));
+                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(ply, level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, ClickControl.ControlType.MOVE, pos));
             else if (down)
-                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(ply, level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, S2CMessageScreenUpdate.MOUSE_DOWN, pos, button));
+                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(ply, level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, ClickControl.ControlType.DOWN, pos));
             else
-                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(ply, level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, S2CMessageScreenUpdate.MOUSE_UP, pos, button));
+                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(ply, level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, ClickControl.ControlType.UP, pos));
         }
     }
 
@@ -1082,7 +1095,7 @@ public class TileEntityScreen extends BlockEntity {
         if (scr != null) {
             if (getLaserUser(scr) == ply) {
                 scr.laserUser = null;
-                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(ply, level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, S2CMessageScreenUpdate.MOUSE_UP, null, button));
+                WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(ply, level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, ClickControl.ControlType.UP, null));
             }
         }
     }
@@ -1154,7 +1167,7 @@ public class TileEntityScreen extends BlockEntity {
             if (scr.browser != null)
                 scr.browser.runJS(code, "");
         }
-        else WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.js(this, side, code));
+//        else WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.js(this, side, code));
     }
 
     public void setAutoVolume(BlockSide side, boolean av) {

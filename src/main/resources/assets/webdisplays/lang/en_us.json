@@ -38,7 +38,7 @@
   "webdisplays.message.tooBig": "Too big! Maximum size is %dx%d.",
   "webdisplays.message.invalid": "Structure is invalid; look at %s.",
   "webdisplays.message.turnOn": "You need to turn the screen on first!",
-  "webdisplays.message.screenSet": "Screen set! Now give the item to the new ow,ner...",
+  "webdisplays.message.screenSet": "Screen set! Now give the item to the new owner...",
   "webdisplays.message.newOwner": "You are now the owner of this screen!",
   "webdisplays.message.restrictions": "You are not allowed to do this :(",
   "webdisplays.message.peripheral": "This is not a peripheral!",

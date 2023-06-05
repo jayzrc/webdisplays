@@ -21,7 +21,7 @@ import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.config.CommonConfig;
 import net.montoyo.wd.core.CraftComponent;
 import net.montoyo.wd.net.WDNetworkRegistry;
-import net.montoyo.wd.net.server_bound.C2SMinepadUrl;
+import net.montoyo.wd.net.server_bound.C2SMessageMinepadUrl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -64,7 +64,7 @@ public class ItemMinePad2 extends Item implements WDItem {
 		} else {
 			UUID uuid = UUID.randomUUID();
 			String url = getURL(is);
-			WDNetworkRegistry.INSTANCE.sendToServer(new C2SMinepadUrl(uuid, url));
+			WDNetworkRegistry.INSTANCE.sendToServer(new C2SMessageMinepadUrl(uuid, url));
 			is.getOrCreateTag().putUUID("PadID", uuid);
 			
 			ok = true;

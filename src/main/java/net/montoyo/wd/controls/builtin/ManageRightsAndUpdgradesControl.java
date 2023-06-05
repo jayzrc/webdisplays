@@ -28,13 +28,15 @@ public class ManageRightsAndUpdgradesControl extends ScreenControl {
 	}
 	
 	ControlType type;
+	boolean adding;
 	ItemStack toRemove;
 	
 	private int friendRights;
 	private int otherRights;
 	
-	public ManageRightsAndUpdgradesControl(ItemStack toRemove) {
+	public ManageRightsAndUpdgradesControl(boolean adding, ItemStack toRemove) {
 		super(id);
+		this.adding = adding;
 		type = ControlType.UPGRADES;
 		this.toRemove = toRemove;
 	}
@@ -50,7 +52,10 @@ public class ManageRightsAndUpdgradesControl extends ScreenControl {
 		super(id);
 		type = ControlType.values()[buf.readByte()];
 		switch (type) {
-			case UPGRADES -> toRemove = buf.readItem();
+			case UPGRADES -> {
+				adding = buf.readBoolean();
+				toRemove = buf.readItem();
+			}
 			case RIGHTS -> {
 				friendRights = buf.readInt();
 				otherRights = buf.readInt();
@@ -62,7 +67,10 @@ public class ManageRightsAndUpdgradesControl extends ScreenControl {
 	public void write(FriendlyByteBuf buf) {
 		buf.writeByte(type.ordinal());
 		switch (type) {
-			case UPGRADES -> buf.writeItem(toRemove);
+			case UPGRADES -> {
+				buf.writeBoolean(adding);
+				buf.writeItem(toRemove);
+			}
 			case RIGHTS -> {
 				buf.writeInt(friendRights);
 				buf.writeInt(otherRights);
@@ -76,7 +84,9 @@ public class ManageRightsAndUpdgradesControl extends ScreenControl {
 		switch (type) {
 			case UPGRADES -> {
 				checkPerms(ScreenRights.MANAGE_UPGRADES, permissionChecker, ctx.getSender());
-				tes.removeUpgrade(side, toRemove, player);
+				if (adding)
+					throw new RuntimeException("Cannot add an upgrade from the client");
+				else tes.removeUpgrade(side, toRemove, player);
 			}
 			case RIGHTS -> {
 				TileEntityScreen.Screen scr = tes.getScreen(side);
@@ -93,6 +103,22 @@ public class ManageRightsAndUpdgradesControl extends ScreenControl {
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public void handleClient(BlockPos pos, BlockSide side, TileEntityScreen tes, NetworkEvent.Context ctx) {
-		throw new RuntimeException("TODO");
+		ServerPlayer player = ctx.getSender();
+		switch (type) {
+			case UPGRADES -> {
+				if (adding)
+					tes.addUpgrade(side, toRemove, player, true);
+				else tes.removeUpgrade(side, toRemove, player);
+			}
+			case RIGHTS -> {
+				TileEntityScreen.Screen scr = tes.getScreen(side);
+				
+				int fr = friendRights;
+				int or = otherRights;
+				
+				if(scr.friendRights != fr || scr.otherRights != or)
+					tes.setRights(player, side, fr, or);
+			}
+		}
 	}
 }
