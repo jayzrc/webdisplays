@@ -286,6 +286,23 @@ public class TileEntityScreen extends BlockEntity {
     }
     
     @Override
+    public CompoundTag getUpdateTag() {
+        CompoundTag tag = new CompoundTag();
+        saveAdditional(tag);
+        return tag;
+    }
+    
+    @Override
+    public void handleUpdateTag(CompoundTag tag) {
+        load(tag);
+        for (Screen screen : screens) {
+            if (screen.browser == null) screen.createBrowser(false);
+            if (screen.browser != null) screen.browser.loadURL(screen.url);
+        }
+        updateAABB();
+    }
+    
+    @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
     
@@ -651,23 +668,6 @@ public class TileEntityScreen extends BlockEntity {
         if (level.isClientSide) {
             WebDisplays.PROXY.trackScreen(this, true);
         }
-    }
-    
-    @Override
-    public CompoundTag getUpdateTag() {
-        CompoundTag tag = new CompoundTag();
-        saveAdditional(tag);
-        return tag;
-    }
-    
-    @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        load(tag);
-        for (Screen screen : screens) {
-            if (screen.browser == null) screen.createBrowser(false);
-            if (screen.browser != null) screen.browser.loadURL(screen.url);
-        }
-        updateAABB();
     }
     
     @Override

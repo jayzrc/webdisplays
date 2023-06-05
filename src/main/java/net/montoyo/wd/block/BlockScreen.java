@@ -103,6 +103,8 @@ public class BlockScreen extends BaseEntityBlock {
     @Override
     public void onRemove(BlockState p_60515_, Level p_60516_, BlockPos p_60517_, BlockState p_60518_, boolean p_60519_) {
         // TODO: make this also get called on client?
+        if (p_60518_.getBlock() == p_60515_.getBlock()) return;
+        
         for (BlockSide value : BlockSide.values()) {
             Vector3i vec = new Vector3i(p_60517_.getX(), p_60517_.getY(), p_60517_.getZ());
             Multiblock.findOrigin(p_60516_, vec, value, null);
