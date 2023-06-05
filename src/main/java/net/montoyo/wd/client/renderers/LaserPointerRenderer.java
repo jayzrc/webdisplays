@@ -8,6 +8,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -33,7 +34,10 @@ public final class LaserPointerRenderer implements IItemRenderer {
 
         float sqrtSwingProg = (float) Math.sqrt(swingProgress);
         float sinSqrtSwingProg1 = (float) Math.sin(sqrtSwingProg * PI);
-
+    
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        
+        var matrix0 = poseStack.last().pose();
         //Laser pointer
         poseStack.pushPose();
         poseStack.translate(handSideSign * -0.4f * sinSqrtSwingProg1, (float) (0.2f * Math.sin(sqrtSwingProg * PI * 2.0f)), (float) (-0.2f * Math.sin(swingProgress * PI)));
@@ -68,9 +72,11 @@ public final class LaserPointerRenderer implements IItemRenderer {
         bb.vertex(matrix, 1.0f, -1.0f, 4.0f).color(0.5f, 0.5f, 0.5f, 1.0f).endVertex();
         bb.vertex(matrix, 1.0f, 0.0f, 4.0f).color(0.5f, 0.5f, 0.5f, 1.0f).endVertex();
         bb.vertex(matrix, 0.0f, 0.0f, 4.0f).color(0.5f, 0.5f, 0.5f, 1.0f).endVertex();
-        if(isOn) {
-            drawLineBetween(bb, matrix, new Vec3(0.5f, -0.5f, 0.5f), new Vec3(-7.0f, 3.5f, -10.0f));
+        
+        if (isOn) {
+            drawLineBetween(bb, matrix0, matrix, new Vec3(0.5f, -0.5f, 0.5f), new Vec3(-40.0f, 4000.5f, -100.0f));
         }
+        
         t.end();
 
         RenderSystem.disableBlend();
@@ -82,30 +88,26 @@ public final class LaserPointerRenderer implements IItemRenderer {
         return true;
     }
 
-    private static void drawLineBetween(BufferBuilder bb, Matrix4f matrix, Vec3 local, Vec3 target)
+    private static void drawLineBetween(BufferBuilder bb, Matrix4f matrix0, Matrix4f matrix, Vec3 local, Vec3 target)
     {
         //Calculate distance between points -> length of the line
-        float distance = (float) local.distanceTo(target);
+        float distance = (float) local.distanceTo(target) / 2;
         float quarterWidth = 0.25f;
+        float biggerWidth = 10;
 
         bb.vertex(matrix, 0.25f, -0.25f, 0.5f).color((float) 0.5, (float) 0.0, (float) 0.0, (float) 1.0).endVertex();
         bb.vertex(matrix, quarterWidth + 0.25f, -0.25f, 0.5f).color((float) 0.5, (float) 0.0, (float) 0.0, (float) 1.0).endVertex();
-        bb.vertex(matrix, quarterWidth - 6f, 3f, - distance).color((float) 0.5, (float) 0.0, (float) 0.0, (float) 1.0).endVertex();
-        bb.vertex(matrix, -6f, 3f, -distance).color((float) 0.5, (float) 0.0, (float) 0.0, (float) 1.0).endVertex();
+        bb.vertex(matrix0, biggerWidth - 6f, 3f, - distance).color((float) 0.5, (float) 0.0, (float) 0.0, (float) 1.0).endVertex();
+        bb.vertex(matrix0, -6f, 3f, -distance).color((float) 0.5, (float) 0.0, (float) 0.0, (float) 1.0).endVertex();
 
         bb.vertex(matrix, 0.25f, -0.25f, 0.5f).color((float) 0.5, (float) 0.0, (float) 0.0, (float) 1.0).endVertex();
         bb.vertex(matrix, 0.25f, -quarterWidth - 0.25f, 0.5f).color((float) 0.5, (float) 0.0, (float) 0.0, (float) 1.0).endVertex();
-        bb.vertex(matrix, -6f, -quarterWidth + 3f, -distance).color((float) 0.5, (float) 0.0, (float) 0.0, (float) 1.0).endVertex();
-        bb.vertex(matrix, -6f, 3f, -distance).color((float) 0.5, (float) 0.0, (float) 0.0, (float) 1.0).endVertex();
+        bb.vertex(matrix0, -6f, -biggerWidth + 3f, -distance).color((float) 0.5, (float) 0.0, (float) 0.0, (float) 1.0).endVertex();
+        bb.vertex(matrix0, -6f, 3f, -distance).color((float) 0.5, (float) 0.0, (float) 0.0, (float) 1.0).endVertex();
 
         bb.vertex(matrix,quarterWidth + 0.25f, -0.25f, 0.5f).color((float) 0.5, (float) 0.0, (float) 0.0, (float) 1.0).endVertex();
         bb.vertex(matrix,quarterWidth + 0.25f, -quarterWidth - 0.25f, 0.5f).color((float) 0.5, (float) 0.0, (float) 0.0, (float) 1.0).endVertex();
-        bb.vertex(matrix,quarterWidth - 6f, -quarterWidth + 3f, -distance).color((float) 0.5, (float) 0.0, (float) 0.0, (float) 1.0).endVertex();
-        bb.vertex(matrix,quarterWidth - 6f, 3f, -distance).color((float) 0.5, (float) 0.0, (float) 0.0, (float) 1.0).endVertex();
-
-        bb.vertex(matrix, -6f, -quarterWidth + 3f, -distance).color((float) 0.5, (float) 0.0, (float) 0.0, (float) 1.0).endVertex();
-        bb.vertex(matrix, quarterWidth - 6f, -quarterWidth + 3f, -distance).color((float) 0.5, (float) 0.0, (float) 0.0, (float) 1.0).endVertex();
-        bb.vertex(matrix, quarterWidth - 6f, 3f, -distance).color((float) 0.5, (float) 0.0, (float) 0.0, (float) 1.0).endVertex();
-        bb.vertex(matrix, -6f, 3f, -distance).color((float) 0.5, (float) 0.0, (float) 0.0, (float) 1.0).endVertex();
+        bb.vertex(matrix0,biggerWidth - 6f, -biggerWidth + 3f, -distance).color((float) 0.5, (float) 0.0, (float) 0.0, (float) 1.0).endVertex();
+        bb.vertex(matrix0,biggerWidth - 6f, 3f, -distance).color((float) 0.5, (float) 0.0, (float) 0.0, (float) 1.0).endVertex();
     }
 }
