@@ -50,7 +50,7 @@ public class GuiServer extends WDScreen {
     private final Vector3i serverPos;
     private final NameUUIDPair owner;
     private final ArrayList<String> lines = new ArrayList<>();
-    private String prompt = "<";
+    private String prompt = "";
     private String userPrompt;
     private int blinkTime;
     private String lastCmd;
@@ -87,7 +87,7 @@ public class GuiServer extends WDScreen {
         lines.add(tr("info"));
         uploadCD(FileSystemView.getFileSystemView().getDefaultDirectory());
     }
-
+    
     private static String tr(String key, Object ... args) {
         return I18n.get("webdisplays.server." + key, args);
     }
@@ -118,8 +118,12 @@ public class GuiServer extends WDScreen {
         }
 
         if(!promptLocked) {
-            x = font.drawShadow(poseStack, userPrompt, x, y, 0xFFFFFFFF, false);
-            x = font.drawShadow(poseStack, prompt, x, y, 0xFFFFFFFF, false);
+            if (queue.isEmpty()) {
+                x = font.drawShadow(poseStack, userPrompt, x, y, 0xFFFFFFFF, false);
+                x = font.drawShadow(poseStack, prompt, x, y, 0xFFFFFFFF, false);
+            } else {
+                x = font.drawShadow(poseStack, "<Press DOWN to show more>", x, y, 0xFFFFFFFF, false);
+            }
         }
 
         if(!uploadWizard && blinkTime < 5)
@@ -198,6 +202,19 @@ public class GuiServer extends WDScreen {
                 uploadFilter = "";
             }
         }
+    
+        final int maxl = uploadWizard ? MAX_LINES : (MAX_LINES - 1); //Cuz prompt is hidden
+        if (!queue.isEmpty()) {
+            while (!queue.isEmpty()) {
+                if (lines.size() >= maxl) {
+                    break;
+                }
+                writeLine(queue.remove(0));
+            }
+        }
+        while (lines.size() > maxl) {
+            lines.remove(0);
+        }
     }
 
     @Override
@@ -205,7 +222,7 @@ public class GuiServer extends WDScreen {
         Supplier<Boolean> predicate = () -> super.keyReleased(keyCode, scanCode, modifiers);
 
         try {
-            return handleKeyboardInput(keyCode, true, predicate);
+            return handleKeyboardInput(keyCode, false, predicate);
         } catch (IOException e) {
             e.printStackTrace();
             return false;
@@ -214,6 +231,11 @@ public class GuiServer extends WDScreen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            Minecraft.getInstance().setScreen(null);
+            return true;
+        }
+        
         getChar(keyCode, scanCode).ifPresent(c -> {
             try {
                 keyTyped(c, keyCode, modifiers);
@@ -231,6 +253,9 @@ public class GuiServer extends WDScreen {
     }
 
     public boolean handleKeyboardInput(int keyCode, boolean keyState, Supplier<Boolean> booleanSupplier) throws IOException {
+        if (!queue.isEmpty())
+            return false;
+        
         if(uploadWizard) {
             if(keyState) {
                 if(keyCode == GLFW.GLFW_KEY_UP) {
@@ -315,42 +340,51 @@ public class GuiServer extends WDScreen {
 
     protected void keyTyped(char typedChar, int keyCode, int modifier) throws IOException {
         //this.charTyped(typedChar, modifier);
-
-        if(uploadWizard) {
+    
+        if (keyCode == GLFW.GLFW_KEY_DOWN) {
+            if (!queue.isEmpty()) {
+                writeLine(queue.remove(0));
+                return;
+            }
+        }
+        if (!queue.isEmpty())
+            return;
+    
+        if (uploadWizard) {
             boolean found = false;
             uploadFilter += Character.toLowerCase(typedChar);
             uploadFilterTime = System.currentTimeMillis();
-
-            for(int i = uploadFirstIsParent ? 1 : 0; i < uploadFiles.size(); i++) {
-                if(uploadFiles.get(i).getName().toLowerCase().startsWith(uploadFilter)) {
+        
+            for (int i = uploadFirstIsParent ? 1 : 0; i < uploadFiles.size(); i++) {
+                if (uploadFiles.get(i).getName().toLowerCase().startsWith(uploadFilter)) {
                     selectFile(i);
                     found = true;
                     break;
                 }
             }
-
-            if(!found && uploadFilter.length() == 1)
+        
+            if (!found && uploadFilter.length() == 1)
                 uploadFilter = "";
-
+        
             return;
-        } else if(promptLocked)
+        } else if (promptLocked)
             return;
-
-        if(keyCode == GLFW.GLFW_KEY_BACKSPACE) {
-            if(prompt.length() > 0)
+    
+        if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
+            if (prompt.length() > 0)
                 prompt = prompt.substring(0, prompt.length() - 1);
-        } else if(keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
-            if(prompt.length() > 0) {
+        } else if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
+            if (prompt.length() > 0) {
                 writeLine(userPrompt + prompt);
                 evaluateCommand(prompt);
                 lastCmd = prompt;
                 prompt = "";
             } else
                 writeLine(userPrompt);
-        } else if(prompt.length() + 1 < MAX_LINE_LEN && typedChar >= 32 && typedChar <= 126)
-
+        } else if (prompt.length() + 1 < MAX_LINE_LEN && typedChar >= 32 && typedChar <= 126)
+        
             prompt = prompt + typedChar;
-
+    
         blinkTime = 0;
     }
 
@@ -453,16 +487,18 @@ public class GuiServer extends WDScreen {
 
     @CommandHandler("help")
     public void commandHelp(String[] args) {
+        queueRead = lines.size();
+        
         if(args.length > 0) {
             String cmd = args[0].toLowerCase();
 
             if(COMMAND_MAP.containsKey(cmd))
-                writeLine(tr("help." + cmd));
+                queueLine(tr("help." + cmd));
             else
-                writeLine(tr("unknowncmd"));
+                queueLine(tr("unknowncmd"));
         } else {
             for(String c : COMMAND_MAP.keySet())
-                writeLine(c + " - " + tr("help." + c));
+                queueLine(c + " - " + tr("help." + c));
         }
     }
 
@@ -744,5 +780,14 @@ public class GuiServer extends WDScreen {
     public String getWikiPageName() {
         return "Server";
     }
-
+    
+    int queueRead = 0;
+    ArrayList<String> queue = new ArrayList<>();
+    
+    private void queueLine(String line) {
+        if (queueRead > 1) {
+            writeLine(line);
+            queueRead -= 1;
+        } else queue.add(line);
+    }
 }

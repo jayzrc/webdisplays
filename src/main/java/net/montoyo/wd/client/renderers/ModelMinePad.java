@@ -41,7 +41,7 @@ public final class ModelMinePad {
 		t.end();
 		
 		int width = 32;
-		int height = 16;
+		int height = 32;
 		
 		float padding = 1f / 23;
 		float padding1 = 1f / 21;

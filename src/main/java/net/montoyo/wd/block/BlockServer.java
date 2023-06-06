@@ -76,7 +76,7 @@ public class BlockServer extends WDBlockContainer{
 
         if(te instanceof TileEntityServer) {
             ((TileEntityServer) te).onPlayerRightClick(player);
-            return InteractionResult.PASS;
+            return InteractionResult.SUCCESS;
         } else
             return InteractionResult.FAIL;
     }
