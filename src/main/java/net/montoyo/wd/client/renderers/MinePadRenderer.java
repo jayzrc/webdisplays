@@ -9,6 +9,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
@@ -96,6 +97,9 @@ public final class MinePadRenderer implements IItemRenderer {
 		stack.translate(0.063f, 0.28f, 0.001f);
 		model.render(multiBufferSource, stack);
 		stack.translate(-0.063f, -0.28f, -0.001f);
+		
+		// force draw so the browser can be drawn ontop of the model
+		multiBufferSource.getBuffer(RenderType.LINES);
 		
 		if (is.getTag() != null && is.getTag().contains("PadID")) {
 			ClientProxy.PadData pd = clientProxy.getPadByID(is.getTag().getUUID("PadID"));
