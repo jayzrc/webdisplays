@@ -7,6 +7,7 @@
   "block.webdisplays.ccinterface": "ComputerCraft Interface",
   "block.webdisplays.cointerface": "OpenComputers Interface",
   "block.webdisplays.redctrl": "Redstone Controller",
+  "block.webdisplays.redctrl": "Redstone Controller",
   "block.webdisplays.server": "Server",
   "item.webdisplays.screencfg": "Screen Configurator",
   "item.webdisplays.ownerthief": "Ownership Thief [ADMIN]",
@@ -152,6 +153,6 @@
   "webdisplays.server.help.url": "Copies a file URL into your clipboard",
   "webdisplays.server.help.upload": "Opens the upload wizard",
   "webdisplays.server.help.rm": "Deletes a file",
-  "webdisplays.server.help.reconnect": "Reconnect to miniserv [DEBUG]"
+  "webdisplays.server.help.reconnect": "Reconnect to miniserv [DEBUG]",
+  "webdisplays.server.press_for_more": "<Press DOWN to show more>"
 }
-

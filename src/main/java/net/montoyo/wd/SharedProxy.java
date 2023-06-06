@@ -33,13 +33,13 @@ public class SharedProxy {
     public void init() {
         MinecraftForge.EVENT_BUS.addListener(this::onCefInit);
     }
-
+    
     public void postInit() {
     }
     
     public void onCefInit(CefInitEvent event) {
     }
-
+    
     @Deprecated(forRemoval = true)
     public Level getWorld(ResourceKey<Level> dim) {
         return getServer().getLevel(dim);

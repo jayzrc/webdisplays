@@ -15,7 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.ContainerScreen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.multiplayer.ClientAdvancements;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -663,8 +663,8 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
                 String wikiName = null;
                 if (mc.screen instanceof WDScreen)
                     wikiName = ((WDScreen) mc.screen).getWikiPageName();
-                else if (mc.screen instanceof ContainerScreen) {
-                    Slot slot = ((ContainerScreen) mc.screen).getSlotUnderMouse();
+                else if (mc.screen instanceof AbstractContainerScreen) {
+                    Slot slot = ((AbstractContainerScreen) mc.screen).getSlotUnderMouse();
     
                     if (slot != null && slot.hasItem() && slot.getItem().getItem() instanceof WDItem)
                         wikiName = ((WDItem) slot.getItem().getItem()).getWikiName(slot.getItem());

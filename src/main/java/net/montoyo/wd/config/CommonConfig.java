@@ -44,8 +44,8 @@ public class CommonConfig {
 		@Name("home_page")
 		@Comment("The page which screens should open up to when turning on")
 		@Translation("config.webdisplays.home_page")
-		@Default(valueStr = "https://www.google.com")
-		public static String homepage = "https://www.google.com";
+		@Default(valueStr = "mod://webdisplays/main.html")
+		public static String homepage = "mod://webdisplays/main.html";
 	}
 	
 	@Comment("Options for the in world screen blocks")

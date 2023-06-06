@@ -122,7 +122,7 @@ public class GuiServer extends WDScreen {
                 x = font.drawShadow(poseStack, userPrompt, x, y, 0xFFFFFFFF, false);
                 x = font.drawShadow(poseStack, prompt, x, y, 0xFFFFFFFF, false);
             } else {
-                x = font.drawShadow(poseStack, "<Press DOWN to show more>", x, y, 0xFFFFFFFF, false);
+                x = font.drawShadow(poseStack, tr("press_for_more"), x, y, 0xFFFFFFFF, false);
             }
         }
 
@@ -206,15 +206,14 @@ public class GuiServer extends WDScreen {
         final int maxl = uploadWizard ? MAX_LINES : (MAX_LINES - 1); //Cuz prompt is hidden
         if (!queue.isEmpty()) {
             while (!queue.isEmpty()) {
-                if (lines.size() >= maxl) {
+                if (lines.size() >= maxl)
                     break;
-                }
                 writeLine(queue.remove(0));
             }
         }
-        while (lines.size() > maxl) {
+        
+        while (lines.size() > maxl)
             lines.remove(0);
-        }
     }
 
     @Override
@@ -369,7 +368,10 @@ public class GuiServer extends WDScreen {
             return;
         } else if (promptLocked)
             return;
-    
+        
+        if (keyCode == GLFW.GLFW_KEY_SPACE)
+            typedChar = ' ';
+        
         if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
             if (prompt.length() > 0)
                 prompt = prompt.substring(0, prompt.length() - 1);
@@ -785,7 +787,10 @@ public class GuiServer extends WDScreen {
     ArrayList<String> queue = new ArrayList<>();
     
     private void queueLine(String line) {
-        if (queueRead > 1) {
+        final int maxl = uploadWizard ? MAX_LINES : (MAX_LINES - 1); //Cuz prompt is hidden
+        if (lines.size() < maxl)
+            writeLine(line);
+        else if (queueRead > 1) {
             writeLine(line);
             queueRead -= 1;
         } else queue.add(line);
