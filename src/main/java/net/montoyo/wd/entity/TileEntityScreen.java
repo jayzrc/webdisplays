@@ -851,6 +851,10 @@ public class TileEntityScreen extends BlockEntity {
     }
 
     public void type(BlockSide side, String text, BlockPos soundPos) {
+        type(side, text, soundPos, null);
+    }
+    
+    public void type(BlockSide side, String text, BlockPos soundPos, @Nullable ServerPlayer sender) {
         Screen scr = getScreen(side);
         if (scr == null) {
             Log.error("Tried to type on invalid screen on side %s", side.toString());
@@ -877,7 +881,8 @@ public class TileEntityScreen extends BlockEntity {
                                         scr.browser.injectKeyPressedByKeyCode(ev.getKeyCode(), (char) ev.getKeyCode(), ev.getModifier());
                                 case RELEASE ->
                                         scr.browser.injectKeyReleasedByKeyCode(ev.getKeyCode(), (char) ev.getKeyCode(), ev.getModifier());
-                                case TYPE -> scr.browser.injectKeyTyped(ev.getKeyCode(), ev.getModifier());
+                                case TYPE ->
+                                        scr.browser.injectKeyTyped(ev.getKeyCode(), ev.getModifier());
                                 default -> throw new RuntimeException("Invalid type action '" + ev.getAction() + '\'');
                             }
                         }
@@ -887,7 +892,11 @@ public class TileEntityScreen extends BlockEntity {
                 }
             }
         } else {
-            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.type(this, side, text));
+            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(
+                    sender != null ?
+                            () -> point(sender, level, getBlockPos()) :
+                            () -> point(level, getBlockPos())
+            ), S2CMessageScreenUpdate.type(this, side, text));
 
             if (soundPos != null)
                 playSoundAt(WebDisplays.INSTANCE.soundTyping, soundPos, 0.25f, 1.f);

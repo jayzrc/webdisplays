@@ -41,7 +41,7 @@ public class KeyTypedControl extends ScreenControl {
 	@Override
 	public void handleServer(BlockPos pos, BlockSide side, TileEntityScreen tes, NetworkEvent.Context ctx, Function<Integer, Boolean> permissionChecker) throws MissingPermissionException {
 		checkPerms(ScreenRights.INTERACT, permissionChecker, ctx.getSender());
-		tes.type(side, text, soundPos);
+		tes.type(side, text, soundPos, ctx.getSender());
 	}
 	
 	@Override

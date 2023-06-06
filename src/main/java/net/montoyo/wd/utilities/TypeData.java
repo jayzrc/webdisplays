@@ -7,7 +7,6 @@ package net.montoyo.wd.utilities;
 import com.google.gson.annotations.SerializedName;
 
 public class TypeData {
-
     public enum Action {
         @SerializedName("i")
         INVALID,
@@ -22,9 +21,9 @@ public class TypeData {
         TYPE
     }
 
-    private Action a;
-    private int k;
-    private int m;
+    private final Action a;
+    private final int k;
+    private final int m;
 
     public TypeData() {
         a = Action.INVALID;
@@ -49,5 +48,4 @@ public class TypeData {
     public int getModifier() {
         return m;
     }
-
 }

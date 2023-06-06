@@ -153,26 +153,28 @@ public class GuiKeyboard extends WDScreen {
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if(quitOnEscape && keyCode == GLFW.GLFW_KEY_ESCAPE)
             Minecraft.getInstance().setScreen(null);
-        evStack.add(new TypeData(TypeData.Action.PRESS, keyCode, modifiers));
-        if (!evStack.isEmpty() && !syncRequested())
-            requestSync();
+        addKey(new TypeData(TypeData.Action.PRESS, keyCode, modifiers));
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
     
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
-        evStack.add(new TypeData(TypeData.Action.TYPE, codePoint, modifiers));
-        if (!evStack.isEmpty() && !syncRequested())
-            requestSync();
+        addKey(new TypeData(TypeData.Action.TYPE, codePoint, modifiers));
         return super.charTyped(codePoint, modifiers);
     }
     
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        evStack.add(new TypeData(TypeData.Action.RELEASE, keyCode, modifiers));
+        addKey(new TypeData(TypeData.Action.RELEASE, keyCode, modifiers));
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+    
+    void addKey(TypeData data) {
+        tes.type(side, "[" + WebDisplays.GSON.toJson(data) + "]", kbPos);
+        
+        evStack.add(data);
         if (!evStack.isEmpty() && !syncRequested())
             requestSync();
-        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
