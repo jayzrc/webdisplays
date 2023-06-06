@@ -11,6 +11,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementProgress;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.Gui;
@@ -46,6 +47,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderHighlightEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -681,7 +683,20 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
             mc.setScreen(nextScreen);
             nextScreen = null;
         }
-    
+        
+        // handle r button
+        if (KEY_MOUSE.isDown()) {
+            if (!rDown) {
+                rDown = true;
+                mouseOn = !mouseOn;
+            }
+        } else rDown = false;
+        if (
+                Minecraft.getInstance().player == null ||
+                    !(Minecraft.getInstance().player.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof ItemLaserPointer)
+        ) mouseOn = false;
+        
+        
         //Load/unload minePads depending on which item is in the player's hand
         if (++minePadTickCounter >= 10) {
             minePadTickCounter = 0;
@@ -879,5 +894,14 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
                 }
             }
         }
+    }
+    
+    /** KEYBINDS **/
+    public static final KeyMapping KEY_MOUSE = new KeyMapping("webdisplays.key.toggle_mouse", GLFW.GLFW_KEY_R, "key.categories.misc");
+    static boolean rDown = false;
+    public static boolean mouseOn = false;
+    
+    public static void onKeybindRegistry(RegisterKeyMappingsEvent event) {
+        event.register(KEY_MOUSE);
     }
 }

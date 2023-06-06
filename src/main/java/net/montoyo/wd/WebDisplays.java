@@ -120,6 +120,7 @@ public class WebDisplays {
     
         if (FMLEnvironment.dist.isClient()) {
             // proxies are annoying, so from now on, I'mma be just registering stuff in here
+            FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientProxy::onKeybindRegistry);
             MinecraftForge.EVENT_BUS.addListener(ClientProxy::onDrawSelection);
             ClientConfig.init();
         }

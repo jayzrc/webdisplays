@@ -4,7 +4,6 @@
 
 package net.montoyo.wd.client.renderers;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
@@ -18,9 +17,9 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.montoyo.wd.client.ClientProxy;
 import net.montoyo.wd.init.ItemInit;
 import net.montoyo.wd.item.ItemLaserPointer;
-import org.lwjgl.glfw.GLFW;
 
 @OnlyIn(Dist.CLIENT)
 public final class LaserPointerRenderer implements IItemRenderer {
@@ -36,7 +35,7 @@ public final class LaserPointerRenderer implements IItemRenderer {
 		Minecraft mc = Minecraft.getInstance();
 		return mc.player != null && mc.level != null &&
 				(
-						InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_ALT) ||
+						ClientProxy.mouseOn ||
 								ItemLaserPointer.isOn()
 				) &&
 				mc.player.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(ItemInit.itemLaserPointer.get()) &&

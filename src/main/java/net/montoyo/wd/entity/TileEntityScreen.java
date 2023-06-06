@@ -543,6 +543,8 @@ public class TileEntityScreen extends BlockEntity {
     }
 
     public void handleMouseEvent(BlockSide side, ClickControl.ControlType event, @Nullable Vector2i vec, int button) {
+        if (button > 1) return; // buttons above 1 crash the game
+        
         Screen scr = getScreen(side);
         if (scr == null) {
             Log.error("Attempt inject mouse events on non-existing screen of side %s", side.toString());
