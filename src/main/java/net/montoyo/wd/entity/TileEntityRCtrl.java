@@ -16,13 +16,8 @@ import net.montoyo.wd.init.TileInit;
 import net.montoyo.wd.utilities.Util;
 
 public class TileEntityRCtrl extends TileEntityPeripheralBase {
-    private static BlockPos blockPos;
-    private static BlockState blockState;
-
     public TileEntityRCtrl(BlockPos arg2, BlockState arg3) {
             super(TileInit.REMOTE_CONTROLLER.get(), arg2, arg3);
-            blockPos = arg2;
-            blockState = arg3;
     }
 
     @Override

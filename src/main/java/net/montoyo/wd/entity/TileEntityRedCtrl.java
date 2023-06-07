@@ -24,13 +24,9 @@ public class TileEntityRedCtrl extends TileEntityPeripheralBase {
     private String risingEdgeURL = "";
     private String fallingEdgeURL = "";
     private boolean state = false;
-    private static BlockState blockState;
-    private static BlockPos blockPos;
 
     public TileEntityRedCtrl(BlockPos arg2, BlockState arg3) {
         super(TileInit.REDSTONE_CONTROLLER.get(), arg2, arg3);
-        blockPos = arg2;
-        blockState = arg3;
     }
     
     @Override

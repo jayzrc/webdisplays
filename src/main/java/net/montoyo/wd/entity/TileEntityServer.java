@@ -8,47 +8,32 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.montoyo.wd.WebDisplays;
-import net.montoyo.wd.block.BlockPeripheral;
 import net.montoyo.wd.data.ServerData;
 import net.montoyo.wd.init.TileInit;
 import net.montoyo.wd.utilities.NameUUIDPair;
 import net.montoyo.wd.utilities.Util;
 
-import javax.annotation.Nonnull;
-
 public class TileEntityServer extends BlockEntity {
 
     private NameUUIDPair owner;
-    private static BlockPos blockPos;
-    private static BlockState blockState;
 
     public TileEntityServer(BlockPos arg2, BlockState arg3) {
         super(TileInit.SERVER.get(), arg2, arg3);
-        blockPos = arg2;
-        blockState = arg3;
-    }
-
-    public static Block getBlockFromTE() {
-        return new TileEntityServer(blockPos, blockState).getBlockState().getBlock();
     }
 
     @Override
-    public void deserializeNBT(CompoundTag tag) {
-        super.deserializeNBT(tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         owner = Util.readOwnerFromNBT(tag);
     }
-
+    
     @Override
-    @Nonnull
-    public CompoundTag serializeNBT() {
-        CompoundTag tag = new CompoundTag();
-        super.serializeNBT();
-        return Util.writeOwnerToNBT(tag, owner);
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        Util.writeOwnerToNBT(tag, owner);
     }
 
     public void setOwner(Player ep) {

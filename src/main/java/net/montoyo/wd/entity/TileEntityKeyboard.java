@@ -21,13 +21,9 @@ import net.montoyo.wd.utilities.Util;
 public class TileEntityKeyboard extends TileEntityPeripheralBase {
 
     private static final String RANDOM_CHARS = "AZERTYUIOPQSDFGHJKLMWXCVBNazertyuiopqsdfghjklmwxcvbn0123456789"; //Yes I have an AZERTY keyboard, u care?
-    private static BlockPos blockPos;
-    private static BlockState blockState;
 
     public TileEntityKeyboard(BlockPos arg2, BlockState arg3) {
         super(TileInit.KEYBOARD.get(), arg2, arg3);
-        blockPos = arg2;
-        blockState = arg3;
     }
 
     @Override
@@ -57,26 +53,27 @@ public class TileEntityKeyboard extends TileEntityPeripheralBase {
     }
 
     public void simulateCat(Entity ent) {
-        if(isScreenChunkLoaded()) {
-            TileEntityScreen tes = getConnectedScreen();
+        if(!isScreenChunkLoaded())
+            return;
+        
+        TileEntityScreen tes = getConnectedScreen();
 
-            if(tes != null) {
-                TileEntityScreen.Screen scr = tes.getScreen(screenSide);
-                boolean ok;
+        if(tes != null) {
+            TileEntityScreen.Screen scr = tes.getScreen(screenSide);
+            boolean ok;
 
-                if(ent instanceof Player)
-                    ok = (scr.rightsFor((Player) ent) & ScreenRights.INTERACT) != 0;
-                else
-                    ok = (scr.otherRights & ScreenRights.INTERACT) != 0;
+            if(ent instanceof Player)
+                ok = (scr.rightsFor((Player) ent) & ScreenRights.INTERACT) != 0;
+            else
+                ok = (scr.otherRights & ScreenRights.INTERACT) != 0;
 
-                if(ok) {
-                    char rnd = RANDOM_CHARS.charAt((int) (Math.random() * ((double) RANDOM_CHARS.length())));
-                    tes.type(screenSide, "t" + rnd, getBlockPos());
+            if(ok) {
+                char rnd = RANDOM_CHARS.charAt((int) (Math.random() * ((double) RANDOM_CHARS.length())));
+                tes.type(screenSide, "t" + rnd, getBlockPos());
 
-                    Player owner = level.getPlayerByUUID(scr.owner.uuid);
-                    if(owner != null && owner instanceof ServerPlayer && ent instanceof Ocelot)
-                        WebDisplays.INSTANCE.criterionKeyboardCat.trigger(((ServerPlayer) owner).getAdvancements());
-                }
+                Player owner = level.getPlayerByUUID(scr.owner.uuid);
+                if(owner != null && owner instanceof ServerPlayer && ent instanceof Ocelot)
+                    WebDisplays.INSTANCE.criterionKeyboardCat.trigger(((ServerPlayer) owner).getAdvancements());
             }
         }
     }
