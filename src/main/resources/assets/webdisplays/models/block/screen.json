@@ -1,6 +1,3 @@
 {
-    "parent": "block/cube_all",
-    "textures": {
-        "all": "webdisplays:blocks/screen15"
-    }
+  "loader": "webdisplays:screen_loader"
 }

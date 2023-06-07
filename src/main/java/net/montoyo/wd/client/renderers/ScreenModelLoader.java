@@ -13,24 +13,30 @@ import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
 import net.minecraftforge.client.model.geometry.IGeometryLoader;
 import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
 public class ScreenModelLoader implements IGeometryLoader<ScreenModelLoader.ScreenModelGeometry> {
-
     public static final ResourceLocation SCREEN_LOADER = new ResourceLocation("webdisplays", "screen_loader");
 
-    public static final ResourceLocation SCREEN_SIDE = new ResourceLocation("webdisplays", "block/screen");
+    public static final ResourceLocation SCREEN_SIDE = new ResourceLocation("webdisplays", "blocks/screen");
 
-    public static final Material MATERIAL_SIDE = ForgeHooksClient.getBlockMaterial(SCREEN_SIDE);
-
+    private static final ResourceLocation[] SIDES = new ResourceLocation[16];
+    public static final Material[] MATERIALS_SIDES = new Material[16];
+    
+    static {
+        for (int i = 0; i < SIDES.length; i++) {
+            SIDES[i] = new ResourceLocation(SCREEN_SIDE.getNamespace(), SCREEN_SIDE.getPath() + i);
+            MATERIALS_SIDES[i] = ForgeHooksClient.getBlockMaterial(SIDES[i]);
+        }
+    }
+    
     @Override
     public ScreenModelGeometry read(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         return new ScreenModelGeometry();
     }
-
 
     public static class ScreenModelGeometry implements IUnbakedGeometry<ScreenModelGeometry> {
 
@@ -41,12 +47,9 @@ public class ScreenModelLoader implements IGeometryLoader<ScreenModelLoader.Scre
 
         @Override
         public Collection<Material> getMaterials(IGeometryBakingContext iGeometryBakingContext, Function<ResourceLocation, UnbakedModel> function, Set<Pair<String, String>> set) {
-            return List.of(MATERIAL_SIDE);
+            return Arrays.asList(MATERIALS_SIDES);
         }
     }
-
-
-
 }
 
 

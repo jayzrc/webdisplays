@@ -230,7 +230,7 @@ public class GuiServer extends WDScreen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE && !uploadWizard) {
             Minecraft.getInstance().setScreen(null);
             return true;
         }
@@ -371,6 +371,10 @@ public class GuiServer extends WDScreen {
         
         if (keyCode == GLFW.GLFW_KEY_SPACE)
             typedChar = ' ';
+        if (
+                (typedChar == 'v' || typedChar == 'V') &&
+                        (modifier & 2) == 2
+        ) return;
         
         if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
             if (prompt.length() > 0)
@@ -384,7 +388,6 @@ public class GuiServer extends WDScreen {
             } else
                 writeLine(userPrompt);
         } else if (prompt.length() + 1 < MAX_LINE_LEN && typedChar >= 32 && typedChar <= 126)
-        
             prompt = prompt + typedChar;
     
         blinkTime = 0;

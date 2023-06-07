@@ -21,6 +21,8 @@ import net.minecraft.client.multiplayer.ClientAdvancements;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -46,10 +48,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
-import net.minecraftforge.client.event.RenderHandEvent;
-import net.minecraftforge.client.event.RenderHighlightEvent;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.level.LevelEvent;
@@ -226,7 +225,6 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
         BlockEntityRenderers.register(TileInit.SCREEN_BLOCK_ENTITY.get(), new ScreenRenderer.ScreenRendererProvider());
-        registerBlockRenderLayers(RenderType.cutout(), BlockInit.blockKeyBoard.get(), BlockInit.blockKbRight.get());
     }
 
     @SubscribeEvent
@@ -579,16 +577,17 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
 
     /**************************************** EVENT METHODS ****************************************/
 
-//    @SubscribeEvent TODO: CHeck if we need this at all
-//    public void onStitchTextures(TextureStitchEvent.Pre ev) {
-//        TextureAtlas texMap = ev.getAtlas();
-//
-//        if(texMap == mc.getTextureManager()..getTextureAtlas()) {
-//            for(ResourceModelPair pair : modelBakers)
-//                pair.getModel().loadTextures(texMap);
-//        }
-//    }
-//
+    @SubscribeEvent
+    public void onStitchTextures(TextureStitchEvent.Pre ev) {
+        TextureAtlas texMap = ev.getAtlas();
+
+        if (texMap.location().equals(TextureAtlas.LOCATION_BLOCKS)) {
+            for (Material materialsSide : ScreenModelLoader.MATERIALS_SIDES) {
+                ev.addSprite(materialsSide.texture());
+            }
+        }
+    }
+
 //    @SubscribeEvent
 //    public void onBakeModel(ModelBakeEvent ev) {
 //        for(ResourceModelPair pair : modelBakers)
