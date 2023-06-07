@@ -230,6 +230,6 @@ public class ScreenBaker implements BakedModel {
 	}
 	
 	//@formatter:off
-    public final class IntegerModelProperty extends ModelProperty<Integer> {}
+    public static final class IntegerModelProperty extends ModelProperty<Integer> {}
     //@formatter:on
 }
