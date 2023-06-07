@@ -80,7 +80,7 @@ public class BlockPeripheral extends WDBlockContainer {
             return ((TileEntityPeripheralBase) te).onRightClick(player, hand);
         else if(te instanceof TileEntityServer) {
             ((TileEntityServer) te).onPlayerRightClick(player);
-            return InteractionResult.PASS;
+            return InteractionResult.SUCCESS;
         } else
             return InteractionResult.FAIL;
     }

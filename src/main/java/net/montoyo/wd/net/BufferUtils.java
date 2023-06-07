@@ -10,12 +10,17 @@ import java.util.function.Supplier;
 
 public class BufferUtils {
 	public static void writeUShort(FriendlyByteBuf buf, int v) {
-		// TODO: write a pair of bytes manually
-		buf.writeInt(v);
+		short s = (short) (v + Short.MIN_VALUE);
+		buf.writeByte((byte) (s & 0xFF));
+		// I have no idea where this 128 came from
+		buf.writeByte((byte) (((s + 128) >> 8) & 0xFF));
 	}
 	
 	public static int readUShort(FriendlyByteBuf buf) {
-		return buf.readInt();
+		int upack = (buf.readByte() + (buf.readByte() << 8)) - Short.MIN_VALUE;
+		// ????
+		if (upack < 0) upack += 65536;
+		return upack;
 	}
 	
 	public static void writeBytes(FriendlyByteBuf buf, byte[] data) {
