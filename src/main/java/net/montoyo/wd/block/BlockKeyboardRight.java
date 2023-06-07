@@ -49,24 +49,21 @@ public class BlockKeyboardRight extends Block implements IPeripheral {
         BlockPos relative = pos.relative(BlockKeyboardLeft.mapDirection(state.getValue(FACING).getOpposite()));
         
         BlockState ns = world.getBlockState(relative);
-        if(ns.getBlock() instanceof BlockKeyboardLeft) {
+        if (ns.getBlock() instanceof BlockKeyboardLeft)
             world.setBlock(relative, Blocks.AIR.defaultBlockState(), 3);
-        }
     }
     
     public static void remove(BlockState state, Level world, BlockPos pos, boolean setState, boolean drop) {
         removeLeftPiece(state, world, pos);
-        if (setState) {
+        if (setState)
             world.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
-        }
         WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(world, pos)), new S2CMessageCloseGui(pos));
     }
     
     @Override
     public void onRemove(BlockState arg, Level arg2, BlockPos arg3, BlockState arg4, boolean bl) {
-        if(!arg2.isClientSide) {
+        if (!arg2.isClientSide)
             remove(arg, arg2, arg3, false, false);
-        }
         super.onRemove(arg, arg2, arg3, arg4, bl);
     }
     
@@ -104,11 +101,11 @@ public class BlockKeyboardRight extends Block implements IPeripheral {
 
     @Override
     public @NotNull InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if(player.getItemInHand(hand).getItem() instanceof ItemLinker)
+        if (player.getItemInHand(hand).getItem() instanceof ItemLinker)
             return InteractionResult.PASS;
 
         TileEntityKeyboard tek = BlockKeyboardLeft.getTileEntity(state, level, pos);
-        if(tek != null)
+        if (tek != null)
             return tek.onRightClick(player, hand);
 
         return InteractionResult.PASS;

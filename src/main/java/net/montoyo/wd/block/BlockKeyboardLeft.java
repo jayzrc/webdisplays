@@ -14,14 +14,12 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -64,7 +62,7 @@ public class BlockKeyboardLeft extends BlockPeripheral {
         BlockPos relative = pos.relative(BlockKeyboardLeft.mapDirection(state.getValue(FACING).getOpposite()));
         BlockState ns = world.getBlockState(relative);
         
-        if(ns.getBlock() instanceof BlockPeripheral) {
+        if (ns.getBlock() instanceof BlockPeripheral) {
             BlockEntity te = world.getBlockEntity(relative); // TODO: check?
             if (te instanceof TileEntityKeyboard)
                 return (TileEntityKeyboard) te;
@@ -89,11 +87,6 @@ public class BlockKeyboardLeft extends BlockPeripheral {
     }
     
     @Override
-    public RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
-    }
-    
-    @Override
     public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
         double rpos = (entity.getY() - ((double) pos.getY())) * 16.0;
         if (!world.isClientSide && rpos >= 1.0 && rpos <= 2.0 && Math.random() < 0.25) {
@@ -106,11 +99,11 @@ public class BlockKeyboardLeft extends BlockPeripheral {
     
     @Override
     public @NotNull InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if(player.getItemInHand(hand).getItem() instanceof ItemLinker)
+        if (player.getItemInHand(hand).getItem() instanceof ItemLinker)
             return InteractionResult.PASS;
         
         TileEntityKeyboard tek = BlockKeyboardLeft.getTileEntity(state, level, pos);
-        if(tek != null)
+        if (tek != null)
             return tek.onRightClick(player, hand);
         
         return InteractionResult.PASS;
@@ -122,37 +115,29 @@ public class BlockKeyboardLeft extends BlockPeripheral {
     }
     
     @Override
-    public PushReaction getPistonPushReaction(BlockState state) {
-        return PushReaction.IGNORE;
+    public VoxelShape getOcclusionShape(BlockState arg, BlockGetter arg2, BlockPos arg3) {
+        return Shapes.empty();
     }
     
     private static void removeRightPiece(BlockState state, Level world, BlockPos pos) {
         BlockPos relative = pos.relative(BlockKeyboardLeft.mapDirection(state.getValue(FACING)));
-        
+    
         BlockState ns = world.getBlockState(relative);
-        if(ns.getBlock() instanceof BlockKeyboardRight) {
+        if (ns.getBlock() instanceof BlockKeyboardRight)
             world.setBlock(relative, Blocks.AIR.defaultBlockState(), 3);
-        }
     }
     
     public static void remove(BlockState state, Level world, BlockPos pos, boolean setState, boolean drop) {
         removeRightPiece(state, world, pos);
-        if (setState) {
+        if (setState)
             world.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
-        }
         WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(world, pos)), new S2CMessageCloseGui(pos));
     }
     
     @Override
     public void onRemove(BlockState arg, Level arg2, BlockPos arg3, BlockState arg4, boolean bl) {
-        if(!arg2.isClientSide) {
+        if (!arg2.isClientSide)
             remove(arg, arg2, arg3, false, false);
-        }
         super.onRemove(arg, arg2, arg3, arg4, bl);
-    }
-    
-    @Override
-    public VoxelShape getOcclusionShape(BlockState arg, BlockGetter arg2, BlockPos arg3) {
-        return Shapes.empty();
     }
 }
