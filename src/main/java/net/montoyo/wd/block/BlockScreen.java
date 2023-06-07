@@ -24,9 +24,7 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.PushReaction;
@@ -52,12 +50,6 @@ public class BlockScreen extends BaseEntityBlock {
     public static final BooleanProperty hasTE = BooleanProperty.create("haste");
     public static final BooleanProperty emitting = BooleanProperty.create("emitting");
     private static final Property<?>[] properties = new Property<?>[]{hasTE, emitting};
-    public static final DirectionProperty FACING = BlockStateProperties.FACING;
-
-    private static final int BAR_BOT = 1;
-    private static final int BAR_RIGHT = 2;
-    private static final int BAR_TOP = 4;
-    private static final int BAR_LEFT = 8;
 
     public BlockScreen(Properties properties) {
         super(properties.strength(1.5f, 10.f));
@@ -66,7 +58,7 @@ public class BlockScreen extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(properties).add(FACING);
+        builder.add(properties);
     }
 
     @Override

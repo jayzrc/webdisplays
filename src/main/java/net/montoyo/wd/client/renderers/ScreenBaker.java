@@ -188,6 +188,7 @@ public class ScreenBaker implements BakedModel {
 			
 			builder.with(TEXTURES[i], res);
 		}
+		
 		return builder.build();
 	}
 	

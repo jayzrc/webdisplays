@@ -5,7 +5,6 @@
 package net.montoyo.wd.block;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -21,7 +20,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.Material;
@@ -41,8 +39,7 @@ import org.jetbrains.annotations.Nullable;
 public class BlockServer extends WDBlockContainer{
 
     public static final EnumProperty<DefaultPeripheral> type = BlockPeripheral.type;
-    public static final DirectionProperty facing = DirectionProperty.create("facing", Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
-    private static final Property<?>[] properties = new Property<?>[] {type, facing};
+    private static final Property<?>[] properties = new Property<?>[] {type};
 
     public BlockServer() {
         super(BlockBehaviour.Properties.of(Material.STONE).strength(1.5f, 10.f));
