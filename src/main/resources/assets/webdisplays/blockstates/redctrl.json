@@ -1,10 +1,7 @@
 {
-  "forge_marker": 1,
-  "uvlock": false,
   "variants": {
-    "facing=north": { "model": "webdisplays:block/redctrl" },
-    "facing=east": { "model": "webdisplays:block/redctrl" },
-    "facing=south": { "model": "webdisplays:block/redctrl" },
-    "facing=west": { "model": "webdisplays:block/redctrl" }
+    "": {
+      "model": "webdisplays:block/redctrl"
+    }
   }
 }

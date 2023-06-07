@@ -12,7 +12,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -38,12 +37,8 @@ import net.montoyo.wd.data.SetURLData;
 import net.montoyo.wd.entity.TileEntityScreen;
 import net.montoyo.wd.init.BlockInit;
 import net.montoyo.wd.item.ItemLaserPointer;
-import net.montoyo.wd.item.WDItem;
 import net.montoyo.wd.utilities.*;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class BlockScreen extends BaseEntityBlock {
 
@@ -326,7 +321,7 @@ public class BlockScreen extends BaseEntityBlock {
         BlockPos bp = pos.toBlock();
         BlockEntity te = world.getBlockEntity(bp);
 
-        if (te != null && te instanceof TileEntityScreen) {
+        if (te instanceof TileEntityScreen) {
             ((TileEntityScreen) te).onDestroy(source);
             world.setBlock(bp, world.getBlockState(bp).setValue(hasTE, false), Block.UPDATE_ALL_IMMEDIATE); //Destroy tile entity.
         }
@@ -376,19 +371,5 @@ public class BlockScreen extends BaseEntityBlock {
     @Override
     public boolean isSignalSource (BlockState state){
         return state.getValue(emitting);
-    }
-
-    private static class ItemBlockScreen extends BlockItem implements WDItem {
-
-        public ItemBlockScreen(BlockScreen screen) {
-            super(screen, new Properties());
-        }
-
-        @Nullable
-        @Override
-        public String getWikiName(@Nonnull ItemStack is) {
-            return is.getItem().getName(is).getString();
-        }
-
     }
 }

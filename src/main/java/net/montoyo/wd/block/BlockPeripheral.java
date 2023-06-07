@@ -5,11 +5,9 @@
 package net.montoyo.wd.block;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -17,15 +15,11 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
@@ -36,7 +30,6 @@ import net.minecraftforge.network.PacketDistributor;
 import net.montoyo.mcef.utilities.Log;
 import net.montoyo.wd.core.DefaultPeripheral;
 import net.montoyo.wd.entity.TileEntityInterfaceBase;
-import net.montoyo.wd.entity.TileEntityKeyboard;
 import net.montoyo.wd.entity.TileEntityPeripheralBase;
 import net.montoyo.wd.entity.TileEntityServer;
 import net.montoyo.wd.item.ItemLinker;
@@ -45,23 +38,17 @@ import net.montoyo.wd.net.client_bound.S2CMessageCloseGui;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockPeripheral extends WDBlockContainer {
+    DefaultPeripheral type;
 
-    public static final EnumProperty<DefaultPeripheral> type = EnumProperty.create("type", DefaultPeripheral.class);
-    private static final Property<?>[] properties = new Property<?>[] { type };
-
-    public BlockPeripheral() {
+    public BlockPeripheral(DefaultPeripheral type) {
         super(BlockBehaviour.Properties.of(Material.STONE).strength(1.5f, 10.f));
-    }
-
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(properties);
+        this.type = type;
     }
 
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        BlockEntityType.BlockEntitySupplier<? extends BlockEntity> cls = state.getValue(type).getTEClass();
+        BlockEntityType.BlockEntitySupplier<? extends BlockEntity> cls = type.getTEClass();
         if(cls == null)
             return null;
 
@@ -123,39 +110,16 @@ public class BlockPeripheral extends WDBlockContainer {
         return PushReaction.IGNORE;
     }
 
-    private void removeRightPiece(Level world, BlockPos pos) {
-        for(Direction nf: Direction.Plane.HORIZONTAL) {
-            BlockPos np = pos.offset(nf.getNormal());
-
-            if(world.getBlockState(np).getBlock() instanceof BlockKeyboardRight) {
-                world.setBlock(np, Blocks.AIR.defaultBlockState(), 3);
-                break;
-            }
-        }
-    }
-
     @Override
     public void neighborChanged(BlockState state, Level world, BlockPos pos, Block neighborType, BlockPos neighbor, boolean isMoving) {
         BlockEntity te = world.getBlockEntity(pos);
-        if(te != null && te instanceof TileEntityPeripheralBase)
+        if(te instanceof TileEntityPeripheralBase)
             ((TileEntityPeripheralBase) te).onNeighborChange(neighborType, neighbor);
-
-        if(world.isClientSide || state.getValue(type) != DefaultPeripheral.KEYBOARD)
-            return;
-
-        if(neighbor.getX() == pos.getX() && neighbor.getY() == pos.getY() - 1 && neighbor.getZ() == pos.getZ() && world.isEmptyBlock(neighbor)) {
-            removeRightPiece(world, pos);
-            world.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
-            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(world, pos)), new S2CMessageCloseGui(pos));
-        }
     }
 
     @Override
     public void playerDestroy(Level world, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
         if(!world.isClientSide) {
-            if(state.getBlock() == this && state.getValue(type) == DefaultPeripheral.KEYBOARD)
-                removeRightPiece(world, pos);
-
             WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(world, pos)), new S2CMessageCloseGui(pos));
         }
         super.playerDestroy(world, player, pos, state, blockEntity, tool);
@@ -164,20 +128,6 @@ public class BlockPeripheral extends WDBlockContainer {
     @Override
     public void onBlockExploded(BlockState state, Level level, BlockPos pos, Explosion explosion) {
         playerDestroy(level, null, pos, level.getBlockState(pos), null, null);
-    }
-
-    @Override
-    public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
-        if(!world.isClientSide && world.getBlockState(pos).getValue(type) == DefaultPeripheral.KEYBOARD) {
-            double rpos = (entity.getY() - ((double) pos.getY())) * 16.0;
-
-            if(rpos >= 1.0 && rpos <= 2.0 && Math.random() < 0.25) {
-                BlockEntity te = world.getBlockEntity(pos);
-
-                if(te != null && te instanceof TileEntityKeyboard)
-                    ((TileEntityKeyboard) te).simulateCat(entity);
-            }
-        }
     }
 
     public static PacketDistributor.TargetPoint point(Player exclude, Level world, BlockPos bp) {

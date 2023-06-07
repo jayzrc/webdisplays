@@ -50,6 +50,7 @@ public class BlockKeyboardLeft extends BlockPeripheral {
     private static final Property<?>[] properties = new Property<?>[] {TYPE, FACING};
 
     public BlockKeyboardLeft() {
+        super(DefaultPeripheral.KEYBOARD);
     }
     
     // TODO: make non static (for extensibility purposes)
@@ -63,7 +64,7 @@ public class BlockKeyboardLeft extends BlockPeripheral {
         BlockPos relative = pos.relative(BlockKeyboardLeft.mapDirection(state.getValue(FACING).getOpposite()));
         BlockState ns = world.getBlockState(relative);
         
-        if(ns.getBlock() instanceof BlockPeripheral && ns.getValue(BlockPeripheral.type) == DefaultPeripheral.KEYBOARD) {
+        if(ns.getBlock() instanceof BlockPeripheral) {
             BlockEntity te = world.getBlockEntity(relative); // TODO: check?
             if (te instanceof TileEntityKeyboard)
                 return (TileEntityKeyboard) te;
@@ -148,10 +149,6 @@ public class BlockKeyboardLeft extends BlockPeripheral {
             remove(arg, arg2, arg3, false, false);
         }
         super.onRemove(arg, arg2, arg3, arg4, bl);
-    }
-    
-    public static PacketDistributor.TargetPoint point(Level world, BlockPos bp) {
-        return new PacketDistributor.TargetPoint(bp.getX(), bp.getY(), bp.getZ(), 64.0, world.dimension());
     }
     
     @Override

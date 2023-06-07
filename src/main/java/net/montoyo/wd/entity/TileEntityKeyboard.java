@@ -11,10 +11,8 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.Ocelot;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.montoyo.wd.WebDisplays;
-import net.montoyo.wd.block.BlockPeripheral;
 import net.montoyo.wd.core.ScreenRights;
 import net.montoyo.wd.data.KeyboardData;
 import net.montoyo.wd.init.TileInit;
@@ -30,10 +28,6 @@ public class TileEntityKeyboard extends TileEntityPeripheralBase {
         super(TileInit.KEYBOARD.get(), arg2, arg3);
         blockPos = arg2;
         blockState = arg3;
-    }
-
-    public static Block getBlockFromTE() {
-       return new BlockPeripheral().defaultBlockState().getBlock();
     }
 
     @Override

@@ -33,6 +33,7 @@ import net.montoyo.wd.utilities.Vector3i;
 import org.jetbrains.annotations.NotNull;
 
 import static net.montoyo.wd.block.BlockKeyboardLeft.KEYBOARD_AABBS;
+import static net.montoyo.wd.block.BlockPeripheral.point;
 
 // TODO: merge into KeyboardLeft
 public class BlockKeyboardRight extends Block implements IPeripheral {
@@ -58,7 +59,7 @@ public class BlockKeyboardRight extends Block implements IPeripheral {
         if (setState) {
             world.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
         }
-        WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> BlockKeyboardLeft.point(world, pos)), new S2CMessageCloseGui(pos));
+        WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(world, pos)), new S2CMessageCloseGui(pos));
     }
     
     @Override
