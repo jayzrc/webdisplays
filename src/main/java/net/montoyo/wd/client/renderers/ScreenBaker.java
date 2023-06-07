@@ -59,17 +59,19 @@ public class ScreenBaker implements BakedModel {
 	}
 	
 	private void putVertex(int[] buf, int pos, Vector3f vpos, TextureAtlasSprite tex, Vector3f uv, Vector3i normal) {
-		buf[pos * 8 + 0] = Float.floatToRawIntBits(vpos.x);
-		buf[pos * 8 + 1] = Float.floatToRawIntBits(vpos.y);
-		buf[pos * 8 + 2] = Float.floatToRawIntBits(vpos.z);
-		buf[pos * 8 + 3] = 0xFFFFFFFF; //Color, let this white...
-		buf[pos * 8 + 4] = Float.floatToRawIntBits(tex.getU(uv.x));
-		buf[pos * 8 + 5] = Float.floatToRawIntBits(tex.getV(uv.y));
+		pos *= 8;
+		
+		buf[pos] = Float.floatToRawIntBits(vpos.x);
+		buf[pos + 1] = Float.floatToRawIntBits(vpos.y);
+		buf[pos + 2] = Float.floatToRawIntBits(vpos.z);
+		buf[pos + 3] = 0xFFFFFFFF; //Color, let this white...
+		buf[pos + 4] = Float.floatToRawIntBits(tex.getU(uv.x));
+		buf[pos + 5] = Float.floatToRawIntBits(tex.getV(uv.y));
 		
 		int nx = (normal.x * 127) & 0xFF;
 		int ny = (normal.y * 127) & 0xFF;
 		int nz = (normal.z * 127) & 0xFF;
-		buf[pos * 8 + 7] = nx | (ny << 8) | (nz << 16);
+		buf[pos + 7] = nx | (ny << 8) | (nz << 16);
 	}
 	
 	private Vector3f rotateVec(Vector3f vec, BlockSide side) {
@@ -87,9 +89,8 @@ public class ScreenBaker implements BakedModel {
 	
 	private Vector3f rotateTex(BlockSide side, float u, float v) {
 		return switch (side) {
-			case BOTTOM -> new Vector3f(16.f - u, 16.f - v, 0.0f);
+			case BOTTOM, NORTH -> new Vector3f(16.f - u, 16.f - v, 0.0f);
 			case TOP -> new Vector3f(16.f - u, v, 0.0f);
-			case NORTH -> new Vector3f(16.f - u, 16.f - v, 0.0f);
 			case SOUTH -> new Vector3f(u, v, 0.0f);
 			case WEST -> new Vector3f(16.f - v, u, 0.0f);
 			case EAST -> new Vector3f(v, 16.f - u, 0.0f);
@@ -101,13 +102,12 @@ public class ScreenBaker implements BakedModel {
 	private BakedQuad bakeSide(BlockSide side, TextureAtlasSprite tex) {
 		int[] data = new int[8 * 4];
 		
+		// I have no idea
 		int rotation = switch (side) {
-			case NORTH -> 0;
+			case NORTH, TOP, BOTTOM -> 2;
 			case SOUTH -> 0;
-			case EAST -> 0;
-			case WEST -> 0;
-			case TOP -> 0;
-			case BOTTOM -> 0;
+			case EAST -> 1;
+			case WEST -> 3;
 			//noinspection UnnecessaryDefault
 			default -> throw new RuntimeException("Unknown block side " + side);
 		};
@@ -115,7 +115,7 @@ public class ScreenBaker implements BakedModel {
 		putVertex(data, (rotation + 3) % 4, rotateVec(new Vector3f(0.0f, 0.0f, 0.0f), side), tex, rotateTex(side, 16.0f, 0.0f), side.backward);
 		putVertex(data, (rotation + 2) % 4, rotateVec(new Vector3f(0.0f, 0.0f, 1.0f), side), tex, rotateTex(side, 16.0f, 16.0f), side.backward);
 		putVertex(data, (rotation + 1) % 4, rotateVec(new Vector3f(1.0f, 0.0f, 1.0f), side), tex, rotateTex(side, 0.0f, 16.0f), side.backward);
-		putVertex(data, (rotation + 0) % 4, rotateVec(new Vector3f(1.0f, 0.0f, 0.0f), side), tex, rotateTex(side, 0.0f, 0.0f), side.backward);
+		putVertex(data, (rotation) % 4, rotateVec(new Vector3f(1.0f, 0.0f, 0.0f), side), tex, rotateTex(side, 0.0f, 0.0f), side.backward);
 		
 		return new BakedQuad(data, 0xFFFFFFFF, blockFacings[side.ordinal()].getOpposite(), tex, true);
 	}
@@ -136,35 +136,55 @@ public class ScreenBaker implements BakedModel {
 		BlockSide s = blockSides[sid];
 		TextureAtlasSprite tex = texs[15];
 		if (data.has(TEXTURES[side.ordinal()]))
-				tex = texs[data.get(TEXTURES[side.ordinal()])];
+			tex = texs[data.get(TEXTURES[side.ordinal()])];
 		ret.add(bakeSide(s, tex));
 		return ret;
+	}
+	
+	protected byte check(BlockState state, BlockAndTintGetter level, BlockPos pos, Vector3i dir) {
+		BlockState u = level.getBlockState(pos.offset(dir.x, dir.y, dir.z));
+		BlockState d = level.getBlockState(pos.offset(-dir.x, -dir.y, -dir.z));
+		if (
+				u.getBlock() == state.getBlock() &&
+						d.getBlock() != state.getBlock()
+		) return (byte) 1; // away
+		else if (
+				d.getBlock() == state.getBlock() &&
+						u.getBlock() != state.getBlock()
+		) return (byte) 2; // to
+		else if (
+				d.getBlock() != state.getBlock() &&
+						u.getBlock() != state.getBlock()
+		) return (byte) 3; // both
+		return (byte) 0; // none
 	}
 	
 	@Override
 	public @NotNull ModelData getModelData(@NotNull BlockAndTintGetter level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull ModelData modelData) {
 		ModelData.Builder builder = ModelData.builder();
+		
+		final int BAR_BOTTOM = 1;
+		final int BAR_RIGHT = 2;
+		final int BAR_TOP = 4;
+		final int BAR_LEFT = 8;
+		
 		for (int i = 0; i < TEXTURES.length; i++) {
-			int res = 0;
 			BlockSide side = blockSides[i];
-			BlockState u = level.getBlockState(pos.offset(side.up.x, side.up.y, side.up.z));
-			BlockState d = level.getBlockState(pos.offset(-side.up.x, -side.up.y, -side.up.z));
-			if (
-					u.getBlock() == state.getBlock() &&
-							d.getBlock() != state.getBlock()
-			) res = 1;
-			else res = 4;
 			
-			BlockState r = level.getBlockState(pos.offset(side.right.x, side.right.y, side.right.z));
-			BlockState l = level.getBlockState(pos.offset(-side.right.x, -side.right.y, -side.right.z));
-			if (
-					r.getBlock() == state.getBlock() &&
-							l.getBlock() != state.getBlock()
-			) {
-				if (res == 1) res = 9;
-				else if (res == 4) res = 12;
-				else res = 8;
-			}
+			// check up and down
+			int res = switch (check(state, level, pos, side.up)) {
+				case 1 -> BAR_BOTTOM;
+				case 2 -> BAR_TOP;
+				case 3 -> BAR_TOP | BAR_BOTTOM;
+				default -> 0;
+			};
+			// check left and right
+			res |= switch (check(state, level, pos, side.right)) {
+				case 1 -> BAR_LEFT;
+				case 2 -> BAR_RIGHT;
+				case 3 -> BAR_LEFT | BAR_RIGHT;
+				default -> 0;
+			};
 			
 			builder.with(TEXTURES[i], res);
 		}
