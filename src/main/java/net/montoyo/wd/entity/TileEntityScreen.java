@@ -876,11 +876,21 @@ public class TileEntityScreen extends BlockEntity {
                         }
                     } else {
                         TypeData[] data = WebDisplays.GSON.fromJson(text, TypeData[].class);
-
+                        
                         for (TypeData ev : data) {
+                            if (ev.getKeyCode() == 257) {
+                                ev = new TypeData(
+                                        ev.getAction(),
+                                        10, ev.getModifier()
+                                );
+                            }
+                            
                             switch (ev.getAction()) {
-                                case PRESS ->
-                                        scr.browser.injectKeyPressedByKeyCode(ev.getKeyCode(), (char) ev.getKeyCode(), ev.getModifier());
+                                case PRESS -> {
+                                    scr.browser.injectKeyPressedByKeyCode(ev.getKeyCode(), (char) ev.getKeyCode(), ev.getModifier());
+                                    if (ev.getKeyCode() == 10)
+                                        scr.browser.injectKeyTyped('\r', ev.getModifier());
+                                }
                                 case RELEASE ->
                                         scr.browser.injectKeyReleasedByKeyCode(ev.getKeyCode(), (char) ev.getKeyCode(), ev.getModifier());
                                 case TYPE ->

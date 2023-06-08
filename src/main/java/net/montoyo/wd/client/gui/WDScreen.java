@@ -211,7 +211,7 @@ public abstract class WDScreen extends Screen {
         for (Control ctrl : controls)
             down = down || ctrl.keyDown(keyCode, scanCode, modifiers);
 
-        if (Minecraft.getInstance().screen instanceof GuiKeyboard) {
+        if (this instanceof GuiKeyboard) {
             return down;
         } else {
             return new GuiServer(new Vector3i(), new NameUUIDPair()).keyPressed(keyCode, scanCode, modifiers);

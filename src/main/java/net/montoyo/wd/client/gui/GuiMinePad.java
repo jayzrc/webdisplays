@@ -122,20 +122,21 @@ public class GuiMinePad extends WDScreen {
             return false;
         
         char key = keystr.charAt(keystr.length() - 1);
-        
-        if(keystr.equals("Enter"))
-            key = '\r';
-        
-        if (pad.view != null) { //Inject events into browser
-//            System.out.println("Sent keystroke " + keystr);
+    
+        if(keystr.equals("Enter")) {
+            keyCode = 10;
+            key = '\n';
+        }
+    
+        if (pad.view != null) {
             if (pressed)
                 pad.view.injectKeyPressedByKeyCode(keyCode, key, modifiers);
             else
                 pad.view.injectKeyReleasedByKeyCode(keyCode, key, modifiers);
-            
-            if(key == '\r')
-                pad.view.injectKeyTyped(key, 0);
-            return true; // Something did happen
+        
+            if (pressed && key == '\n')
+                if (modifiers != 0) pad.view.injectKeyTyped('\r', modifiers);
+            return true;
         }
         
         return false;

@@ -9,6 +9,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3d;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.KeyMapping;
@@ -640,14 +641,26 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
 			if (!tes.isLoaded())
 				tes.load();
 		} else {
-			double dist2 = mc.player.distanceToSqr(tes.getBlockPos().getX(), tes.getBlockPos().getY(), tes.getBlockPos().getZ());
+		    double dist = Double.POSITIVE_INFINITY;
+            for (int i = 0; i < tes.screenCount(); i++) {
+                TileEntityScreen.Screen scrn = tes.getScreen(i);
+                
+                Vector3d pos = new Vector3d(
+                        scrn.side.right.x * scrn.size.x + scrn.size.y * scrn.side.up.x,
+                        scrn.side.right.y * scrn.size.x + scrn.size.y * scrn.side.up.y,
+                        scrn.side.right.z * scrn.size.x + scrn.size.y * scrn.side.up.z
+                );
+                
+                double dist2 = mc.player.distanceToSqr(pos.x, pos.y, pos.z);
+                dist = Math.min(dist, dist2);
+            }
 		
 			if (tes.isLoaded()) {
-				if (dist2 > WebDisplays.INSTANCE.unloadDistance2)
+				if (dist > WebDisplays.INSTANCE.unloadDistance2)
 					tes.unload();
 				else if (ClientConfig.AutoVolumeControl.enableAutoVolume)
-					tes.updateTrackDistance(dist2, 80); //ToDo find master volume
-			} else if (dist2 <= WebDisplays.INSTANCE.loadDistance2)
+					tes.updateTrackDistance(dist, 80); //ToDo find master volume
+			} else if (dist <= WebDisplays.INSTANCE.loadDistance2)
 				tes.load();
 		}
 	}
