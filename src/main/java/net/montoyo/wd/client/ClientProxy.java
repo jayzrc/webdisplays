@@ -758,10 +758,10 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
         Item item = ev.getItemStack().getItem();
         IItemRenderer renderer;
 
-        if(ItemInit.itemMinePad.isPresent() && ItemInit.itemLaserPointer.isPresent()) {
-            if (item == ItemInit.itemMinePad.get())
+        if(ItemInit.MINEPAD.isPresent() && ItemInit.LASER_POINTER.isPresent()) {
+            if (item == ItemInit.MINEPAD.get())
                 renderer = minePadRenderer;
-            else if (item == ItemInit.itemLaserPointer.get())
+            else if (item == ItemInit.LASER_POINTER.get())
                 renderer = laserPointerRenderer;
             else
                 return;
@@ -801,8 +801,8 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
         for (int i = 0; i < cnt; i++) {
             ItemStack item = inv.get(i);
 
-            if (ItemInit.itemMinePad.isPresent()) {
-                if (item.getItem() == ItemInit.itemMinePad.get()) {
+            if (ItemInit.MINEPAD.isPresent()) {
+                if (item.getItem() == ItemInit.MINEPAD.get()) {
                     CompoundTag tag = item.getTag();
 
                     if (tag != null && tag.contains("PadID"))

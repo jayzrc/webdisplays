@@ -5,11 +5,9 @@
 package net.montoyo.wd.core;
 
 import net.minecraft.world.item.ItemStack;
-import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.init.ItemInit;
 
 public enum CraftComponent {
-
     STONEKEY("stonekey", "StoneKey"),
     UPGRADE("upgrade", "Upgrade"),
     PERIPHERAL("peripheral", "Peripheral"),
@@ -34,7 +32,6 @@ public enum CraftComponent {
     }
 
     public ItemStack makeItemStack() {
-        return new ItemStack(ItemInit.itemCraftComp.get(), 1);
+        return new ItemStack(ItemInit.getComputerCraftItem(ordinal()).get(), 1);
     }
-
 }

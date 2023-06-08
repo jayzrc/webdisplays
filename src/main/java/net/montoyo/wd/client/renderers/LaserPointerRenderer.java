@@ -38,7 +38,7 @@ public final class LaserPointerRenderer implements IItemRenderer {
 						ClientProxy.mouseOn ||
 								ItemLaserPointer.isOn()
 				) &&
-				mc.player.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(ItemInit.itemLaserPointer.get()) &&
+				mc.player.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(ItemInit.LASER_POINTER.get()) &&
 				(mc.hitResult == null || mc.hitResult.getType() == HitResult.Type.BLOCK || mc.hitResult.getType() == HitResult.Type.MISS);
 	}
 	

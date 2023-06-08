@@ -503,7 +503,7 @@ public class TileEntityScreen extends BlockEntity {
 
     private static Player getLaserUser(Screen scr) {
         if (scr.laserUser != null) {
-            if (scr.laserUser.isRemoved() || !scr.laserUser.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(ItemInit.itemLaserPointer.get()))
+            if (scr.laserUser.isRemoved() || !scr.laserUser.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(ItemInit.LASER_POINTER.get()))
                 scr.laserUser = null;
         }
 

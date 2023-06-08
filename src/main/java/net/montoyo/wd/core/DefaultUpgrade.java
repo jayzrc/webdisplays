@@ -5,17 +5,16 @@
 package net.montoyo.wd.core;
 
 import net.minecraft.world.item.ItemStack;
-import net.montoyo.wd.init.ItemInit;
+import net.montoyo.wd.item.ItemUpgrade;
 
 public enum DefaultUpgrade {
-
     LASERMOUSE("lasermouse", "LaserMouse"),
     REDINPUT("redinput", "RedInput"),
     REDOUTPUT("redoutput", "RedOutput"),
     GPS("gps", "GPS");
-
-    private final String name;
-    private final String wikiName;
+    
+    public final String name;
+    public final String wikiName;
 
     DefaultUpgrade(String n, String wn) {
         name = n;
@@ -27,19 +26,25 @@ public enum DefaultUpgrade {
         return name;
     }
 
+    protected static boolean matches(ItemStack stack, DefaultUpgrade upgrade) {
+        if (stack.getItem() instanceof ItemUpgrade upgrade1)
+            return upgrade1.type == upgrade;
+        return false;
+    }
+    
     public boolean matchesLaserMouse(ItemStack is) {
-        return is.getItem() == ItemInit.laserMouse.get();
+        return matches(is, LASERMOUSE);
     }
 
     public boolean matchesRedInput(ItemStack is) {
-        return is.getItem() == ItemInit.redInput.get();
+        return matches(is, REDINPUT);
     }
 
     public boolean matchesRedOutput(ItemStack is) {
-        return is.getItem() == ItemInit.redOutput.get();
+        return matches(is, REDOUTPUT);
     }
 
     public boolean matchesGps(ItemStack is) {
-        return is.getItem() == ItemInit.gps.get();
+        return matches(is, GPS);
     }
 }

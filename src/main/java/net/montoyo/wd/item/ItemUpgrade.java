@@ -5,6 +5,7 @@
 package net.montoyo.wd.item;
 
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.core.DefaultUpgrade;
@@ -17,9 +18,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ItemUpgrade extends ItemMulti implements IUpgrade, WDItem {
-
-    public ItemUpgrade() {
+    public final DefaultUpgrade type;
+    
+    public ItemUpgrade(DefaultUpgrade type) {
         super(DefaultUpgrade.class, new Properties().tab(WebDisplays.CREATIVE_TAB));
+        this.type = type;
     }
 
     @Override
@@ -36,18 +39,20 @@ public class ItemUpgrade extends ItemMulti implements IUpgrade, WDItem {
 
     @Override
     public boolean isSameUpgrade(@Nonnull ItemStack myStack, @Nonnull ItemStack otherStack) {
-        return otherStack.getItem() == this;
+        if (myStack.getItem() instanceof ItemUpgrade upgrade0) {
+            if (otherStack.getItem() instanceof ItemUpgrade upgrade1) {
+                return upgrade0.type == upgrade1.type;
+            }
+        }
+        return false;
     }
 
     @Override
     public String getJSName(@Nonnull ItemStack is) {
-        ItemStack meta = is;
-        DefaultUpgrade[] upgrades = DefaultUpgrade.values();
-
-        if(meta.isEmpty())
-            return "webdisplays:wtf";
-        else
-            return "webdisplays:" + is;
+        Item item = is.getItem();
+        if (item instanceof ItemUpgrade upgrade)
+            return "webdisplays:" + upgrade.type.toString();
+        return "webdisplays:null";
     }
 
     @Override

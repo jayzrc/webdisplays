@@ -24,7 +24,7 @@ public class MouseHandlerMixin {
 		if (Minecraft.getInstance().screen == null) {
 			if (
 					minecraft.player != null && minecraft.level != null &&
-							minecraft.player.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(ItemInit.itemLaserPointer.get()) &&
+							minecraft.player.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(ItemInit.LASER_POINTER.get()) &&
 							(minecraft.hitResult == null || minecraft.hitResult.getType() == HitResult.Type.BLOCK || minecraft.hitResult.getType() == HitResult.Type.MISS)
 			) {
 				ItemLaserPointer.press(flag, p_91532_);

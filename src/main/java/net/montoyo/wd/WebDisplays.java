@@ -142,8 +142,6 @@ public class WebDisplays {
         onRegisterSounds();
         BlockInit.init(bus);
         ItemInit.init(bus);
-        ItemInit.registerUpgrade();
-        ItemInit.registerComponents();
         TileInit.init(bus);
         
         PROXY.preInit();
@@ -264,7 +262,7 @@ public class WebDisplays {
         if(!ev.getEntity().getLevel().isClientSide) {
             ItemStack is = ev.getEntity().getItem();
 
-            if(is.getItem() == ItemInit.itemMinePad.get()) {
+            if(is.getItem() == ItemInit.MINEPAD.get()) {
                 CompoundTag tag = is.getTag();
 
                 if(tag == null) {
@@ -282,7 +280,7 @@ public class WebDisplays {
 
     @SubscribeEvent
     public void onPlayerCraft(PlayerEvent.ItemCraftedEvent ev) {
-        if(CommonConfig.hardRecipes && ev.getCrafting().getItem() == ItemInit.itemCraftComp.get() && (CraftComponent.EXTCARD.makeItemStack().is(ev.getCrafting().getItem()))) {
+        if(CommonConfig.hardRecipes && ItemInit.isCompCraftItem(ev.getCrafting().getItem()) && (CraftComponent.EXTCARD.makeItemStack().is(ev.getCrafting().getItem()))) {
             if((ev.getEntity() instanceof ServerPlayer && !hasPlayerAdvancement((ServerPlayer) ev.getEntity(), ADV_PAD_BREAK)) || PROXY.hasClientPlayerAdvancement(ADV_PAD_BREAK) != HasAdvancement.YES) {
                 ev.getCrafting().setDamageValue(CraftComponent.BADEXTCARD.ordinal());
 
