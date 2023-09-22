@@ -45,6 +45,7 @@ import net.montoyo.wd.net.client_bound.S2CMessageJSResponse;
 import net.montoyo.wd.net.client_bound.S2CMessageScreenUpdate;
 import net.montoyo.wd.utilities.*;
 import org.cef.browser.CefBrowser;
+import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -232,8 +233,7 @@ public class TileEntityScreen extends BlockEntity {
 					else
 						mcefBrowser.resize(resolution.x, resolution.y);
 					
-					if (WebDisplays.cursorSupport)
-						mcefBrowser.setCursorChangeListener((type) -> mouseType = type);
+					mcefBrowser.setCursorChangeListener((type) -> mouseType = type);
 				}
 				
 				doTurnOnAnim = doAnim;

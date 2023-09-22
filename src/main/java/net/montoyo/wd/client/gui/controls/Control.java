@@ -121,7 +121,6 @@ public abstract class Control {
 
         RenderSystem.setShaderColor(((float) r) / 255.f, ((float) g) / 255.f, ((float) b) / 255.f, ((float) a) / 255.f);
 //        RenderSystem.disableTexture();
-        glDisable(GL_TEXTURE_2D);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
@@ -134,7 +133,6 @@ public abstract class Control {
 
         RenderSystem.disableBlend();
 //        RenderSystem.enableTexture();
-        glEnable(GL_TEXTURE_2D);
     }
 
     public void fillTexturedRect(PoseStack poseStack, int x, int y, int w, int h, double u1, double v1, double u2, double v2) {
@@ -182,7 +180,6 @@ public abstract class Control {
 
         RenderSystem.setShaderColor(((float) r) / 255.f, ((float) g) / 255.f, ((float) b) / 255.f, ((float) a) / 255.f);
 //        RenderSystem.enableTexture();
-        glEnable(GL_TEXTURE_2D);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
@@ -214,7 +211,6 @@ public abstract class Control {
 
         RenderSystem.disableBlend();
 //        RenderSystem.enableTexture();
-        glEnable(GL_TEXTURE_2D);
     }
 
     public PoseStack beginFramebuffer(RenderTarget fbo, float vpW, float vpH) {

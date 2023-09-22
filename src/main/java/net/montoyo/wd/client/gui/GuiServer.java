@@ -103,7 +103,6 @@ public class GuiServer extends WDScreen {
         int y = (height - 176) / 2;
 
 //        RenderSystem.enableTexture();
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
         RenderSystem.setShaderTexture(0, BG_IMAGE);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 //        blit(poseStack, x, y, 0, 0, 256, 176);
@@ -134,7 +133,6 @@ public class GuiServer extends WDScreen {
             drawWhiteQuad(x + 1, y, 6, 8);
 
 //        RenderSystem.enableTexture();
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.setShaderTexture(0, FG_IMAGE);
@@ -150,7 +148,6 @@ public class GuiServer extends WDScreen {
         float zd = (float) getBlitOffset();
 
 //        RenderSystem.disableTexture();
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         Tesselator t = Tesselator.getInstance();
         BufferBuilder bb = t.getBuilder();
@@ -160,7 +157,6 @@ public class GuiServer extends WDScreen {
         bb.vertex(xd2, yd, zd).endVertex();
         bb.vertex(xd, yd, zd).endVertex();
         t.end();
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
 //        RenderSystem.enableTexture();
     }
     

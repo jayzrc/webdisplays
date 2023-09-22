@@ -41,7 +41,6 @@ public class ScreenRenderer implements BlockEntityRenderer<TileEntityScreen> {
 		
 		//Disable lighting
 //		RenderSystem.enableTexture();
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
 //        RenderSystem.disableCull();
 		RenderSystem.disableBlend();
 		

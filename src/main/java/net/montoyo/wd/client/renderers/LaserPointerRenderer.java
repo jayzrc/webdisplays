@@ -48,7 +48,6 @@ public final class LaserPointerRenderer implements IItemRenderer {
 	public boolean render(PoseStack poseStack, ItemStack is, float handSideSign, float swingProgress, float equipProgress, MultiBufferSource multiBufferSource, int packedLight) {
 		RenderSystem.disableCull();
 //		RenderSystem.disableTexture();
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		RenderSystem.enableDepthTest();
 		RenderSystem.enableBlend();
 		
@@ -102,7 +101,6 @@ public final class LaserPointerRenderer implements IItemRenderer {
 		RenderSystem.disableBlend();
 		RenderSystem.disableDepthTest();
 //		RenderSystem.enableTexture(); //Fix for shitty minecraft fire
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		RenderSystem.enableCull();
 		poseStack.popPose();
 		

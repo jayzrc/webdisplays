@@ -66,14 +66,7 @@ public class WebDisplays {
 
     public static SharedProxy PROXY = null;
     
-    public static final boolean cursorSupport;
-    
-    static {
-        ArtifactVersion ver = ModList.get().getModFileById("forgecef").getMods().get(0).getVersion();
-        cursorSupport = (ver.getMajorVersion() >= 1 && ver.getMinorVersion() >= 2 && ver.getIncrementalVersion() >= 4);
-    }
-    
-//    public static WDCreativeTab CREATIVE_TAB;
+//    public static ceativeTab CREATIVE_TAB;
     public static final ResourceLocation ADV_PAD_BREAK = new ResourceLocation("webdisplays", "webdisplays/pad_break");
     public static final String BLACKLIST_URL = "mod://webdisplays/blacklisted.html";
     public static final Gson GSON = new Gson();

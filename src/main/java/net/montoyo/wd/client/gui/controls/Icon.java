@@ -50,7 +50,6 @@ public class Icon extends BasicControl {
         if(texture != null) {
             poseStack.pose().pushPose();
 //            RenderSystem.enableTexture();
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
             RenderSystem.setShaderTexture(1, texture);
             RenderSystem.bindTexture(1);
             RenderSystem.enableBlend();

@@ -103,7 +103,6 @@ public class ControlGroup extends Container {
             poseStack.pose().pushPose();
             RenderSystem.setShaderColor(0.5f, 0.5f, 0.5f, 1.f);
 //            RenderSystem.disableTexture();
-            GL11.glDisable(GL_TEXTURE_2D);
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
@@ -163,7 +162,6 @@ public class ControlGroup extends Container {
 
             RenderSystem.disableBlend();
 //            RenderSystem.enableTexture();
-            GL11.glEnable(GL_TEXTURE_2D);
             poseStack.pose().popPose();
 
 //            if(labelW != 0)
