@@ -44,6 +44,7 @@ import net.montoyo.wd.controls.ScreenControlRegistry;
 import net.montoyo.wd.core.*;
 import net.montoyo.wd.init.BlockInit;
 import net.montoyo.wd.init.ItemInit;
+import net.montoyo.wd.init.TabInit;
 import net.montoyo.wd.init.TileInit;
 import net.montoyo.wd.miniserv.server.Server;
 import net.montoyo.wd.net.WDNetworkRegistry;
@@ -51,7 +52,6 @@ import net.montoyo.wd.net.client_bound.S2CMessageServerInfo;
 import net.montoyo.wd.utilities.DistSafety;
 import net.montoyo.wd.utilities.Log;
 import net.montoyo.wd.utilities.Util;
-import org.apache.maven.artifact.versioning.ArtifactVersion;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -66,7 +66,6 @@ public class WebDisplays {
 
     public static SharedProxy PROXY = null;
     
-//    public static ceativeTab CREATIVE_TAB;
     public static final ResourceLocation ADV_PAD_BREAK = new ResourceLocation("webdisplays", "webdisplays/pad_break");
     public static final String BLACKLIST_URL = "mod://webdisplays/blacklisted.html";
     public static final Gson GSON = new Gson();
@@ -119,9 +118,7 @@ public class WebDisplays {
         }
         
         CommonConfig.init();
-
-//        CREATIVE_TAB = new WDCreativeTab();
-
+        
         //Criterions
         criterionPadBreak = new Criterion("pad_break");
         criterionUpgradeScreen = new Criterion("upgrade_screen");
@@ -133,6 +130,7 @@ public class WebDisplays {
         WDNetworkRegistry.init();
         SOUNDS.register(bus);
         onRegisterSounds();
+        TabInit.init(bus);
         BlockInit.init(bus);
         ItemInit.init(bus);
         TileInit.init(bus);

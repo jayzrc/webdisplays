@@ -19,7 +19,7 @@ public class ItemInit{
     public static void init(IEventBus bus) {
         ITEMS.register(bus);
     }
-
+    
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, "webdisplays");
 
     protected static final RegistryObject<Item>[] COMP_CRAFT_ITEMS = new RegistryObject[CraftComponent.values().length];
@@ -58,6 +58,14 @@ public class ItemInit{
     
     public static RegistryObject<Item> getUpgradeItem(int index) {
         return UPGRADE_ITEMS[index];
+    }
+    
+    public static int countCompCraftItems() {
+        return COMP_CRAFT_ITEMS.length;
+    }
+    
+    public static int countUpgrades() {
+        return UPGRADE_ITEMS.length;
     }
     
     public static boolean isCompCraftItem(Item item) {

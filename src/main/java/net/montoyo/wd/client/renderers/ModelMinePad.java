@@ -48,7 +48,7 @@ public final class ModelMinePad {
 		
 		float z = 0;
 		
-		VertexConsumer consumer = buffers.getBuffer(RenderType.entityCutout(new ResourceLocation("webdisplays:textures/models/minepad_item.png")));
+		VertexConsumer consumer = buffers.getBuffer(RenderType.entityCutout(new ResourceLocation("webdisplays:textures/item/model/minepad_item.png")));
 		
 		consumer.vertex(positionMatrix, (float) x1, (float) y1 - padding, z).color(255, 255, 255, 255).uv(1f / width, 12f / height).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LightTexture.FULL_BRIGHT).normal(0.25f, 0.5f, 1).endVertex();
 		consumer.vertex(positionMatrix, (float) x2, (float) y1 - padding, z).color(255, 255, 255, 255).uv(19f / width, 12f / height).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LightTexture.FULL_BRIGHT).normal(0.25f, 0.5f, 1).endVertex();

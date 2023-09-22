@@ -27,7 +27,7 @@ import static com.mojang.math.Axis.*;
 public final class MinePadRenderer implements IItemRenderer {
 	private static final float PI = (float) Math.PI;
 	private final Minecraft mc = Minecraft.getInstance();
-	private final ResourceLocation tex = new ResourceLocation("webdisplays", "textures/models/minepad.png");
+	private final ResourceLocation tex = new ResourceLocation("webdisplays", "textures/item/model/minepad.png");
 	private final ModelMinePad model = new ModelMinePad();
 	private final ClientProxy clientProxy = (ClientProxy) WebDisplays.PROXY;
 	

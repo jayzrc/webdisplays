@@ -1,7 +1,7 @@
 {
     "__comment": "Model absolutely not generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/)",
     "textures": {
-        "particle": "webdisplays:blocks/kb_key",
+        "particle": "webdisplays:block/kb_key",
         "0": "webdisplays:block/kb_base",
         "1": "webdisplays:block/kb_key"
     },
