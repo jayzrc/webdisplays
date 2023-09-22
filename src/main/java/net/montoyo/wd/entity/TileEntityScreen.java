@@ -556,20 +556,23 @@ public class TileEntityScreen extends BlockEntity {
 			return;
 		}
 		
-		if (scr.browser != null) {
-			if (scr.browser instanceof MCEFBrowser mcefBrowser) {
-				if (event == ClickControl.ControlType.CLICK) {
-					mcefBrowser.sendMouseMove(vec.x, vec.y);                                            //Move to target
-					mcefBrowser.sendMousePress(vec.x, vec.y, button);                              //Press
-					mcefBrowser.sendMouseRelease(vec.x, vec.y, button);                            //Release
-				} else if (event == ClickControl.ControlType.DOWN) {
-					mcefBrowser.sendMouseMove(vec.x, vec.y);                                            //Move to target
-					mcefBrowser.sendMousePress(vec.x, vec.y, button);                              //Press
-				} else if (event == ClickControl.ControlType.MOVE)
-					mcefBrowser.sendMouseMove(vec.x, vec.y);                                            //Move
-				else if (event == ClickControl.ControlType.UP)
-					mcefBrowser.sendMouseRelease(scr.lastMousePos.x, scr.lastMousePos.y, button);  //Release
-			}
+		if (scr.browser instanceof MCEFBrowser mcefBrowser) {
+			if (button == 1) button = 0;
+			else if (button == 0) button = 1;
+			
+			if (event == ClickControl.ControlType.CLICK) {
+				mcefBrowser.sendMouseMove(vec.x, vec.y);                                            //Move to target
+				mcefBrowser.sendMousePress(vec.x, vec.y, button);                              //Press
+				mcefBrowser.sendMouseRelease(vec.x, vec.y, button);                            //Release
+			} else if (event == ClickControl.ControlType.DOWN) {
+				mcefBrowser.sendMouseMove(vec.x, vec.y);                                            //Move to target
+				mcefBrowser.sendMousePress(vec.x, vec.y, button);                              //Press
+			} else if (event == ClickControl.ControlType.MOVE)
+				mcefBrowser.sendMouseMove(vec.x, vec.y);                                            //Move
+			else if (event == ClickControl.ControlType.UP)
+				mcefBrowser.sendMouseRelease(scr.lastMousePos.x, scr.lastMousePos.y, button);  //Release
+			
+			mcefBrowser.setFocus(true);
 			
 			if (vec != null) {
 				scr.lastMousePos.x = vec.x;
@@ -889,18 +892,19 @@ public class TileEntityScreen extends BlockEntity {
 							if (ev.getKeyCode() == 257) {
 								ev = new TypeData(
 										ev.getAction(),
-										10, ev.getModifier()
+										10, ev.getModifier(),
+										ev.getScanCode()
 								);
 							}
 							
 							switch (ev.getAction()) {
 								case PRESS -> {
-									mcefBrowser.sendKeyPress(ev.getKeyCode(), (char) ev.getKeyCode(), ev.getModifier());
+									mcefBrowser.sendKeyPress(ev.getKeyCode(), ev.getScanCode(), ev.getModifier());
 									if (ev.getKeyCode() == 10)
 										mcefBrowser.sendKeyTyped('\r', ev.getModifier());
 								}
 								case RELEASE ->
-										mcefBrowser.sendKeyRelease(ev.getKeyCode(), (char) ev.getKeyCode(), ev.getModifier());
+										mcefBrowser.sendKeyRelease(ev.getKeyCode(), ev.getScanCode(), ev.getModifier());
 								case TYPE -> mcefBrowser.sendKeyTyped((char) ev.getKeyCode(), ev.getModifier()); // TODO: check
 								
 								default -> throw new RuntimeException("Invalid type action '" + ev.getAction() + '\'');

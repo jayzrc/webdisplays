@@ -153,19 +153,19 @@ public class GuiKeyboard extends WDScreen {
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if(quitOnEscape && keyCode == GLFW.GLFW_KEY_ESCAPE)
             Minecraft.getInstance().setScreen(null);
-        addKey(new TypeData(TypeData.Action.PRESS, keyCode, modifiers));
+        addKey(new TypeData(TypeData.Action.PRESS, keyCode, modifiers, scanCode));
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
     
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
-        addKey(new TypeData(TypeData.Action.TYPE, codePoint, modifiers));
+        addKey(new TypeData(TypeData.Action.TYPE, codePoint, modifiers, 0));
         return super.charTyped(codePoint, modifiers);
     }
     
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        addKey(new TypeData(TypeData.Action.RELEASE, keyCode, modifiers));
+        addKey(new TypeData(TypeData.Action.RELEASE, keyCode, modifiers, scanCode));
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
     

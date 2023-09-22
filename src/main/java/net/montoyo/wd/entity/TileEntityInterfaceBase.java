@@ -317,7 +317,7 @@ public abstract class TileEntityInterfaceBase extends TileEntityPeripheralBase {
                 code = ((Double) oCode).intValue();
             }
 
-            data.add(new TypeData(dataAction, code, 0));
+            data.add(new TypeData(dataAction, code, 0, 0));
         }
 
         return realType(WebDisplays.GSON.toJson(data));

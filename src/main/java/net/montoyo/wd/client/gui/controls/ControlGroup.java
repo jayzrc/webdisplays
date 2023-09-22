@@ -9,6 +9,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.montoyo.wd.client.gui.loading.JsonOWrapper;
 import net.montoyo.wd.utilities.Bounds;
@@ -164,8 +165,8 @@ public class ControlGroup extends Container {
 //            RenderSystem.enableTexture();
             poseStack.pose().popPose();
 
-//            if(labelW != 0)
-//                font.drawShadow(poseStack, label, x + 10 + ((int) bp), y, labelColor, labelShadowed);
+            if(labelW != 0)
+                poseStack.drawString(Minecraft.getInstance().font, label, x + 10 + ((int) bp), y, labelColor, labelShadowed);
         }
     }
 

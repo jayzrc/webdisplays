@@ -45,7 +45,7 @@ public class UpgradeGroup extends BasicControl {
     @Override
     public void postDraw(GuiGraphics poseStack, int mouseX, int mouseY, float ptt) {
         if(overStack != null)
-            parent.drawItemStackTooltip(poseStack.pose(), overStack, mouseX, mouseY);
+            parent.drawItemStackTooltip(poseStack, overStack, mouseX, mouseY);
     }
 
     @Override

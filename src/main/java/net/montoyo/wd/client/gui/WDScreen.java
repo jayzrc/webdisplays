@@ -116,11 +116,11 @@ public abstract class WDScreen extends Screen {
         if(defaultBackground)
             renderBackground(poseStack);
 
-//        for(Control ctrl: controls)
-//            ctrl.draw(poseStack, mouseX, mouseY, ptt);
-//
-//        for(Control ctrl: postDrawList)
-//            ctrl.postDraw(poseStack, mouseX, mouseY, ptt);
+        for(Control ctrl: controls)
+            ctrl.draw(poseStack, mouseX, mouseY, ptt);
+
+        for(Control ctrl: postDrawList)
+            ctrl.postDraw(poseStack, mouseX, mouseY, ptt);
     }
     
     @Override
@@ -363,12 +363,12 @@ public abstract class WDScreen extends Screen {
         }
     }
 
-    public void drawItemStackTooltip(PoseStack poseStack, ItemStack is, int x, int y) {
-//        renderTooltip(poseStack, is, x, y); //Since it's protected...
+    public void drawItemStackTooltip(GuiGraphics poseStack, ItemStack is, int x, int y) {
+        poseStack.renderTooltip(Minecraft.getInstance().font, is, x, y); //Since it's protected...
     }
 
-    public void drawTooltip(PoseStack poseStack, List<String> lines, int x, int y) {
-//        renderTooltip(poseStack, lines.stream().map(a -> FormattedCharSequence.forward(a, Style.EMPTY)).collect(Collectors.toList()), x, y, font); //This is also protected...
+    public void drawTooltip(GuiGraphics poseStack, List<String> lines, int x, int y) {
+        poseStack.renderTooltip(Minecraft.getInstance().font, lines.stream().map(a -> FormattedCharSequence.forward(a, Style.EMPTY)).collect(Collectors.toList()), x, y); //This is also protected...
     }
 
     public void requirePostDraw(Control ctrl) {

@@ -9,6 +9,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.montoyo.wd.client.gui.loading.JsonOWrapper;
 import org.lwjgl.glfw.GLFW;
 
@@ -83,6 +84,7 @@ public class Button extends Control {
 
     @Override
     public void draw(GuiGraphics poseStack, int mouseX, int mouseY, float ptt) {
+        btn.setFGColor(16777215);
         btn.render(poseStack, mouseX, mouseY, ptt);
     }
 
@@ -114,20 +116,17 @@ public class Button extends Control {
 
     @Override
     public void setPos(int x, int y) {
-//        btn.x = x;
-//        btn.y = y;
+        btn.setPosition(x, y);
     }
 
     @Override
     public int getX() {
-//        return btn.x;
-        return 0;
+        return btn.getX();
     }
 
     @Override
     public int getY() {
-//        return btn.y;
-        return 0;
+        return btn.getY();
     }
 
     public net.minecraft.client.gui.components.Button getMcButton() {
@@ -217,8 +216,10 @@ public class Button extends Control {
     @Override
     public void load(JsonOWrapper json) {
         super.load(json);
-//        btn.x = json.getInt("x", 0);
-//        btn.y = json.getInt("y", 0);
+        btn.setPosition(
+                json.getInt("x", 0),
+                json.getInt("y", 0)
+        );
         btn.setWidth(json.getInt("width", 200));
         btn.setHeight(json.getInt("height", 20));
         btn.setMessage(Component.nullToEmpty(tr(json.getString("label", btn.getMessage().getContents().toString()))));

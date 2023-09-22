@@ -164,11 +164,11 @@ public abstract class Control {
             RenderSystem.setShaderTexture(0, resLoc);
     }
 
-    public void drawBorder(PoseStack poseStack, int x, int y, int w, int h, int color) {
+    public void drawBorder(GuiGraphics poseStack, int x, int y, int w, int h, int color) {
         drawBorder(poseStack, x, y, w, h, color, 1.0);
     }
 
-    public void drawBorder(PoseStack poseStack, int x, int y, int w, int h, int color, double sz) {
+    public void drawBorder(GuiGraphics poseStack, int x, int y, int w, int h, int color, double sz) {
         double x1 = (double) x;
         double y1 = (double) y;
         double x2 = (double) (x + w);
@@ -213,13 +213,17 @@ public abstract class Control {
 //        RenderSystem.enableTexture();
     }
 
-    public PoseStack beginFramebuffer(RenderTarget fbo, float vpW, float vpH) {
+    public GuiGraphics beginFramebuffer(RenderTarget fbo, float vpW, float vpH) {
+        GuiGraphics tmpGraphics = new GuiGraphics(Minecraft.getInstance(), Minecraft.getInstance().renderBuffers().bufferSource());
+        
         fbo.bindWrite(true);
 
         RenderSystem.backupProjectionMatrix();
         RenderSystem.setProjectionMatrix(new Matrix4f().ortho(0.0f, vpW, vpH, 0.0f, -1.0f,1.0f), VertexSorting.ORTHOGRAPHIC_Z);
 
-        PoseStack poseStack = RenderSystem.getModelViewStack();
+        tmpGraphics.pose().last().pose().set(RenderSystem.getModelViewStack().last().pose());
+        tmpGraphics.pose().last().normal().set(RenderSystem.getModelViewStack().last().normal());
+        PoseStack poseStack = tmpGraphics.pose();
         poseStack.pushPose();
         poseStack.setIdentity();
 //        poseStack.mulPose(Vector3f.XP.rotationDegrees(180.0f));
@@ -228,17 +232,17 @@ public abstract class Control {
         if(!fbo.useDepth)
             RenderSystem.disableDepthTest();
 
-        return poseStack;
+        return tmpGraphics;
     }
 
-    public void endFramebuffer(PoseStack poseStack, RenderTarget fbo) {
+    public void endFramebuffer(GuiGraphics poseStack, RenderTarget fbo) {
         if(!fbo.useDepth)
             RenderSystem.enableDepthTest();
 
 
         RenderSystem.colorMask(true, true, true, true);
         RenderSystem.restoreProjectionMatrix();
-        poseStack.popPose();
+        poseStack.pose().popPose();
         RenderSystem.applyModelViewMatrix();
         fbo.unbindWrite();
         mc.getMainRenderTarget().bindWrite(true);

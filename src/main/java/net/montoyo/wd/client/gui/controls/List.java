@@ -107,8 +107,8 @@ public class List extends BasicControl {
     }
 
     private void renderToFBO() {
-        PoseStack poseStack = beginFramebuffer(fbo, width, height);
-        poseStack.pushPose();
+        GuiGraphics poseStack = beginFramebuffer(fbo, width, height);
+        poseStack.pose().pushPose();
         fillRect(0, 0, width, height, COLOR_BLACK);
         RenderSystem.setShaderColor(1.f, 1.f, 1.f, 1.f);
 
@@ -121,13 +121,13 @@ public class List extends BasicControl {
                     break;
 
                 int color = (i == selected) ? selColor : COLOR_WHITE;
-//                font.draw(poseStack, content.get(i).text, 4, i * 12 + offset, color);
+                poseStack.drawString(font, content.get(i).text, 4, i * 12 + offset, color);
             }
         }
 
         drawBorder(poseStack, 0, 0, width, height, 0xFF808080);
         endFramebuffer(poseStack, fbo);
-        poseStack.popPose();
+        poseStack.pose().popPose();
     }
 
     @Override
@@ -321,7 +321,7 @@ public class List extends BasicControl {
 
             fbo.bindRead(); //TODO: Make sure is right
             RenderSystem.setShaderColor(1.f, 1.f, 1.f, 1.f);
-//            fillTexturedRect(poseStack, x, y, width, height, 0.0, 1.0, 1.0, 0.0);
+            fillTexturedRect(poseStack.pose(), x, y, width, height, 0.0, 1.0, 1.0, 0.0);
             fbo.unbindRead();
 
             fillRect(x + width - 5, y + 1 + scrollPos, 4, scrollSize, (scrolling || isInScrollbar(mouseX, mouseY)) ? 0xFF202020 : 0xFF404040);
