@@ -37,8 +37,8 @@ public class GuiMinePad extends WDScreen {
         this();
         this.pad = pad;
     
-        if (WebDisplays.cursorSupport)
-            pad.view.allowCursorChanges(true);
+//        if (WebDisplays.cursorSupport)
+//            pad.view.allowCursorChanges(true);
     }
 
     @Override
@@ -61,31 +61,31 @@ public class GuiMinePad extends WDScreen {
         bb.vertex(x, y + h, 0.0).color(255, 255, 255, 255).endVertex();
     }
 
-    @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float ptt) {
-        renderBackground(poseStack);
-
-        RenderSystem.disableTexture();
-        RenderSystem.disableCull();
-        RenderSystem.setShaderColor(0.73f, 0.73f, 0.73f, 1.0f);
-
-        Tesselator t = Tesselator.getInstance();
-        BufferBuilder bb = t.getBuilder();
-        bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        addRect(bb, vx, vy - 16, vw, 16);
-        addRect(bb, vx, vy + vh, vw, 16);
-        addRect(bb, vx - 16, vy, 16, vh);
-        addRect(bb, vx + vw, vy, 16, vh);
-        t.end();
-
-        RenderSystem.enableTexture();
-
-        if (pad.view != null) {
-            pad.view.draw(poseStack, vx, vy + vh, vx + vw, vy);
-        }
-
-        RenderSystem.enableCull();
-    }
+//    @Override
+//    public void render(PoseStack poseStack, int mouseX, int mouseY, float ptt) {
+//        renderBackground(poseStack);
+//
+//        RenderSystem.disableTexture();
+//        RenderSystem.disableCull();
+//        RenderSystem.setShaderColor(0.73f, 0.73f, 0.73f, 1.0f);
+//
+//        Tesselator t = Tesselator.getInstance();
+//        BufferBuilder bb = t.getBuilder();
+//        bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+//        addRect(bb, vx, vy - 16, vw, 16);
+//        addRect(bb, vx, vy + vh, vw, 16);
+//        addRect(bb, vx - 16, vy, 16, vh);
+//        addRect(bb, vx + vw, vy, 16, vh);
+//        t.end();
+//
+//        RenderSystem.enableTexture();
+//
+//        if (pad.view != null) {
+//            pad.view.draw(poseStack, vx, vy + vh, vx + vw, vy);
+//        }
+//
+//        RenderSystem.enableCull();
+//    }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
@@ -99,12 +99,13 @@ public class GuiMinePad extends WDScreen {
     
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
-        if (pad.view != null) {
-            pad.view.injectKeyTyped((int) codePoint, modifiers);
-            return true;
-        } else {
-            return super.charTyped(codePoint, modifiers);
-        }
+//        if (pad.view != null) {
+//            pad.view.injectKeyTyped((int) codePoint, modifiers);
+//            return true;
+//        } else {
+//            return super.charTyped(codePoint, modifiers);
+//        }
+        return false;
     }
     
     /* copied from MCEF */
@@ -128,16 +129,16 @@ public class GuiMinePad extends WDScreen {
             key = '\n';
         }
     
-        if (pad.view != null) {
-            if (pressed)
-                pad.view.injectKeyPressedByKeyCode(keyCode, key, modifiers);
-            else
-                pad.view.injectKeyReleasedByKeyCode(keyCode, key, modifiers);
-        
-            if (pressed && key == '\n')
-                if (modifiers != 0) pad.view.injectKeyTyped('\r', modifiers);
-            return true;
-        }
+//        if (pad.view != null) {
+//            if (pressed)
+//                pad.view.injectKeyPressedByKeyCode(keyCode, key, modifiers);
+//            else
+//                pad.view.injectKeyReleasedByKeyCode(keyCode, key, modifiers);
+//
+//            if (pressed && key == '\n')
+//                if (modifiers != 0) pad.view.injectKeyTyped('\r', modifiers);
+//            return true;
+//        }
         
         return false;
     }
@@ -176,20 +177,20 @@ public class GuiMinePad extends WDScreen {
         double mx = (sx - vx) / vw;
         double my = (sy - vy) / vh;
 
-        if (pad.view != null && mx >= 0 && mx <= 1) {
-            int wheel = (int) scrollAmount;
-
-            //Scale again according to the webview
-            sx = (int) (mx * WebDisplays.INSTANCE.padResX);
-            sy = (int) (my * WebDisplays.INSTANCE.padResY);
-    
-            if (wheel != 0)
-                pad.view.injectMouseWheel(sx, sy, (hasControlDown() && ! hasAltDown() && !hasShiftDown()) ? GLFW.GLFW_MOD_CONTROL : 0, wheel, 0);
-            if (btn == -1)
-                pad.view.injectMouseMove(sx, sy, 0, sy < 0);
-            else
-                pad.view.injectMouseButton(sx, sy, 0, btn + 1, pressed, 1);
-        }
+//        if (pad.view != null && mx >= 0 && mx <= 1) {
+//            int wheel = (int) scrollAmount;
+//
+//            //Scale again according to the webview
+//            sx = (int) (mx * WebDisplays.INSTANCE.padResX);
+//            sy = (int) (my * WebDisplays.INSTANCE.padResY);
+//
+//            if (wheel != 0)
+//                pad.view.injectMouseWheel(sx, sy, (hasControlDown() && ! hasAltDown() && !hasShiftDown()) ? GLFW.GLFW_MOD_CONTROL : 0, wheel, 0);
+//            if (btn == -1)
+//                pad.view.injectMouseMove(sx, sy, 0, sy < 0);
+//            else
+//                pad.view.injectMouseButton(sx, sy, 0, btn + 1, pressed, 1);
+//        }
     }
 
     public static Optional<Character> getChar(int keyCode, int scanCode) {
@@ -222,7 +223,7 @@ public class GuiMinePad extends WDScreen {
     public void removed() {
         super.removed();
         if (pad.view instanceof CefBrowserOsr osr) {
-            osr.allowCursorChanges(true);
+//            osr.allowCursorChanges(true);
             osr.onCursorChange(null, 0);
         }
     }
@@ -230,10 +231,10 @@ public class GuiMinePad extends WDScreen {
     @Override
     public void onClose() {
         super.onClose();
-        if (WebDisplays.cursorSupport) {
-            pad.view.allowCursorChanges(false);
-            if (pad.view instanceof CefBrowserOsr osr)
-                osr.onCursorChange(null, 0);
-        }
+//        if (WebDisplays.cursorSupport) {
+//            pad.view.allowCursorChanges(false);
+//            if (pad.view instanceof CefBrowserOsr osr)
+//                osr.onCursorChange(null, 0);
+//        }
     }
 }

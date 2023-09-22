@@ -391,7 +391,7 @@ public abstract class TileEntityInterfaceBase extends TileEntityPeripheralBase {
         else if((scr.getScreen(screenSide).rightsFor(owner.uuid) & ScreenRights.CHANGE_URL) == 0)
             return err("restrictions");
         else {
-            scr.evalJS(screenSide, code);
+//            scr.evalJS(screenSide, code);
             return TRUE;
         }
     }

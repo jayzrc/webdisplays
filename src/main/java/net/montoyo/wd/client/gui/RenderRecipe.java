@@ -7,6 +7,7 @@ package net.montoyo.wd.client.gui;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.language.I18n;
@@ -77,15 +78,16 @@ public class RenderRecipe extends Screen {
         Log.info("Loaded %d recipes", recipes.size());
         nextRecipe();
     }
-
+    
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        renderBackground(poseStack);
+    public void render(GuiGraphics context, int mouseX, int mouseY, float partialTick) {
+//        renderBackground(poseStack);
+        renderBackground(context);
 
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, CRAFTING_TABLE_GUI_TEXTURES);
-        blit(poseStack, x, y, 0, 0, SIZE_X, SIZE_Y);
-        font.draw(poseStack, I18n.get("container.crafting"), x + 28, y + 6, 0x404040);
+//        context.blit(x, y, 0, 0, SIZE_X, SIZE_Y);
+//        font.draw(poseStack, I18n.get("container.crafting"), x + 28, y + 6, 0x404040);
 
         Lighting.setupForFlatItems();
 //        RenderSystem.disableLighting(); //TODO: Need this?
@@ -98,15 +100,15 @@ public class RenderRecipe extends Screen {
                     int x = this.x + 30 + sx * 18;
                     int y = this.y + 17 + sy * 18;
 
-                    renderItem.renderAndDecorateItem(minecraft.player, is, x, y, 0);
-                    renderItem.renderGuiItemDecorations(font, is, x, y, null);
+//                    renderItem.renderAndDecorateItem(minecraft.player, is, x, y, 0);
+//                    renderItem.renderGuiItemDecorations(font, is, x, y, null);
                 }
             }
         }
 
         if(recipeResult != null) {
-            renderItem.renderAndDecorateItem(minecraft.player, recipeResult, x + 124, y + 35, 0);
-            renderItem.renderGuiItemDecorations(font, recipeResult, x + 124, y + 35, null);
+//            renderItem.renderAndDecorateItem(minecraft.player, recipeResult, x + 124, y + 35, 0);
+//            renderItem.renderGuiItemDecorations(font, recipeResult, x + 124, y + 35, null);
         }
 
 //        GlStateManager.enableLighting();
@@ -127,7 +129,7 @@ public class RenderRecipe extends Screen {
             }
         }
 
-        recipeResult = recipe.getResultItem();
+//        recipeResult = recipe.getResultItem();
     }
 
     private void nextRecipe() {

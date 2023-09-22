@@ -73,7 +73,7 @@ public class WebDisplays {
         cursorSupport = (ver.getMajorVersion() >= 1 && ver.getMinorVersion() >= 2 && ver.getIncrementalVersion() >= 4);
     }
     
-    public static WDCreativeTab CREATIVE_TAB;
+//    public static WDCreativeTab CREATIVE_TAB;
     public static final ResourceLocation ADV_PAD_BREAK = new ResourceLocation("webdisplays", "webdisplays/pad_break");
     public static final String BLACKLIST_URL = "mod://webdisplays/blacklisted.html";
     public static final Gson GSON = new Gson();
@@ -127,7 +127,7 @@ public class WebDisplays {
         
         CommonConfig.init();
 
-        CREATIVE_TAB = new WDCreativeTab();
+//        CREATIVE_TAB = new WDCreativeTab();
 
         //Criterions
         criterionPadBreak = new Criterion("pad_break");
@@ -259,7 +259,7 @@ public class WebDisplays {
 
     @SubscribeEvent
     public void onToss(ItemTossEvent ev) {
-        if(!ev.getEntity().getLevel().isClientSide) {
+        if(!ev.getEntity().level().isClientSide) {
             ItemStack is = ev.getEntity().getItem();
 
             if(is.getItem() == ItemInit.MINEPAD.get()) {
@@ -284,8 +284,8 @@ public class WebDisplays {
             if((ev.getEntity() instanceof ServerPlayer && !hasPlayerAdvancement((ServerPlayer) ev.getEntity(), ADV_PAD_BREAK)) || PROXY.hasClientPlayerAdvancement(ADV_PAD_BREAK) != HasAdvancement.YES) {
                 ev.getCrafting().setDamageValue(CraftComponent.BADEXTCARD.ordinal());
 
-                if(!ev.getEntity().getLevel().isClientSide)
-                    ev.getEntity().getLevel().playSound(null, ev.getEntity().getX(), ev.getEntity().getY(), ev.getEntity().getZ(), SoundEvents.ITEM_BREAK, SoundSource.MASTER, 1.0f, 1.0f);
+                if(!ev.getEntity().level().isClientSide)
+                    ev.getEntity().level().playSound(null, ev.getEntity().getX(), ev.getEntity().getY(), ev.getEntity().getZ(), SoundEvents.ITEM_BREAK, SoundSource.MASTER, 1.0f, 1.0f);
             }
         }
     }
@@ -297,7 +297,7 @@ public class WebDisplays {
 
     @SubscribeEvent
     public void onLogIn(PlayerEvent.PlayerLoggedInEvent ev) {
-        if(!ev.getEntity().getLevel().isClientSide && ev.getEntity() instanceof ServerPlayer) {
+        if(!ev.getEntity().level().isClientSide && ev.getEntity() instanceof ServerPlayer) {
             IWDDCapability cap = ev.getEntity().getCapability(WDDCapability.Provider.cap, null).orElseThrow(RuntimeException::new);
 
             if(cap.isFirstRun()) {
@@ -320,7 +320,7 @@ public class WebDisplays {
 
     @SubscribeEvent
     public void onLogOut(PlayerEvent.PlayerLoggedOutEvent ev) {
-        if(!ev.getEntity().getLevel().isClientSide)
+        if(!ev.getEntity().level().isClientSide)
             Server.getInstance().getClientManager().revokeClientKey(ev.getEntity().getGameProfile().getId());
     }
 
@@ -361,7 +361,7 @@ public class WebDisplays {
 
         if(sb.toString().equals("ironic he could save others from death but not himself")) {
             Player ply = ev.getPlayer();
-            ply.getLevel().playSound(null, ply.getX(), ply.getY(), ply.getZ(), soundIronic, SoundSource.PLAYERS, 1.0f, 1.0f);
+            ply.level().playSound(null, ply.getX(), ply.getY(), ply.getZ(), soundIronic, SoundSource.PLAYERS, 1.0f, 1.0f);
         }
     }
 
@@ -388,7 +388,7 @@ public class WebDisplays {
 
     private static void registerSound(String resName) {
         ResourceLocation resLoc = new ResourceLocation("webdisplays", resName);
-        SoundEvent ret = new SoundEvent(resLoc);
+        SoundEvent ret = SoundEvent.createVariableRangeEvent(resLoc);
 
         SOUNDS.register(resName, () -> ret);
     }

@@ -5,6 +5,7 @@
 package net.montoyo.wd.client.gui.controls;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.montoyo.wd.client.gui.loading.GuiLoader;
 import net.montoyo.wd.client.gui.loading.JsonAWrapper;
 import net.montoyo.wd.client.gui.loading.JsonOWrapper;
@@ -137,13 +138,13 @@ public abstract class Container extends BasicControl {
     }
 
     @Override
-    public void draw(PoseStack poseStack, int mouseX, int mouseY, float ptt) {
+    public void draw(GuiGraphics poseStack, int mouseX, int mouseY, float ptt) {
         if(visible) {
             mouseX -= x + paddingX;
             mouseY -= y + paddingY;
 
-            poseStack.pushPose();
-            poseStack.translate(x + paddingX, y + paddingY, 0.0);
+            poseStack.pose().pushPose();
+            poseStack.pose().translate(x + paddingX, y + paddingY, 0.0);
 
             if(disabled) {
                 for(Control ctrl : childs)
@@ -153,7 +154,7 @@ public abstract class Container extends BasicControl {
                     ctrl.draw(poseStack, mouseX, mouseY, ptt);
             }
 
-            poseStack.popPose();
+            poseStack.pose().popPose();
         }
     }
 

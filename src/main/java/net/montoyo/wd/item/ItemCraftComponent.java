@@ -13,8 +13,8 @@ public class ItemCraftComponent extends ItemMulti implements WDItem {
 
     public ItemCraftComponent(Properties properties) {
         super(CraftComponent.class, properties
-        //setRegistryName("craftcomp");
-                .tab(WebDisplays.CREATIVE_TAB));
+//                .tab(WebDisplays.CREATIVE_TAB)
+        );
 
         //Hide the bad extension card from the creative tab
         creativeTabItems.clear(CraftComponent.BADEXTCARD.ordinal());

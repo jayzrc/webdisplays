@@ -16,7 +16,6 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.server.ServerLifecycleHooks;
-import net.montoyo.mcef.api.CefInitEvent;
 import net.montoyo.wd.core.HasAdvancement;
 import net.montoyo.wd.core.JSServerRequest;
 import net.montoyo.wd.data.GuiData;
@@ -31,13 +30,14 @@ public class SharedProxy {
     }
 
     public void init() {
-        MinecraftForge.EVENT_BUS.addListener(this::onCefInit);
+//        MinecraftForge.EVENT_BUS.addListener(this::onCefInit);
+        onCefInit();
     }
     
     public void postInit() {
     }
     
-    public void onCefInit(CefInitEvent event) {
+    public void onCefInit(/*CefInitEvent event*/) {
     }
     
     @Deprecated(forRemoval = true)
@@ -46,7 +46,7 @@ public class SharedProxy {
     }
     
     public BlockGetter getWorld(NetworkEvent.Context context) {
-        if (context.getSender() != null) return context.getSender().level;
+        if (context.getSender() != null) return context.getSender().level();
         return null;
     }
 

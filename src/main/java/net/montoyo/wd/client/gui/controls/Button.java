@@ -5,9 +5,14 @@
 package net.montoyo.wd.client.gui.controls;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentContents;
+import net.minecraft.network.chat.MutableComponent;
 import net.montoyo.wd.client.gui.loading.JsonOWrapper;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.function.Supplier;
 
 public class Button extends Control {
 
@@ -31,17 +36,23 @@ public class Button extends Control {
         }
 
     }
-
+    
     public Button() {
-        btn = new net.minecraft.client.gui.components.Button(0,0, 0, 0, Component.nullToEmpty(null), a -> {});
+        btn = net.minecraft.client.gui.components.Button.builder(Component.nullToEmpty(""), a -> {})
+                .bounds(0, 0, 0, 0)
+                .build();
     }
 
     public Button(String text, int x, int y, int width) {
-        btn = new net.minecraft.client.gui.components.Button(x, y, width, 20, Component.nullToEmpty(text), a -> {});
+        btn = net.minecraft.client.gui.components.Button.builder(Component.nullToEmpty(text), a -> {})
+                .bounds(x, y, width, 20)
+                .build();
     }
 
     public Button(String text, int x, int y) {
-        btn = new net.minecraft.client.gui.components.Button(0, 0, x, y, Component.nullToEmpty(text), a -> {});
+        btn = net.minecraft.client.gui.components.Button.builder(Component.nullToEmpty(text), a -> {})
+                .bounds(0, 0, x, y)
+                .build();
     }
 
     @Override
@@ -71,7 +82,7 @@ public class Button extends Control {
     }
 
     @Override
-    public void draw(PoseStack poseStack, int mouseX, int mouseY, float ptt) {
+    public void draw(GuiGraphics poseStack, int mouseX, int mouseY, float ptt) {
         btn.render(poseStack, mouseX, mouseY, ptt);
     }
 
@@ -103,18 +114,20 @@ public class Button extends Control {
 
     @Override
     public void setPos(int x, int y) {
-        btn.x = x;
-        btn.y = y;
+//        btn.x = x;
+//        btn.y = y;
     }
 
     @Override
     public int getX() {
-        return btn.x;
+//        return btn.x;
+        return 0;
     }
 
     @Override
     public int getY() {
-        return btn.y;
+//        return btn.y;
+        return 0;
     }
 
     public net.minecraft.client.gui.components.Button getMcButton() {
@@ -204,8 +217,8 @@ public class Button extends Control {
     @Override
     public void load(JsonOWrapper json) {
         super.load(json);
-        btn.x = json.getInt("x", 0);
-        btn.y = json.getInt("y", 0);
+//        btn.x = json.getInt("x", 0);
+//        btn.y = json.getInt("y", 0);
         btn.setWidth(json.getInt("width", 200));
         btn.setHeight(json.getInt("height", 20));
         btn.setMessage(Component.nullToEmpty(tr(json.getString("label", btn.getMessage().getContents().toString()))));

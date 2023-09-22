@@ -9,6 +9,7 @@ import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.montoyo.wd.client.gui.loading.JsonOWrapper;
 
 import java.util.ArrayList;
@@ -120,7 +121,7 @@ public class List extends BasicControl {
                     break;
 
                 int color = (i == selected) ? selColor : COLOR_WHITE;
-                font.draw(poseStack, content.get(i).text, 4, i * 12 + offset, color);
+//                font.draw(poseStack, content.get(i).text, 4, i * 12 + offset, color);
             }
         }
 
@@ -311,7 +312,7 @@ public class List extends BasicControl {
     }
 
     @Override
-    public void draw(PoseStack poseStack, int mouseX, int mouseY, float ptt) {
+    public void draw(GuiGraphics poseStack, int mouseX, int mouseY, float ptt) {
         if(visible) {
             if(update) {
                 renderToFBO();
@@ -320,7 +321,7 @@ public class List extends BasicControl {
 
             fbo.bindRead(); //TODO: Make sure is right
             RenderSystem.setShaderColor(1.f, 1.f, 1.f, 1.f);
-            fillTexturedRect(poseStack, x, y, width, height, 0.0, 1.0, 1.0, 0.0);
+//            fillTexturedRect(poseStack, x, y, width, height, 0.0, 1.0, 1.0, 0.0);
             fbo.unbindRead();
 
             fillRect(x + width - 5, y + 1 + scrollPos, 4, scrollSize, (scrolling || isInScrollbar(mouseX, mouseY)) ? 0xFF202020 : 0xFF404040);

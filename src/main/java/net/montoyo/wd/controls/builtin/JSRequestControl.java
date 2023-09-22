@@ -51,8 +51,8 @@ public class JSRequestControl extends ScreenControl {
 	@Override
 	public void handleServer(BlockPos pos, BlockSide side, TileEntityScreen tes, NetworkEvent.Context ctx, Function<Integer, Boolean> permissionChecker) throws MissingPermissionException {
 		ServerPlayer player = ctx.getSender();
-		if (reqType == null || data == null) Log.warning("Caught invalid JS request from player %s (UUID %s)", player.getName(), player.getGameProfile().getId().toString());
-		else tes.handleJSRequest(player, side, reqId, reqType, data);
+//		if (reqType == null || data == null) Log.warning("Caught invalid JS request from player %s (UUID %s)", player.getName(), player.getGameProfile().getId().toString());
+//		else tes.handleJSRequest(player, side, reqId, reqType, data);
 	}
 	
 	@Override

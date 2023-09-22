@@ -7,6 +7,7 @@ package net.montoyo.wd.client.gui.controls;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -75,21 +76,21 @@ public class CheckBox extends BasicControl {
     }
 
     @Override
-    public void draw(PoseStack poseStack, int mouseX, int mouseY, float ptt) {
-        if(visible) {
-//            GlStateManager.disableAlpha();
-            poseStack.pushPose();
-            RenderSystem.setShaderTexture(2, checked ? texChecked : texUnchecked);
-            RenderSystem.bindTexture(2);
-            RenderSystem.enableBlend();
-            fillTexturedRect(poseStack, x, y, WIDTH, HEIGHT, 0.0, 0.0, 1.0, 1.0);
-            RenderSystem.disableBlend();
-            RenderSystem.bindTexture(-1);
-
-            poseStack.popPose();
-            boolean inside = (!disabled && mouseX >= x && mouseX <= x + WIDTH + 2 + labelW && mouseY >= y && mouseY < y + HEIGHT);
-            font.draw(poseStack, label, x + WIDTH + 2, y + 4, inside ? 0xFF0080FF : COLOR_WHITE);
-        }
+    public void draw(GuiGraphics poseStack, int mouseX, int mouseY, float ptt) {
+//        if(visible) {
+////            GlStateManager.disableAlpha();
+//            poseStack.pushPose();
+//            RenderSystem.setShaderTexture(2, checked ? texChecked : texUnchecked);
+//            RenderSystem.bindTexture(2);
+//            RenderSystem.enableBlend();
+//            fillTexturedRect(poseStack, x, y, WIDTH, HEIGHT, 0.0, 0.0, 1.0, 1.0);
+//            RenderSystem.disableBlend();
+//            RenderSystem.bindTexture(-1);
+//
+//            poseStack.popPose();
+//            boolean inside = (!disabled && mouseX >= x && mouseX <= x + WIDTH + 2 + labelW && mouseY >= y && mouseY < y + HEIGHT);
+////            font.draw(poseStack, label, x + WIDTH + 2, y + 4, inside ? 0xFF0080FF : COLOR_WHITE);
+//        }
     }
 
     public void setLabel(String label) {
@@ -134,9 +135,9 @@ public class CheckBox extends BasicControl {
     }
 
     @Override
-    public void postDraw(PoseStack poseStack, int mouseX, int mouseY, float ptt) {
+    public void postDraw(GuiGraphics poseStack, int mouseX, int mouseY, float ptt) {
         if(tooltip != null && !disabled && mouseX >= x && mouseX <= x + WIDTH + 2 + labelW && mouseY >= y && mouseY < y + HEIGHT)
-            parent.drawTooltip(poseStack, tooltip, mouseX, mouseY);
+            parent.drawTooltip(poseStack.pose(), tooltip, mouseX, mouseY);
     }
 
 }

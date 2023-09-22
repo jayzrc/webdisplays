@@ -33,9 +33,9 @@ public class ItemLaserPointer extends Item implements WDItem {
 	
 	public ItemLaserPointer(Properties properties) {
 		super(properties
-				//setRegistryName("laserpointer")
 				.stacksTo(1)
-				.tab(WebDisplays.CREATIVE_TAB));
+//				.tab(WebDisplays.CREATIVE_TAB)
+		);
 	}
 	
 	//Laser pointer

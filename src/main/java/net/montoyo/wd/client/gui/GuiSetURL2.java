@@ -126,7 +126,7 @@ public class GuiSetURL2 extends WDScreen {
 			}
 			
 			url = Util.addProtocol(url);
-			url = ((ClientProxy) WebDisplays.PROXY).getMCEF().punycode(url);
+//			url = ((ClientProxy) WebDisplays.PROXY).getMCEF().punycode(url);
 			
 			if (isPad) {
 				UUID uuid = getUUID();

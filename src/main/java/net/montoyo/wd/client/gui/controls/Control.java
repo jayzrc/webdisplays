@@ -10,6 +10,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -89,10 +90,10 @@ public abstract class Control {
         return false;
     }
 
-    public void draw(PoseStack poseStack, int mouseX, int mouseY, float ptt) {
+    public void draw(GuiGraphics poseStack, int mouseX, int mouseY, float ptt) {
     }
 
-    public void postDraw(PoseStack poseStack, int mouseX, int mouseY, float ptt) {
+    public void postDraw(GuiGraphics poseStack, int mouseX, int mouseY, float ptt) {
     }
 
     public void destroy() {

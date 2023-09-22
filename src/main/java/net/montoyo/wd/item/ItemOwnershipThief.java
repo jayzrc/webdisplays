@@ -26,9 +26,9 @@ public class ItemOwnershipThief extends Item implements WDItem {
 
     public ItemOwnershipThief(Properties properties) {
         super(properties
-        //setRegistryName("ownerthief");
                 .stacksTo(1)
-                .tab(WebDisplays.CREATIVE_TAB));
+//                .tab(WebDisplays.CREATIVE_TAB)
+        );
     }
 
     @Override

@@ -9,6 +9,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -111,15 +112,15 @@ public abstract class WDScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float ptt) {
+    public void render(GuiGraphics poseStack, int mouseX, int mouseY, float ptt) {
         if(defaultBackground)
             renderBackground(poseStack);
 
-        for(Control ctrl: controls)
-            ctrl.draw(poseStack, mouseX, mouseY, ptt);
-
-        for(Control ctrl: postDrawList)
-            ctrl.postDraw(poseStack, mouseX, mouseY, ptt);
+//        for(Control ctrl: controls)
+//            ctrl.draw(poseStack, mouseX, mouseY, ptt);
+//
+//        for(Control ctrl: postDrawList)
+//            ctrl.postDraw(poseStack, mouseX, mouseY, ptt);
     }
     
     @Override
@@ -167,7 +168,7 @@ public abstract class WDScreen extends Screen {
     @Override
     protected void init() {
         CURRENT_SCREEN = this;
-        minecraft.keyboardHandler.setSendRepeatsToGui(true);
+//        minecraft.keyboardHandler.setSendRepeatsToGui(true);
     }
 
     @Override
@@ -180,7 +181,7 @@ public abstract class WDScreen extends Screen {
         for(Control ctrl : controls)
             ctrl.destroy();
 
-        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(false);
+//        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(false);
         CURRENT_SCREEN = null;
     }
 
@@ -363,11 +364,11 @@ public abstract class WDScreen extends Screen {
     }
 
     public void drawItemStackTooltip(PoseStack poseStack, ItemStack is, int x, int y) {
-        renderTooltip(poseStack, is, x, y); //Since it's protected...
+//        renderTooltip(poseStack, is, x, y); //Since it's protected...
     }
 
     public void drawTooltip(PoseStack poseStack, List<String> lines, int x, int y) {
-        renderTooltip(poseStack, lines.stream().map(a -> FormattedCharSequence.forward(a, Style.EMPTY)).collect(Collectors.toList()), x, y, font); //This is also protected...
+//        renderTooltip(poseStack, lines.stream().map(a -> FormattedCharSequence.forward(a, Style.EMPTY)).collect(Collectors.toList()), x, y, font); //This is also protected...
     }
 
     public void requirePostDraw(Control ctrl) {

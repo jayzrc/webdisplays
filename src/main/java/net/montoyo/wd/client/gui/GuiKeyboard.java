@@ -136,16 +136,16 @@ public class GuiKeyboard extends WDScreen {
         defaultBackground = showWarning;
         syncTicks = 5;
     
-        if (vivecraftPresent)
-            if (VRPlayer.get() != null)
-                KeyboardHandler.setOverlayShowing(true);
+//        if (vivecraftPresent)
+//            if (VRPlayer.get() != null)
+//                KeyboardHandler.setOverlayShowing(true);
     }
     
     @Override
     public void onClose() {
-        if (vivecraftPresent)
-            if (VRPlayer.get() != null)
-                KeyboardHandler.setOverlayShowing(false);
+//        if (vivecraftPresent)
+//            if (VRPlayer.get() != null)
+//                KeyboardHandler.setOverlayShowing(false);
         super.onClose();
     }
     

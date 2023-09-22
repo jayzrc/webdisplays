@@ -228,7 +228,7 @@ public class BlockScreen extends BaseEntityBlock {
                 if (tes != null && tes.hasUpgrade(side, DefaultUpgrade.REDINPUT)) {
                     Direction facing = Direction.from2DDataValue(side.reverse().ordinal()); //Opposite face
                     vec.sub(pos.getX(), pos.getY(), pos.getZ()).neg();
-                    tes.updateJSRedstone(side, new Vector2i(vec.dot(side.right), vec.dot(side.up)), world.getSignal(pos, facing));
+//                    tes.updateJSRedstone(side, new Vector2i(vec.dot(side.right), vec.dot(side.up)), world.getSignal(pos, facing));
                 }
             }
         }

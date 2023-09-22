@@ -9,8 +9,10 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.gui.GuiGraphics;
 import net.montoyo.wd.client.gui.loading.JsonOWrapper;
 import net.montoyo.wd.utilities.Bounds;
+import org.lwjgl.opengl.GL11;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -94,13 +96,14 @@ public class ControlGroup extends Container {
     }
 
     @Override
-    public void draw(PoseStack poseStack, int mouseX, int mouseY, float ptt) {
+    public void draw(GuiGraphics poseStack, int mouseX, int mouseY, float ptt) {
         super.draw(poseStack, mouseX, mouseY, ptt);
 
         if(visible) {
-            poseStack.pushPose();
+            poseStack.pose().pushPose();
             RenderSystem.setShaderColor(0.5f, 0.5f, 0.5f, 1.f);
-            RenderSystem.disableTexture();
+//            RenderSystem.disableTexture();
+            GL11.glDisable(GL_TEXTURE_2D);
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
@@ -159,11 +162,12 @@ public class ControlGroup extends Container {
             tessellator.end();
 
             RenderSystem.disableBlend();
-            RenderSystem.enableTexture();
-            poseStack.popPose();
+//            RenderSystem.enableTexture();
+            GL11.glEnable(GL_TEXTURE_2D);
+            poseStack.pose().popPose();
 
-            if(labelW != 0)
-                font.drawShadow(poseStack, label, x + 10 + ((int) bp), y, labelColor, labelShadowed);
+//            if(labelW != 0)
+//                font.drawShadow(poseStack, label, x + 10 + ((int) bp), y, labelColor, labelShadowed);
         }
     }
 

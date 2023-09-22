@@ -8,6 +8,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -23,6 +24,8 @@ import net.montoyo.wd.miniserv.client.*;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.utilities.*;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 import javax.swing.filechooser.FileSystemView;
@@ -93,48 +96,50 @@ public class GuiServer extends WDScreen {
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float ptt) {
+    public void render(GuiGraphics poseStack, int mouseX, int mouseY, float ptt) {
         super.render(poseStack, mouseX, mouseY, ptt);
 
         int x = (width - 256) / 2;
         int y = (height - 176) / 2;
 
-        RenderSystem.enableTexture();
+//        RenderSystem.enableTexture();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
         RenderSystem.setShaderTexture(0, BG_IMAGE);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        blit(poseStack, x, y, 0, 0, 256, 176);
+//        blit(poseStack, x, y, 0, 0, 256, 176);
 
         x += 18;
         y += 18;
 
         for(int i = 0; i < lines.size(); i++) {
-            if(selectedLine == i) {
-                drawWhiteQuad(x - 1, y - 2, font.width(lines.get(i)) + 1, 12);
-                font.drawShadow(poseStack, lines.get(i), x, y, 0xFF129700, false);
-            } else
-                font.drawShadow(poseStack, lines.get(i), x, y, 0xFFFFFFFF, false);
+//            if(selectedLine == i) {
+//                drawWhiteQuad(x - 1, y - 2, font.width(lines.get(i)) + 1, 12);
+//                font.drawShadow(poseStack, lines.get(i), x, y, 0xFF129700, false);
+//            } else
+//                font.drawShadow(poseStack, lines.get(i), x, y, 0xFFFFFFFF, false);
 
             y += 12;
         }
 
         if(!promptLocked) {
-            if (queue.isEmpty()) {
-                x = font.drawShadow(poseStack, userPrompt, x, y, 0xFFFFFFFF, false);
-                x = font.drawShadow(poseStack, prompt, x, y, 0xFFFFFFFF, false);
-            } else {
-                x = font.drawShadow(poseStack, tr("press_for_more"), x, y, 0xFFFFFFFF, false);
-            }
+//            if (queue.isEmpty()) {
+//                x = font.drawShadow(poseStack, userPrompt, x, y, 0xFFFFFFFF, false);
+//                x = font.drawShadow(poseStack, prompt, x, y, 0xFFFFFFFF, false);
+//            } else {
+//                x = font.drawShadow(poseStack, tr("press_for_more"), x, y, 0xFFFFFFFF, false);
+//            }
         }
 
         if(!uploadWizard && blinkTime < 5)
             drawWhiteQuad(x + 1, y, 6, 8);
 
-        RenderSystem.enableTexture();
+//        RenderSystem.enableTexture();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.setShaderTexture(0, FG_IMAGE);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        blit(poseStack,(width - 256) / 2, (height - 176) / 2, 0, 0, 256, 176);
+//        blit(poseStack,(width - 256) / 2, (height - 176) / 2, 0, 0, 256, 176);
     }
 
     private void drawWhiteQuad(int x, int y, int w, int h) {
@@ -144,7 +149,8 @@ public class GuiServer extends WDScreen {
         float yd2 = (float) (y + h);
         float zd = (float) getBlitOffset();
 
-        RenderSystem.disableTexture();
+//        RenderSystem.disableTexture();
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         Tesselator t = Tesselator.getInstance();
         BufferBuilder bb = t.getBuilder();
@@ -154,9 +160,14 @@ public class GuiServer extends WDScreen {
         bb.vertex(xd2, yd, zd).endVertex();
         bb.vertex(xd, yd, zd).endVertex();
         t.end();
-        RenderSystem.enableTexture();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+//        RenderSystem.enableTexture();
     }
-
+    
+    private float getBlitOffset() {
+        return 0;
+    }
+    
     @Override
     public void tick() {
         super.tick();

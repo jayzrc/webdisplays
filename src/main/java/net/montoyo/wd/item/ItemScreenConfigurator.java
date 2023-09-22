@@ -24,9 +24,9 @@ public class ItemScreenConfigurator extends Item implements WDItem {
 
     public ItemScreenConfigurator(Properties properties) {
         super(properties
-        //setRegistryName("screencfg");
                 .stacksTo(1)
-                .tab(WebDisplays.CREATIVE_TAB));
+//                .tab(WebDisplays.CREATIVE_TAB)
+        );
     }
 
     @Override

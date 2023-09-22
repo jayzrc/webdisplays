@@ -45,12 +45,12 @@ public class ItemInit{
         }
     }
 
-    public static final RegistryObject<Item> SCREEN = ITEMS.register("screen", () -> new BlockItem(BlockInit.blockScreen.get(), new Item.Properties().tab(WebDisplays.CREATIVE_TAB)));
+    public static final RegistryObject<Item> SCREEN = ITEMS.register("screen", () -> new BlockItem(BlockInit.blockScreen.get(), new Item.Properties()/*.tab(WebDisplays.CREATIVE_TAB)*/));
 
-    public static final RegistryObject<Item> KEYBOARD = ITEMS.register("keyboard", () -> new KeyboardItem(BlockInit.blockKeyBoard.get(), new Item.Properties().tab(WebDisplays.CREATIVE_TAB)));
-    public static final RegistryObject<Item> REDSTONE_CONTROLLER = ITEMS.register("redctrl", () -> new BlockItem(BlockInit.blockRedControl.get(), new Item.Properties().tab(WebDisplays.CREATIVE_TAB)));
-    public static final RegistryObject<Item> REMOTE_CONTROLLER = ITEMS.register("rctrl", () -> new BlockItem(BlockInit.blockRControl.get(), new Item.Properties().tab(WebDisplays.CREATIVE_TAB)));
-    public static final RegistryObject<Item> SERVER = ITEMS.register("server", () -> new BlockItem(BlockInit.blockServer.get(), new Item.Properties().tab(WebDisplays.CREATIVE_TAB)));
+    public static final RegistryObject<Item> KEYBOARD = ITEMS.register("keyboard", () -> new KeyboardItem(BlockInit.blockKeyBoard.get(), new Item.Properties()/*.tab(WebDisplays.CREATIVE_TAB)*/));
+    public static final RegistryObject<Item> REDSTONE_CONTROLLER = ITEMS.register("redctrl", () -> new BlockItem(BlockInit.blockRedControl.get(), new Item.Properties()/*.tab(WebDisplays.CREATIVE_TAB)*/));
+    public static final RegistryObject<Item> REMOTE_CONTROLLER = ITEMS.register("rctrl", () -> new BlockItem(BlockInit.blockRControl.get(), new Item.Properties()/*.tab(WebDisplays.CREATIVE_TAB)*/));
+    public static final RegistryObject<Item> SERVER = ITEMS.register("server", () -> new BlockItem(BlockInit.blockServer.get(), new Item.Properties()/*.tab(WebDisplays.CREATIVE_TAB)*/));
     
     public static RegistryObject<Item> getComputerCraftItem(int index) {
         return COMP_CRAFT_ITEMS[index];

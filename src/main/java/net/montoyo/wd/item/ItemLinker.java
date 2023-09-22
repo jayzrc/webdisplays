@@ -30,9 +30,9 @@ public class ItemLinker extends Item implements WDItem {
 
     public ItemLinker(Properties properties) {
         super(properties
-        //setRegistryName("linker");
             .stacksTo(1)
-            .tab(WebDisplays.CREATIVE_TAB));
+//            .tab(WebDisplays.CREATIVE_TAB)
+        );
     }
 
     @Override

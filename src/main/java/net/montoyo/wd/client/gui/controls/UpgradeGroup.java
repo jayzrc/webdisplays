@@ -6,6 +6,7 @@ package net.montoyo.wd.client.gui.controls;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.world.item.ItemStack;
 import net.montoyo.wd.client.gui.loading.JsonOWrapper;
@@ -26,7 +27,7 @@ public class UpgradeGroup extends BasicControl {
     }
 
     @Override
-    public void draw(PoseStack poseStack, int mouseX, int mouseY, float ptt) {
+    public void draw(GuiGraphics poseStack, int mouseX, int mouseY, float ptt) {
         if(upgrades != null) {
             int x = this.x;
 
@@ -34,17 +35,17 @@ public class UpgradeGroup extends BasicControl {
                 if(is == overStack && !disabled)
                     fillRect(x, y, 16, 16, 0x80FF0000);
 
-                renderItem.renderAndDecorateItem(mc.player, is, x, y, 0);
-                renderItem.renderAndDecorateItem(is, font.lineHeight, x, y); //TODO is lineHeight right?
+//                renderItem.renderAndDecorateItem(mc.player, is, x, y, 0);
+//                renderItem.renderAndDecorateItem(is, font.lineHeight, x, y); //TODO is lineHeight right?
                 x += 18;
             }
         }
     }
 
     @Override
-    public void postDraw(PoseStack poseStack, int mouseX, int mouseY, float ptt) {
+    public void postDraw(GuiGraphics poseStack, int mouseX, int mouseY, float ptt) {
         if(overStack != null)
-            parent.drawItemStackTooltip(poseStack, overStack, mouseX, mouseY);
+            parent.drawItemStackTooltip(poseStack.pose(), overStack, mouseX, mouseY);
     }
 
     @Override

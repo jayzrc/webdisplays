@@ -39,16 +39,27 @@ public class ScreenModelLoader implements IGeometryLoader<ScreenModelLoader.Scre
     }
 
     public static class ScreenModelGeometry implements IUnbakedGeometry<ScreenModelGeometry> {
-
+        
         @Override
-        public BakedModel bake(IGeometryBakingContext iGeometryBakingContext, ModelBakery arg, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides itemOverrides, ResourceLocation arg4) {
-            return new ScreenBaker(modelState, spriteGetter, itemOverrides, iGeometryBakingContext.getTransforms());
+        public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
+            return new ScreenBaker(modelState, spriteGetter, overrides, context.getTransforms());
         }
+        
+//        @Override
+//        public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, IGeometryBakingContext context) {
+//            IUnbakedGeometry.super.resolveParents(modelGetter, context);
+//        }
+        
+//        @Override
+//        public Set<String> getConfigurableComponentNames() {
+//            return IUnbakedGeometry.super.getConfigurableComponentNames();
+//        }
 
-        @Override
-        public Collection<Material> getMaterials(IGeometryBakingContext iGeometryBakingContext, Function<ResourceLocation, UnbakedModel> function, Set<Pair<String, String>> set) {
-            return Arrays.asList(MATERIALS_SIDES);
-        }
+        // TODO: ?
+//        @Override
+//        public Collection<Material> getMaterials(IGeometryBakingContext iGeometryBakingContext, Function<ResourceLocation, UnbakedModel> function, Set<Pair<String, String>> set) {
+//            return Arrays.asList(MATERIALS_SIDES);
+//        }
     }
 }
 

@@ -5,6 +5,7 @@
 package net.montoyo.wd.client.gui.controls;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
 import net.montoyo.wd.client.gui.loading.JsonOWrapper;
@@ -190,7 +191,7 @@ public class TextField extends Control {
     }
     
     @Override
-    public void draw(PoseStack poseStack, int mouseX, int mouseY, float ptt) {
+    public void draw(GuiGraphics poseStack, int mouseX, int mouseY, float ptt) {
         field.render(poseStack, mouseX, mouseY, ptt);
     }
 
@@ -241,23 +242,25 @@ public class TextField extends Control {
 
     @Override
     public void setPos(int x, int y) {
-        field.x = x + 1;
-        field.y = y + 1;
+//        field.x = x + 1;
+//        field.y = y + 1;
     }
 
     @Override
     public int getX() {
-        return field.x - 1;
+//        return field.x - 1;
+        return 0;
     }
 
     @Override
     public int getY() {
-        return field.y - 1;
+//        return field.y - 1;
+        return 0;
     }
 
     public void setDisabled(boolean en) {
         enabled = !en;
-        field.setFocus(enabled);
+//        field.setFocus(enabled);
     }
 
     public boolean isDisabled() {
@@ -265,12 +268,12 @@ public class TextField extends Control {
     }
 
     public void enable() {
-        field.setFocus(true);
+//        field.setFocus(true);
         enabled = true;
     }
 
     public void disable() {
-        field.setFocus(false);
+//        field.setFocus(false);
         enabled = false;
     }
 
@@ -291,7 +294,7 @@ public class TextField extends Control {
     }
 
     public void setFocused(boolean val) {
-        field.setFocus(val);
+//        field.setFocus(val);
     }
 
     public boolean hasFocus() {
@@ -299,7 +302,7 @@ public class TextField extends Control {
     }
 
     public void focus() {
-        field.setFocus(true);
+//        field.setFocus(true);
     }
 
     public void setTextColor(int color) {
@@ -336,8 +339,8 @@ public class TextField extends Control {
     @Override
     public void load(JsonOWrapper json) {
         super.load(json);
-        field.x = json.getInt("x", 0) + 1;
-        field.y = json.getInt("y", 0) + 1;
+//        field.x = json.getInt("x", 0) + 1;
+//        field.y = json.getInt("y", 0) + 1;
         field.setWidth(json.getInt("width", 200) - 2);
         field.setHeight(json.getInt("height", 22) - 2);
         field.setValue(tr(json.getString("text", "")));
@@ -350,7 +353,7 @@ public class TextField extends Control {
 
         field.setTextColor(textColor);
         field.setTextColorUneditable(disabledColor);
-        field.setFocus(enabled);
+//        field.setFocus(enabled);
     }
 
 }

@@ -5,6 +5,7 @@
 package net.montoyo.wd.client.gui.controls;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.montoyo.wd.client.gui.loading.JsonOWrapper;
 
 public class Label extends BasicControl {
@@ -72,9 +73,9 @@ public class Label extends BasicControl {
     }
 
     @Override
-    public void draw(PoseStack poseStack, int mouseX, int mouseY, float ptt) {
-        if(visible)
-            font.drawShadow(poseStack, label, x, y, color, shadowed);
+    public void draw(GuiGraphics poseStack, int mouseX, int mouseY, float ptt) {
+//        if(visible)
+//            font.drawShadow(poseStack, label, x, y, color, shadowed);
     }
 
     @Override
