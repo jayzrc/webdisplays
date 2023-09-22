@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "webdisplays:items/badextcard"
+        "layer0": "webdisplays:item/badextcard"
     }
 }
