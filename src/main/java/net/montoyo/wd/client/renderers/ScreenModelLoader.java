@@ -21,7 +21,7 @@ import java.util.function.Function;
 public class ScreenModelLoader implements IGeometryLoader<ScreenModelLoader.ScreenModelGeometry> {
     public static final ResourceLocation SCREEN_LOADER = new ResourceLocation("webdisplays", "screen_loader");
 
-    public static final ResourceLocation SCREEN_SIDE = new ResourceLocation("webdisplays", "blocks/screen");
+    public static final ResourceLocation SCREEN_SIDE = new ResourceLocation("webdisplays", "block/screen");
 
     private static final ResourceLocation[] SIDES = new ResourceLocation[16];
     public static final Material[] MATERIALS_SIDES = new Material[16];

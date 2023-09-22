@@ -596,18 +596,6 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 	
 	/**************************************** EVENT METHODS ****************************************/
 	
-	@SubscribeEvent
-	public void onStitchTextures(TextureStitchEvent ev) {
-		TextureAtlas texMap = ev.getAtlas();
-		
-		if (texMap.location().equals(TextureAtlas.LOCATION_BLOCKS)) {
-			for (Material materialsSide : ScreenModelLoader.MATERIALS_SIDES) {
-				// TODO: what?
-//				texMap.addSprite(materialsSide.texture());
-			}
-		}
-	}
-
 //    @SubscribeEvent
 //    public void onBakeModel(ModelBakeEvent ev) {
 //        for(ResourceModelPair pair : modelBakers)
