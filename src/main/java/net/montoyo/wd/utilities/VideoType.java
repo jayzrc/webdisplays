@@ -4,8 +4,6 @@
 
 package net.montoyo.wd.utilities;
 
-import net.montoyo.wd.client.JSQueryDispatcher;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.net.MalformedURLException;
@@ -46,9 +44,9 @@ public enum VideoType {
 		volumeCap = volume.prefix.length() + 5 + volume.suffix.length();
 	}
     
-    public static void registerQueries(JSQueryDispatcher jsQueryDispatcher) {
-		// TODO: register GetTime query
-    }
+//    public static void registerQueries(JSQueryDispatcher jsQueryDispatcher) {
+//		// TODO: register GetTime query
+//    }
     
     protected static class Function {
 		String prefix, suffix;

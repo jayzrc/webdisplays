@@ -7,7 +7,6 @@ package net.montoyo.wd.client.gui;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.montoyo.mcef.api.API;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.client.ClientProxy;
 import net.montoyo.wd.client.gui.controls.Button;
@@ -53,18 +52,18 @@ public class GuiRedstoneCtrl extends WDScreen {
         tfFallingEdge.setText(fallingEdgeURL);
     }
 
-    @GuiSubscribe
-    public void onClick(Button.ClickEvent ev) {
-        if(ev.getSource() == btnOk) {
-            API mcef = ((ClientProxy) WebDisplays.PROXY).getMCEF();
-
-            String rising = mcef.punycode(Util.addProtocol(tfRisingEdge.getText()));
-            String falling = mcef.punycode(Util.addProtocol(tfFallingEdge.getText()));
-            WDNetworkRegistry.INSTANCE.sendToServer(new C2SMessageRedstoneCtrl(pos, rising, falling));
-        }
-
-        minecraft.setScreen(null);
-    }
+//    @GuiSubscribe
+//    public void onClick(Button.ClickEvent ev) {
+//        if(ev.getSource() == btnOk) {
+//            API mcef = ((ClientProxy) WebDisplays.PROXY).getMCEF();
+//
+//            String rising = mcef.punycode(Util.addProtocol(tfRisingEdge.getText()));
+//            String falling = mcef.punycode(Util.addProtocol(tfFallingEdge.getText()));
+//            WDNetworkRegistry.INSTANCE.sendToServer(new C2SMessageRedstoneCtrl(pos, rising, falling));
+//        }
+//
+//        minecraft.setScreen(null);
+//    }
 
     @Override
     public boolean isForBlock(BlockPos bp, BlockSide side) {

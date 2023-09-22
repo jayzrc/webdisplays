@@ -8,7 +8,6 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.resources.language.I18n;
@@ -18,9 +17,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.montoyo.wd.client.gui.WDScreen;
 import net.montoyo.wd.client.gui.loading.JsonOWrapper;
 import net.montoyo.wd.utilities.Bounds;
+import org.joml.Matrix4f;
 
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.*;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class Control {
@@ -120,7 +119,8 @@ public abstract class Control {
         int b =  color & 0xFF;
 
         RenderSystem.setShaderColor(((float) r) / 255.f, ((float) g) / 255.f, ((float) b) / 255.f, ((float) a) / 255.f);
-        RenderSystem.disableTexture();
+//        RenderSystem.disableTexture();
+        glDisable(GL_TEXTURE_2D);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
@@ -132,7 +132,8 @@ public abstract class Control {
         tessellator.end();
 
         RenderSystem.disableBlend();
-        RenderSystem.enableTexture();glEnable(GL_TEXTURE_2D);
+//        RenderSystem.enableTexture();
+        glEnable(GL_TEXTURE_2D);
     }
 
     public void fillTexturedRect(PoseStack poseStack, int x, int y, int w, int h, double u1, double v1, double u2, double v2) {
@@ -179,7 +180,8 @@ public abstract class Control {
         int b =  color & 0xFF;
 
         RenderSystem.setShaderColor(((float) r) / 255.f, ((float) g) / 255.f, ((float) b) / 255.f, ((float) a) / 255.f);
-        RenderSystem.enableTexture();
+//        RenderSystem.enableTexture();
+        glEnable(GL_TEXTURE_2D);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
@@ -210,14 +212,15 @@ public abstract class Control {
         tessellator.end();
 
         RenderSystem.disableBlend();
-        RenderSystem.enableTexture();
+//        RenderSystem.enableTexture();
+        glEnable(GL_TEXTURE_2D);
     }
 
     public PoseStack beginFramebuffer(RenderTarget fbo, float vpW, float vpH) {
         fbo.bindWrite(true);
 
         RenderSystem.backupProjectionMatrix();
-        RenderSystem.setProjectionMatrix(Matrix4f.orthographic(0.0f, vpW, vpH, 0.0f, -1.0f,1.0f));
+        RenderSystem.setProjectionMatrix(new Matrix4f().ortho(0.0f, vpW, vpH, 0.0f, -1.0f,1.0f), VertexSorting.ORTHOGRAPHIC_Z);
 
         PoseStack poseStack = RenderSystem.getModelViewStack();
         poseStack.pushPose();

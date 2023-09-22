@@ -25,8 +25,8 @@ import net.montoyo.wd.utilities.Log;
 import net.montoyo.wd.utilities.TypeData;
 import net.montoyo.wd.utilities.Util;
 import org.lwjgl.glfw.GLFW;
-import org.vivecraft.gameplay.VRPlayer;
-import org.vivecraft.gameplay.screenhandlers.KeyboardHandler;
+//import org.vivecraft.gameplay.VRPlayer;
+//import org.vivecraft.gameplay.screenhandlers.KeyboardHandler;
 
 import java.io.*;
 import java.lang.reflect.Method;

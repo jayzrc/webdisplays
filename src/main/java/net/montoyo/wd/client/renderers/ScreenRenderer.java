@@ -4,6 +4,7 @@
 
 package net.montoyo.wd.client.renderers;
 
+import com.cinemamod.mcef.MCEFBrowser;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.renderer.GameRenderer;
@@ -14,8 +15,9 @@ import net.montoyo.wd.entity.TileEntityScreen;
 import net.montoyo.wd.utilities.Vector3f;
 import net.montoyo.wd.utilities.Vector3i;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.opengl.GL11;
 
-import static com.mojang.math.Vector3f.*;
+import static com.mojang.math.Axis.*;
 
 public class ScreenRenderer implements BlockEntityRenderer<TileEntityScreen> {
 	public ScreenRenderer() {
@@ -38,7 +40,8 @@ public class ScreenRenderer implements BlockEntityRenderer<TileEntityScreen> {
 			return;
 		
 		//Disable lighting
-		RenderSystem.enableTexture();
+//		RenderSystem.enableTexture();
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
 //        RenderSystem.disableCull();
 		RenderSystem.disableBlend();
 		
@@ -118,7 +121,7 @@ public class ScreenRenderer implements BlockEntityRenderer<TileEntityScreen> {
 			//TODO: don't use tesselator
 			RenderSystem.enableDepthTest();
 			RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-			RenderSystem._setShaderTexture(0, scr.browser.getTextureID());
+			RenderSystem._setShaderTexture(0, ((MCEFBrowser) scr.browser).getRenderer().getTextureID());
 			RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 			builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
 			builder.vertex(poseStack.last().pose(), -sw, -sh, 0.505f).uv(0.f, 1.f).color(1.f, 1.f, 1.f, 1.f).endVertex();

@@ -6,7 +6,6 @@ package net.montoyo.wd.client.renderers;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -21,6 +20,8 @@ import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.client.ClientProxy;
 import net.montoyo.wd.config.ClientConfig;
 import net.montoyo.wd.item.ItemMinePad2;
+
+import static com.mojang.math.Axis.*;
 
 @OnlyIn(Dist.CLIENT)
 public final class MinePadRenderer implements IItemRenderer {
@@ -76,18 +77,18 @@ public final class MinePadRenderer implements IItemRenderer {
 		stack.pushPose();
 		stack.translate(handSideSign * -0.4f * sinSqrtSwingProg1, 0.2f * sinSqrtSwingProg2, -0.2f * sinSwingProg1);
 		stack.translate(handSideSign * 0.56f, -0.52f - equipProgress * 0.6f, -0.72f);
-		stack.mulPose(Vector3f.YP.rotationDegrees(handSideSign * (45.0f - sinSwingProg2 * 20.0f)));
-		stack.mulPose(Vector3f.ZP.rotationDegrees(handSideSign * sinSqrtSwingProg1 * -20.0f));
-		stack.mulPose(Vector3f.XP.rotationDegrees(sinSqrtSwingProg1 * -80.0f));
-		stack.mulPose(Vector3f.YP.rotationDegrees(handSideSign * -45.0f));
+		stack.mulPose(YP.rotationDegrees(handSideSign * (45.0f - sinSwingProg2 * 20.0f)));
+		stack.mulPose(ZP.rotationDegrees(handSideSign * sinSqrtSwingProg1 * -20.0f));
+		stack.mulPose(XP.rotationDegrees(sinSqrtSwingProg1 * -80.0f));
+		stack.mulPose(YP.rotationDegrees(handSideSign * -45.0f));
 		
 		if (sideHold) {
 			stack.translate(0.0f, 0.0f, -0.2f);
-			stack.mulPose(Vector3f.YP.rotationDegrees(20.0f * -handSideSign));
+			stack.mulPose(YP.rotationDegrees(20.0f * -handSideSign));
 			float total = 0.475f;
 			float off = -0.025f; // gotta love magic numbers
 			stack.translate(-(total - off) + (off * handSideSign), -0.1f, 0.0f);
-			stack.mulPose(Vector3f.ZP.rotationDegrees(1.0f));
+			stack.mulPose(ZP.rotationDegrees(1.0f));
 		} else if (handSideSign >= 0) // right hand
 			stack.translate(-1.065f, 0.0f, 0.0f);
 		else // left hand
@@ -113,7 +114,7 @@ public final class MinePadRenderer implements IItemRenderer {
 				
 				stack.translate(0.063f, 0.28f, 0.001f);
 				RenderSystem.setShaderTexture(0, tex);
-				pd.view.draw(stack, x1, y1, x2, y2);
+//				pd.view.draw(stack, x1, y1, x2, y2);
 			}
 		}
 		
@@ -129,13 +130,13 @@ public final class MinePadRenderer implements IItemRenderer {
 		float tz = -0.4f * sinSwingProg1;
 		
 		stack.translate(handSideSign * (tx + 0.64000005f), ty - 0.6f - equipProgress * 0.6f, tz - 0.71999997f);
-		stack.mulPose(Vector3f.YP.rotationDegrees(handSideSign * 45.0f));
-		stack.mulPose(Vector3f.YP.rotationDegrees(handSideSign * sinSqrtSwingProg1 * 70.0f));
-		stack.mulPose(Vector3f.ZP.rotationDegrees(handSideSign * sinSwingProg2 * -20.0f));
+		stack.mulPose(YP.rotationDegrees(handSideSign * 45.0f));
+		stack.mulPose(YP.rotationDegrees(handSideSign * sinSqrtSwingProg1 * 70.0f));
+		stack.mulPose(ZP.rotationDegrees(handSideSign * sinSwingProg2 * -20.0f));
 		stack.translate(-handSideSign, 3.6f, 3.5f);
-		stack.mulPose(Vector3f.ZP.rotationDegrees(handSideSign * 120.0f));
-		stack.mulPose(Vector3f.XP.rotationDegrees(200.0f));
-		stack.mulPose(Vector3f.YP.rotationDegrees(handSideSign * -135.0f));
+		stack.mulPose(ZP.rotationDegrees(handSideSign * 120.0f));
+		stack.mulPose(XP.rotationDegrees(200.0f));
+		stack.mulPose(YP.rotationDegrees(handSideSign * -135.0f));
 		stack.translate(handSideSign * 5.6f, 0.0f, 0.0f);
 		
 		PlayerRenderer playerRenderer = (PlayerRenderer) mc.getEntityRenderDispatcher().getRenderer(mc.player);

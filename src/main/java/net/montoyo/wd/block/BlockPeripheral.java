@@ -15,19 +15,18 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.PacketDistributor;
-import net.montoyo.mcef.utilities.Log;
 import net.montoyo.wd.core.DefaultPeripheral;
 import net.montoyo.wd.entity.TileEntityInterfaceBase;
 import net.montoyo.wd.entity.TileEntityPeripheralBase;
@@ -35,13 +34,14 @@ import net.montoyo.wd.entity.TileEntityServer;
 import net.montoyo.wd.item.ItemLinker;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.client_bound.S2CMessageCloseGui;
+import net.montoyo.wd.utilities.Log;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockPeripheral extends WDBlockContainer {
     DefaultPeripheral type;
 
     public BlockPeripheral(DefaultPeripheral type) {
-        super(BlockBehaviour.Properties.of(Material.STONE).strength(1.5f, 10.f));
+        super(BlockBehaviour.Properties.copy(Blocks.STONE).strength(1.5f, 10.f));
         this.type = type;
     }
 

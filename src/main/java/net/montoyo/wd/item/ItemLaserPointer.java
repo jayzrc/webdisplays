@@ -14,7 +14,6 @@ import net.minecraft.world.phys.HitResult;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.block.BlockScreen;
 import net.montoyo.wd.client.ClientProxy;
-import net.montoyo.wd.client.JSQueryDispatcher;
 import net.montoyo.wd.config.ClientConfig;
 import net.montoyo.wd.controls.builtin.ClickControl;
 import net.montoyo.wd.core.DefaultUpgrade;
@@ -79,7 +78,7 @@ public class ItemLaserPointer extends Item implements WDItem {
 		}
 	}
 	
-	public static void deselect(Minecraft mc, JSQueryDispatcher jsDispatcher) {
+	public static void deselect(Minecraft mc) {
 		deselectScreen();
 	}
 	

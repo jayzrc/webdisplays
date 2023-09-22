@@ -7,6 +7,7 @@ package net.montoyo.wd.core;
 import com.google.gson.JsonObject;
 import net.minecraft.advancements.CriterionTrigger;
 import net.minecraft.advancements.critereon.AbstractCriterionTriggerInstance;
+import net.minecraft.advancements.critereon.ContextAwarePredicate;
 import net.minecraft.advancements.critereon.DeserializationContext;
 import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.resources.ResourceLocation;
@@ -22,7 +23,7 @@ public class Criterion implements CriterionTrigger<Criterion.Instance> {
 
     public static class Instance extends AbstractCriterionTriggerInstance {
 
-        public Instance(ResourceLocation id, EntityPredicate.Composite arg2) {
+        public Instance(ResourceLocation id, ContextAwarePredicate arg2) {
             super(id, arg2);
         }
     }
@@ -60,7 +61,7 @@ public class Criterion implements CriterionTrigger<Criterion.Instance> {
 
     @Override
     public @NotNull Instance createInstance(JsonObject json, DeserializationContext context) {
-        return new Instance(id, EntityPredicate.Composite.fromJson(json, "instance", context));
+        return new Instance(id, EntityPredicate.fromJson(json, "instance", context));
     }
 
     public void trigger(PlayerAdvancements ply) {

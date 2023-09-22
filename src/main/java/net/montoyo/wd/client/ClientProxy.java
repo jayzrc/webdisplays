@@ -740,11 +740,11 @@ public class ClientProxy extends SharedProxy implements IDisplayHandler, IJSQuer
         if (LaserPointerRenderer.isOn()) {
             ItemLaserPointer.tick(mc);
         } else {
-            ItemLaserPointer.deselect(mc, jsDispatcher);
+            ItemLaserPointer.deselect(mc);
         }
     
-        //Handle JS queries
-        jsDispatcher.handleQueries();
+//        //Handle JS queries
+//        jsDispatcher.handleQueries();
     
         //Miniserv
         if (msClientStarted && mc.player == null) {

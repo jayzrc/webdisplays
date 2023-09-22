@@ -6,8 +6,6 @@ package net.montoyo.wd.client.renderers;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -20,6 +18,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.montoyo.wd.client.ClientProxy;
 import net.montoyo.wd.init.ItemInit;
 import net.montoyo.wd.item.ItemLaserPointer;
+import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL11;
+
+import static com.mojang.math.Axis.*;
 
 @OnlyIn(Dist.CLIENT)
 public final class LaserPointerRenderer implements IItemRenderer {
@@ -45,7 +47,8 @@ public final class LaserPointerRenderer implements IItemRenderer {
 	@Override
 	public boolean render(PoseStack poseStack, ItemStack is, float handSideSign, float swingProgress, float equipProgress, MultiBufferSource multiBufferSource, int packedLight) {
 		RenderSystem.disableCull();
-		RenderSystem.disableTexture();
+//		RenderSystem.disableTexture();
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		RenderSystem.enableDepthTest();
 		RenderSystem.enableBlend();
 		
@@ -61,12 +64,12 @@ public final class LaserPointerRenderer implements IItemRenderer {
 		poseStack.pushPose();
 		poseStack.translate(handSideSign * -0.4f * sinSqrtSwingProg1, (float) (0.2f * Math.sin(sqrtSwingProg * PI * 2.0f)), (float) (-0.2f * Math.sin(swingProgress * PI)));
 		poseStack.translate(handSideSign * 0.56f, -0.52f - equipProgress * 0.6f, -0.72f);
-		poseStack.mulPose(Vector3f.YP.rotationDegrees((float) (handSideSign * (45.0f - Math.sin(swingProgress * swingProgress * PI) * 20.0f))));
-		poseStack.mulPose(Vector3f.ZP.rotationDegrees(handSideSign * sinSqrtSwingProg1 * -20.0f));
-		poseStack.mulPose(Vector3f.XP.rotationDegrees(sinSqrtSwingProg1 * -80.0f));
-		poseStack.mulPose(Vector3f.YP.rotationDegrees(handSideSign * -30.0f));
+		poseStack.mulPose(YP.rotationDegrees((float) (handSideSign * (45.0f - Math.sin(swingProgress * swingProgress * PI) * 20.0f))));
+		poseStack.mulPose(ZP.rotationDegrees(handSideSign * sinSqrtSwingProg1 * -20.0f));
+		poseStack.mulPose(XP.rotationDegrees(sinSqrtSwingProg1 * -80.0f));
+		poseStack.mulPose(YP.rotationDegrees(handSideSign * -30.0f));
 		poseStack.translate(0.0f, 0.2f, 0.0f);
-		poseStack.mulPose(Vector3f.XP.rotationDegrees(10.0f));
+		poseStack.mulPose(XP.rotationDegrees(10.0f));
 		poseStack.scale(1.0f / 16.0f, 1.0f / 16.0f, 1.0f / 16.0f);
 		var matrix = poseStack.last().pose();
 		
@@ -98,7 +101,8 @@ public final class LaserPointerRenderer implements IItemRenderer {
 		
 		RenderSystem.disableBlend();
 		RenderSystem.disableDepthTest();
-		RenderSystem.enableTexture(); //Fix for shitty minecraft fire
+//		RenderSystem.enableTexture(); //Fix for shitty minecraft fire
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		RenderSystem.enableCull();
 		poseStack.popPose();
 		
