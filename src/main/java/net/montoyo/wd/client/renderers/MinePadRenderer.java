@@ -4,9 +4,11 @@
 
 package net.montoyo.wd.client.renderers;
 
+import com.cinemamod.mcef.MCEFBrowser;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
@@ -114,7 +116,19 @@ public final class MinePadRenderer implements IItemRenderer {
 				
 				stack.translate(0.063f, 0.28f, 0.001f);
 				RenderSystem.setShaderTexture(0, tex);
-//				pd.view.draw(stack, x1, y1, x2, y2);
+
+				RenderSystem.disableDepthTest();
+				RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+				RenderSystem.setShaderTexture(0, ((MCEFBrowser) pd.view).getRenderer().getTextureID());
+				Tesselator t = Tesselator.getInstance();
+				BufferBuilder buffer = t.getBuilder();
+				buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+				buffer.vertex(stack.last().pose(), (float) x1, (float) y1, 0.0f).uv(0.0F, 1.0F).color(255, 255, 255, 255).endVertex();
+				buffer.vertex(stack.last().pose(), (float) x2, (float) y1, 0.0f).uv(1.0F, 1.0F).color(255, 255, 255, 255).endVertex();
+				buffer.vertex(stack.last().pose(), (float) x2, (float) y2, 0.0f).uv(1.0F, 0.0F).color(255, 255, 255, 255).endVertex();
+				buffer.vertex(stack.last().pose(), (float) x1, (float) y2, 0.0f).uv(0.0F, 0.0F).color(255, 255, 255, 255).endVertex();
+				t.end();
+				RenderSystem.enableDepthTest();
 			}
 		}
 		

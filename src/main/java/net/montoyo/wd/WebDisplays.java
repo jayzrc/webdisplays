@@ -169,12 +169,12 @@ public class WebDisplays {
     }
 
     public void onRegisterSounds() {
-        registerSound("keyboard_type");
-        registerSound( "upgrade_add");
-        registerSound( "upgrade_del");
-        registerSound("screencfg_open");
-        registerSound("server");
-        registerSound("ironic");
+        soundTyping = registerSound("keyboard_type");
+        soundUpgradeAdd = registerSound("upgrade_add");
+        soundUpgradeDel = registerSound("upgrade_del");
+        soundScreenCfg = registerSound("screencfg_open");
+        soundServer = registerSound("server");
+        soundIronic = registerSound("ironic");
     }
 
     ArrayList<ResourceKey<Level>> serverStartedDimensions = new ArrayList<>();
@@ -377,11 +377,12 @@ public class WebDisplays {
 
     public static DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, "webdisplays");
 
-    private static void registerSound(String resName) {
+    private static SoundEvent registerSound(String resName) {
         ResourceLocation resLoc = new ResourceLocation("webdisplays", resName);
         SoundEvent ret = SoundEvent.createVariableRangeEvent(resLoc);
 
         SOUNDS.register(resName, () -> ret);
+        return ret;
     }
 
     private static void registerTrigger(Criterion ... criteria) {
