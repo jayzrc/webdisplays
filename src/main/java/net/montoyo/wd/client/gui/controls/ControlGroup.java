@@ -15,6 +15,8 @@ import net.montoyo.wd.client.gui.loading.JsonOWrapper;
 import net.montoyo.wd.utilities.Bounds;
 import org.lwjgl.opengl.GL11;
 
+import java.util.Arrays;
+
 import static org.lwjgl.opengl.GL11.*;
 
 public class ControlGroup extends Container {
@@ -102,6 +104,7 @@ public class ControlGroup extends Container {
 
         if(visible) {
             poseStack.pose().pushPose();
+            float[] sdrCol = Arrays.copyOf(RenderSystem.getShaderColor(), 4);
             RenderSystem.setShaderColor(0.5f, 0.5f, 0.5f, 1.f);
 //            RenderSystem.disableTexture();
             RenderSystem.enableBlend();
@@ -160,6 +163,8 @@ public class ControlGroup extends Container {
             vBuffer.vertex(x2, y1, 0.0).endVertex();
             vBuffer.vertex(x2 - 1.0, y1, 0.0).endVertex();
             tessellator.end();
+
+            RenderSystem.setShaderColor(sdrCol[0], sdrCol[1], sdrCol[2], sdrCol[3]);
 
             RenderSystem.disableBlend();
 //            RenderSystem.enableTexture();

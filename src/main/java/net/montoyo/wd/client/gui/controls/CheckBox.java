@@ -9,6 +9,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -81,12 +82,11 @@ public class CheckBox extends BasicControl {
         if(visible) {
 //            GlStateManager.disableAlpha();
             poseStack.pose().pushPose();
-            RenderSystem.setShaderTexture(2, checked ? texChecked : texUnchecked);
-            RenderSystem.bindTexture(2);
             RenderSystem.enableBlend();
-            fillTexturedRect(poseStack.pose(), x, y, WIDTH, HEIGHT, 0.0, 0.0, 1.0, 1.0);
+            poseStack.blit(
+                    checked ? texChecked : texUnchecked, x, y, 0, 0, 0, WIDTH, HEIGHT, WIDTH, HEIGHT
+            );
             RenderSystem.disableBlend();
-            RenderSystem.bindTexture(-1);
 
             poseStack.pose().popPose();
             boolean inside = (!disabled && mouseX >= x && mouseX <= x + WIDTH + 2 + labelW && mouseY >= y && mouseY < y + HEIGHT);

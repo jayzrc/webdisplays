@@ -7,6 +7,7 @@ package net.montoyo.wd.client.gui;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -116,6 +117,8 @@ public abstract class WDScreen extends Screen {
         if(defaultBackground)
             renderBackground(poseStack);
 
+        RenderSystem.setShaderColor(1.f, 1.f, 1.f, 1.f);
+        
         for(Control ctrl: controls)
             ctrl.draw(poseStack, mouseX, mouseY, ptt);
 

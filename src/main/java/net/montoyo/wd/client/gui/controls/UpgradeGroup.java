@@ -7,6 +7,7 @@ package net.montoyo.wd.client.gui.controls;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.world.item.ItemStack;
 import net.montoyo.wd.client.gui.loading.JsonOWrapper;
@@ -33,10 +34,10 @@ public class UpgradeGroup extends BasicControl {
 
             for(ItemStack is: upgrades) {
                 if(is == overStack && !disabled)
-                    fillRect(x, y, 16, 16, 0x80FF0000);
+                    fillRect(poseStack.bufferSource(), x, y, 16, 16, 0x80FF0000);
 
-//                renderItem.renderAndDecorateItem(mc.player, is, x, y, 0);
-//                renderItem.renderAndDecorateItem(is, font.lineHeight, x, y); //TODO is lineHeight right?
+                poseStack.renderItem(is, x, y);
+                poseStack.renderItemDecorations(font, is, x, y);
                 x += 18;
             }
         }

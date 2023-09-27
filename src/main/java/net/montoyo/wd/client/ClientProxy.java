@@ -138,12 +138,11 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 			return;
 		
 		if (!LaserPointerRenderer.isOn()) {
-			RenderSystem.setShaderTexture(0, new ResourceLocation(
-					"webdisplays:textures/gui/cursors.png"
-			));
 			RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-			
-//			blit(poseStack, (screenWidth - 15) / 2, (screenHeight - 15) / 2, 240, 240, 15, 15, offset);
+
+			poseStack.blit(new ResourceLocation(
+					"webdisplays:textures/gui/cursors.png"
+			), (screenWidth - 15) / 2, (screenHeight - 15) / 2, offset, 240, 240, 15, 15, 256, 256);
 			ci.cancel();
 			return;
 		}
@@ -154,9 +153,16 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 		
 		BlockPos bpos = result.getBlockPos();
 		
-		if (result.getType() != HitResult.Type.BLOCK || mc.level.getBlockState(bpos).getBlock() != BlockInit.blockScreen.get())
+		if (result.getType() != HitResult.Type.BLOCK || mc.level.getBlockState(bpos).getBlock() != BlockInit.blockScreen.get()) {
+			RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+
+			poseStack.blit(new ResourceLocation(
+					"webdisplays:textures/gui/cursors.png"
+			), (screenWidth - 15) / 2, (screenHeight - 15) / 2, offset, 240, 240, 15, 15, 256, 256);
+			ci.cancel();
 			return;
-		
+		}
+
 		Vector3i pos = new Vector3i(result.getBlockPos());
 		BlockSide side = BlockSide.values()[result.getDirection().ordinal()];
 		
@@ -166,19 +172,17 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 		TileEntityScreen.Screen sc = te.getScreen(side);
 		
 		if (sc == null) return;
-//        if (sc.mouseType == 1) return;
-		
+
 		int coordX = sc.mouseType * 15;
 		int coordY = coordX / 256;
 		coordX -= coordY * 256;
 		
-		RenderSystem.setShaderTexture(0, new ResourceLocation(
-				"webdisplays:textures/gui/cursors.png"
-		));
 		RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-		
-//		blit(poseStack, (screenWidth - 15) / 2, (screenHeight - 15) / 2, coordX, coordY, 15, 15, offset);
-		
+
+		poseStack.blit(new ResourceLocation(
+				"webdisplays:textures/gui/cursors.png"
+		), (screenWidth - 15) / 2, (screenHeight - 15) / 2, offset, coordX, coordY, 15, 15, 256, 256);
+
 		ci.cancel();
 	}
 	

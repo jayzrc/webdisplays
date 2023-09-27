@@ -6,6 +6,7 @@ package net.montoyo.wd.entity;
 
 import com.cinemamod.mcef.MCEF;
 import com.cinemamod.mcef.MCEFBrowser;
+import com.cinemamod.mcef.MCEFCursorChangeListener;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -233,7 +234,7 @@ public class TileEntityScreen extends BlockEntity {
 					else
 						mcefBrowser.resize(resolution.x, resolution.y);
 					
-					mcefBrowser.setCursorChangeListener((type) -> mouseType = type);
+					mcefBrowser.setCursorChangeListener((MCEFCursorChangeListener) (type) -> mouseType = type);
 				}
 				
 				doTurnOnAnim = doAnim;
