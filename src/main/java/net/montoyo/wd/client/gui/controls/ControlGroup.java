@@ -185,6 +185,13 @@ public class ControlGroup extends Container {
     }
 
     @Override
+    public void unfocus() {
+        for (Control control : childs) {
+            control.unfocus();
+        }
+    }
+
+    @Override
     public void load(JsonOWrapper json) {
         super.load(json);
         width = json.getInt("width", 100);

@@ -140,9 +140,20 @@ public abstract class WDScreen extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         boolean clicked = false;
 
+        Control clickedEl = null;
         for(Control ctrl: controls) {
             clicked = ctrl.mouseClicked(mouseX, mouseY, button);
-            if (clicked) break; // don't assume the compiler will optimize stuff
+            if (clicked) {
+                clickedEl = ctrl;
+                break; // don't assume the compiler will optimize stuff
+            }
+        }
+
+        if (clicked) {
+            for (Control control : controls) {
+                if (control != clickedEl)
+                    control.unfocus();
+            }
         }
 
         return clicked;

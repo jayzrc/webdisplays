@@ -189,4 +189,10 @@ public abstract class Container extends BasicControl {
         return null;
     }
 
+    @Override
+    public void unfocus() {
+        for (Control control : childs) {
+            control.unfocus();
+        }
+    }
 }

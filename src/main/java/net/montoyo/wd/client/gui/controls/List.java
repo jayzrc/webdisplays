@@ -107,6 +107,7 @@ public class List extends BasicControl {
         RenderSystem.clearColor(0.0f, 0.0f, 0.0f, 1.f); //Set alpha to 1
         RenderSystem.clearDepth(GL_COLOR_BUFFER_BIT);
         fbo.unbindWrite();
+        mc.getMainRenderTarget().bindWrite(true);
         update = true;
     }
 
@@ -131,8 +132,6 @@ public class List extends BasicControl {
         }
 
         graphics.renderOutline(0, 0, width, height, 0xFF808080);
-        RenderSystem.clearColor(0.0f, 0.0f, 0.0f, 1.f); //Set alpha to 1
-        RenderSystem.clearDepth(GL_COLOR_BUFFER_BIT);
         graphics.flush();
         endFramebuffer(graphics, fbo);
     }
@@ -321,10 +320,10 @@ public class List extends BasicControl {
     @Override
     public void draw(GuiGraphics graphics, int mouseX, int mouseY, float ptt) {
         if(visible) {
-//            if(update) {
+            if(update) {
                 renderToFBO(graphics.bufferSource());
                 update = false;
-//            }
+            }
 
             RenderSystem.setShaderTexture(0, fbo.getColorTextureId());
             RenderSystem.setShaderColor(1.f, 1.f, 1.f, 1.f);

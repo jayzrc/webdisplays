@@ -99,15 +99,18 @@ public class TextField extends Control {
 
     public TextField() {
         field = new EditBox(font, 1, 1, 198, 20, Component.nullToEmpty(""));
+        setFocused(false);
     }
 
     public TextField(int x, int y, int width, int height) {
         field = new EditBox(font, x + 1, y + 1, width - 2, height - 2, Component.nullToEmpty(""));
+        setFocused(false);
     }
 
     public TextField(int x, int y, int width, int height, String text) {
         field = new EditBox(font, x + 1, y + 1, width - 2, height - 2, Component.nullToEmpty(""));
         field.setValue(text);
+        setFocused(false);
     }
     
     // TODO: make this public static in CefBrowserOSR
@@ -166,11 +169,18 @@ public class TextField extends Control {
     
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        if (field.mouseClicked(mouseX, mouseY, mouseButton))
+        if (field.mouseClicked(mouseX, mouseY, mouseButton)) {
             setFocused(true);
+            return true;
+        }
         return false;
     }
-    
+
+    @Override
+    public void unfocus() {
+        setFocused(false);
+    }
+
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int state) {
         return field.mouseReleased(mouseX, mouseY, state);
@@ -262,7 +272,8 @@ public class TextField extends Control {
 
     public void setDisabled(boolean en) {
         enabled = !en;
-        field.setFocused(enabled);
+        if (!en)
+            field.setFocused(false);
     }
 
     public boolean isDisabled() {
@@ -270,7 +281,6 @@ public class TextField extends Control {
     }
 
     public void enable() {
-        field.setFocused(true);
         enabled = true;
     }
 
@@ -357,7 +367,7 @@ public class TextField extends Control {
 
         field.setTextColor(textColor);
         field.setTextColorUneditable(disabledColor);
-//        field.setFocus(enabled);
+        setFocused(false);
     }
 
 }

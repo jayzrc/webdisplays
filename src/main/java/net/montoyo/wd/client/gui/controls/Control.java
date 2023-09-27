@@ -81,6 +81,9 @@ public abstract class Control {
         return false;
     }
 
+    public void unfocus() {
+    }
+
     public boolean mouseReleased(double mouseX, double mouseY, int state) {
         return false;
     }
