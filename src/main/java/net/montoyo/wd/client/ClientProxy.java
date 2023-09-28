@@ -85,6 +85,7 @@ import org.cef.CefSettings;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
 import org.cef.handler.CefDisplayHandler;
+import org.cef.misc.CefCursorType;
 import org.cef.network.CefRequest;
 import org.joml.Vector3d;
 import org.lwjgl.glfw.GLFW;
@@ -175,8 +176,11 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 		if (sc == null) return;
 
 		int coordX = sc.mouseType * 15;
-		int coordY = coordX / 256;
-		coordX -= coordY * 256;
+		int coordY = coordX / 255;
+		coordX -= coordY * 255;
+		coordY *= 15;
+		// for some reason, the cursor gets offset at this value
+		if (sc.mouseType >= CefCursorType.NOT_ALLOWED.ordinal()) coordX -= 15;
 		
 		RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 
