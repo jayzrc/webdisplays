@@ -10,12 +10,16 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.montoyo.wd.client.gui.loading.JsonOWrapper;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
 
 import java.util.ArrayList;
 
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_NEAREST;
+import static org.lwjgl.opengl.GL11.*;
 
 public class List extends BasicControl {
 
@@ -97,19 +101,21 @@ public class List extends BasicControl {
         if(fbo != null)
             fbo.destroyBuffers();
 
-        fbo = new TextureTarget(parent.screen2DisplayX(width), parent.screen2DisplayY(height), false, Minecraft.ON_OSX);
+        fbo = new TextureTarget(parent.screen2DisplayX(width), parent.screen2DisplayY(height), true, Minecraft.ON_OSX);
         fbo.setFilterMode(GL_NEAREST);
-        fbo.bindWrite(false);
+        fbo.bindWrite(true);
         RenderSystem.clearColor(0.0f, 0.0f, 0.0f, 1.f); //Set alpha to 1
         RenderSystem.clearDepth(GL_COLOR_BUFFER_BIT);
         fbo.unbindWrite();
+        mc.getMainRenderTarget().bindWrite(true);
         update = true;
     }
 
-    private void renderToFBO() {
-        GuiGraphics poseStack = beginFramebuffer(fbo, width, height);
-        poseStack.pose().pushPose();
-        fillRect(0, 0, width, height, COLOR_BLACK);
+    private void renderToFBO(MultiBufferSource.BufferSource source) {
+        GuiGraphics graphics = beginFramebuffer(fbo, width, height);
+        GL11.glColorMask(true, true, true, true);
+        RenderSystem.applyModelViewMatrix();
+        graphics.fill(0, 0, width, height, COLOR_BLACK);
         RenderSystem.setShaderColor(1.f, 1.f, 1.f, 1.f);
 
         int offset = 4 - getYOffset();
@@ -121,13 +127,13 @@ public class List extends BasicControl {
                     break;
 
                 int color = (i == selected) ? selColor : COLOR_WHITE;
-                poseStack.drawString(font, content.get(i).text, 4, i * 12 + offset, color);
+                graphics.drawString(font, content.get(i).text, 4, i * 12 + offset, color);
             }
         }
 
-        drawBorder(poseStack, 0, 0, width, height, 0xFF808080);
-        endFramebuffer(poseStack, fbo);
-        poseStack.pose().popPose();
+        graphics.renderOutline(0, 0, width, height, 0xFF808080);
+        graphics.flush();
+        endFramebuffer(graphics, fbo);
     }
 
     @Override
@@ -312,19 +318,18 @@ public class List extends BasicControl {
     }
 
     @Override
-    public void draw(GuiGraphics poseStack, int mouseX, int mouseY, float ptt) {
+    public void draw(GuiGraphics graphics, int mouseX, int mouseY, float ptt) {
         if(visible) {
             if(update) {
-                renderToFBO();
+                renderToFBO(graphics.bufferSource());
                 update = false;
             }
 
-            fbo.bindRead(); //TODO: Make sure is right
+            RenderSystem.setShaderTexture(0, fbo.getColorTextureId());
             RenderSystem.setShaderColor(1.f, 1.f, 1.f, 1.f);
-            fillTexturedRect(poseStack.pose(), x, y, width, height, 0.0, 1.0, 1.0, 0.0);
-            fbo.unbindRead();
+            fillTexturedRect(graphics.pose(), x, y, width, height, 0.0, 1.0, 1.0, 0.0);
 
-            fillRect(x + width - 5, y + 1 + scrollPos, 4, scrollSize, (scrolling || isInScrollbar(mouseX, mouseY)) ? 0xFF202020 : 0xFF404040);
+            fillRect(graphics.bufferSource(), x + width - 5, y + 1 + scrollPos, 4, scrollSize, (scrolling || isInScrollbar(mouseX, mouseY)) ? 0xFF202020 : 0xFF404040);
         }
     }
 

@@ -15,6 +15,8 @@ import net.montoyo.wd.client.gui.loading.JsonOWrapper;
 import net.montoyo.wd.utilities.Bounds;
 import org.lwjgl.opengl.GL11;
 
+import java.util.Arrays;
+
 import static org.lwjgl.opengl.GL11.*;
 
 public class ControlGroup extends Container {
@@ -102,17 +104,18 @@ public class ControlGroup extends Container {
 
         if(visible) {
             poseStack.pose().pushPose();
+            float[] sdrCol = Arrays.copyOf(RenderSystem.getShaderColor(), 4);
             RenderSystem.setShaderColor(0.5f, 0.5f, 0.5f, 1.f);
 //            RenderSystem.disableTexture();
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
-            double x1 = (double) x;
-            double y1 = (double) y;
-            double x2 = (double) (x + width);
-            double y2 = (double) (y + height);
+            double x1 = x;
+            double y1 = y;
+            double x2 = (x + width);
+            double y2 = (y + height);
             double bp = 4.0;
-            double lw = (double) labelW;
+            double lw = labelW;
 
             x1 += bp;
             y1 += bp;
@@ -161,6 +164,8 @@ public class ControlGroup extends Container {
             vBuffer.vertex(x2 - 1.0, y1, 0.0).endVertex();
             tessellator.end();
 
+            RenderSystem.setShaderColor(sdrCol[0], sdrCol[1], sdrCol[2], sdrCol[3]);
+
             RenderSystem.disableBlend();
 //            RenderSystem.enableTexture();
             poseStack.pose().popPose();
@@ -177,6 +182,13 @@ public class ControlGroup extends Container {
 
         width = bounds.getWidth() + paddingX * 2;
         height = bounds.getHeight() + paddingY * 2;
+    }
+
+    @Override
+    public void unfocus() {
+        for (Control control : childs) {
+            control.unfocus();
+        }
     }
 
     @Override

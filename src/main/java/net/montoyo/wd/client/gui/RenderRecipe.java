@@ -100,15 +100,15 @@ public class RenderRecipe extends Screen {
                     int x = this.x + 30 + sx * 18;
                     int y = this.y + 17 + sy * 18;
 
-//                    renderItem.renderAndDecorateItem(minecraft.player, is, x, y, 0);
-//                    renderItem.renderGuiItemDecorations(font, is, x, y, null);
+                    context.renderItem(is, x, y);
+                    context.renderItemDecorations(font, is, x, y);
                 }
             }
         }
 
         if(recipeResult != null) {
-//            renderItem.renderAndDecorateItem(minecraft.player, recipeResult, x + 124, y + 35, 0);
-//            renderItem.renderGuiItemDecorations(font, recipeResult, x + 124, y + 35, null);
+            context.renderItem(recipeResult, x, y);
+            context.renderItemDecorations(font, recipeResult, x, y);
         }
 
 //        GlStateManager.enableLighting();

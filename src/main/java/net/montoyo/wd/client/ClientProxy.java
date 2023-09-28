@@ -85,6 +85,7 @@ import org.cef.CefSettings;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
 import org.cef.handler.CefDisplayHandler;
+import org.cef.network.CefRequest;
 import org.joml.Vector3d;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -138,12 +139,11 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 			return;
 		
 		if (!LaserPointerRenderer.isOn()) {
-			RenderSystem.setShaderTexture(0, new ResourceLocation(
-					"webdisplays:textures/gui/cursors.png"
-			));
 			RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-			
-//			blit(poseStack, (screenWidth - 15) / 2, (screenHeight - 15) / 2, 240, 240, 15, 15, offset);
+
+			poseStack.blit(new ResourceLocation(
+					"webdisplays:textures/gui/cursors.png"
+			), (screenWidth - 15) / 2, (screenHeight - 15) / 2, offset, 240, 240, 15, 15, 256, 256);
 			ci.cancel();
 			return;
 		}
@@ -154,9 +154,16 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 		
 		BlockPos bpos = result.getBlockPos();
 		
-		if (result.getType() != HitResult.Type.BLOCK || mc.level.getBlockState(bpos).getBlock() != BlockInit.blockScreen.get())
+		if (result.getType() != HitResult.Type.BLOCK || mc.level.getBlockState(bpos).getBlock() != BlockInit.blockScreen.get()) {
+			RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+
+			poseStack.blit(new ResourceLocation(
+					"webdisplays:textures/gui/cursors.png"
+			), (screenWidth - 15) / 2, (screenHeight - 15) / 2, offset, 240, 240, 15, 15, 256, 256);
+			ci.cancel();
 			return;
-		
+		}
+
 		Vector3i pos = new Vector3i(result.getBlockPos());
 		BlockSide side = BlockSide.values()[result.getDirection().ordinal()];
 		
@@ -166,19 +173,17 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 		TileEntityScreen.Screen sc = te.getScreen(side);
 		
 		if (sc == null) return;
-//        if (sc.mouseType == 1) return;
-		
+
 		int coordX = sc.mouseType * 15;
 		int coordY = coordX / 256;
 		coordX -= coordY * 256;
 		
-		RenderSystem.setShaderTexture(0, new ResourceLocation(
-				"webdisplays:textures/gui/cursors.png"
-		));
 		RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-		
-//		blit(poseStack, (screenWidth - 15) / 2, (screenHeight - 15) / 2, coordX, coordY, 15, 15, offset);
-		
+
+		poseStack.blit(new ResourceLocation(
+				"webdisplays:textures/gui/cursors.png"
+		), (screenWidth - 15) / 2, (screenHeight - 15) / 2, offset, coordX, coordY, 15, 15, 256, 256);
+
 		ci.cancel();
 	}
 	
@@ -258,15 +263,20 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 	@Override
 	public void onCefInit(/*CefInitEvent event*/) {
 		MinecraftForge.EVENT_BUS.register(this);
-//		if (mcef != null)
-//			mcef.registerScheme("wd", WDScheme.class, true, false, false, true, true, false, false);
+
+		if (!MCEF.isInitialized()) return;
+
+		MCEF.getApp().getHandle().registerSchemeHandlerFactory(
+				"webdisplays", "",
+				(browser, frame, url, request) -> {
+					// TODO: check if it's a webdisplays browser?
+					return new WDScheme(request.getURL());
+				}
+		);
 
 //		jsDispatcher = new JSQueryDispatcher(this);
 		minePadRenderer = new MinePadRenderer();
 		laserPointerRenderer = new LaserPointerRenderer();
-		
-//		if (mcef == null)
-//			throw new RuntimeException("MCEF is missing");
 		
 		MCEF.getClient().addDisplayHandler(this);
 //		mcef.registerJSQueryHandler(this);

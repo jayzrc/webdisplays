@@ -96,8 +96,8 @@ public class GuiServer extends WDScreen {
 	}
 	
 	@Override
-	public void render(GuiGraphics poseStack, int mouseX, int mouseY, float ptt) {
-		super.render(poseStack, mouseX, mouseY, ptt);
+	public void render(GuiGraphics graphics, int mouseX, int mouseY, float ptt) {
+		super.render(graphics, mouseX, mouseY, ptt);
 		
 		int x = (width - 256) / 2;
 		int y = (height - 176) / 2;
@@ -105,27 +105,27 @@ public class GuiServer extends WDScreen {
 //        RenderSystem.enableTexture();
 		RenderSystem.setShaderTexture(0, BG_IMAGE);
 		RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-//        blit(poseStack, x, y, 0, 0, 256, 176);
-		
+		graphics.blit(BG_IMAGE, x, y, 0, 0, 256, 256);
+
 		x += 18;
 		y += 18;
 		
 		for (int i = 0; i < lines.size(); i++) {
 			if (selectedLine == i) {
 				drawWhiteQuad(x - 1, y - 2, font.width(lines.get(i)) + 1, 12);
-				poseStack.drawString(Minecraft.getInstance().font, lines.get(i), x, y, 0xFF129700, false);
+				graphics.drawString(Minecraft.getInstance().font, lines.get(i), x, y, 0xFF129700, false);
 			} else
-				poseStack.drawString(Minecraft.getInstance().font, lines.get(i), x, y, 0xFFFFFFFF, false);
+				graphics.drawString(Minecraft.getInstance().font, lines.get(i), x, y, 0xFFFFFFFF, false);
 			
 			y += 12;
 		}
 		
 		if (!promptLocked) {
 			if (queue.isEmpty()) {
-				x = poseStack.drawString(Minecraft.getInstance().font, userPrompt, x, y, 0xFFFFFFFF, false);
-				x = poseStack.drawString(Minecraft.getInstance().font, prompt, x, y, 0xFFFFFFFF, false);
+				x = graphics.drawString(Minecraft.getInstance().font, userPrompt, x, y, 0xFFFFFFFF, false);
+				x = graphics.drawString(Minecraft.getInstance().font, prompt, x, y, 0xFFFFFFFF, false);
 			} else {
-				x = poseStack.drawString(Minecraft.getInstance().font, tr("press_for_more"), x, y, 0xFFFFFFFF, false);
+				x = graphics.drawString(Minecraft.getInstance().font, tr("press_for_more"), x, y, 0xFFFFFFFF, false);
 			}
 		}
 		
@@ -137,7 +137,7 @@ public class GuiServer extends WDScreen {
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		RenderSystem.setShaderTexture(0, FG_IMAGE);
 		RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-//        blit(poseStack,(width - 256) / 2, (height - 176) / 2, 0, 0, 256, 176);
+//        blit(graphics,(width - 256) / 2, (height - 176) / 2, 0, 0, 256, 176);
 	}
 	
 	private void drawWhiteQuad(int x, int y, int w, int h) {

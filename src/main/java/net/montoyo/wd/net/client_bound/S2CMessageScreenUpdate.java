@@ -86,7 +86,13 @@ public class S2CMessageScreenUpdate extends Packet  {
         screenUpdate.control = new OwnerControl(owner);
         return screenUpdate;
     }
-    
+
+    public static S2CMessageScreenUpdate turnOff(BlockPos blockPos, BlockSide side) {
+        S2CMessageScreenUpdate screenUpdate = new S2CMessageScreenUpdate(blockPos, side);
+        screenUpdate.control = TurnOffControl.INSTANCE;
+        return screenUpdate;
+    }
+
     @Override
     public void write(FriendlyByteBuf buf) {
         buf.writeBlockPos(pos);
