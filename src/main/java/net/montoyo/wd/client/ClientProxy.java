@@ -85,6 +85,7 @@ import org.cef.CefSettings;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
 import org.cef.handler.CefDisplayHandler;
+import org.cef.network.CefRequest;
 import org.joml.Vector3d;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -262,15 +263,20 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 	@Override
 	public void onCefInit(/*CefInitEvent event*/) {
 		MinecraftForge.EVENT_BUS.register(this);
-//		if (mcef != null)
-//			mcef.registerScheme("wd", WDScheme.class, true, false, false, true, true, false, false);
+
+		if (!MCEF.isInitialized()) return;
+
+		MCEF.getApp().getHandle().registerSchemeHandlerFactory(
+				"webdisplays", "",
+				(browser, frame, url, request) -> {
+					// TODO: check if it's a webdisplays browser?
+					return new WDScheme(request.getURL());
+				}
+		);
 
 //		jsDispatcher = new JSQueryDispatcher(this);
 		minePadRenderer = new MinePadRenderer();
 		laserPointerRenderer = new LaserPointerRenderer();
-		
-//		if (mcef == null)
-//			throw new RuntimeException("MCEF is missing");
 		
 		MCEF.getClient().addDisplayHandler(this);
 //		mcef.registerJSQueryHandler(this);

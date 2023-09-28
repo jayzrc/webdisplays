@@ -63,6 +63,7 @@ public class ScreenControlRegistry {
 		register(ManageRightsAndUpdgradesControl.id, new ScreenControlType<>(ManageRightsAndUpdgradesControl.class, ManageRightsAndUpdgradesControl::new));
 		register(ClickControl.id, new ScreenControlType<>(ClickControl.class, ClickControl::new));
 		register(OwnerControl.id, new ScreenControlType<>(OwnerControl.class, OwnerControl::new));
+		register(TurnOffControl.id, new ScreenControlType<>(TurnOffControl.class, (buf) -> TurnOffControl.INSTANCE));
 	}
 	
 	public static ScreenControl parse(FriendlyByteBuf buf) {

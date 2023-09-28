@@ -110,12 +110,12 @@ public class ControlGroup extends Container {
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
-            double x1 = (double) x;
-            double y1 = (double) y;
-            double x2 = (double) (x + width);
-            double y2 = (double) (y + height);
+            double x1 = x;
+            double y1 = y;
+            double x2 = (x + width);
+            double y2 = (y + height);
             double bp = 4.0;
-            double lw = (double) labelW;
+            double lw = labelW;
 
             x1 += bp;
             y1 += bp;

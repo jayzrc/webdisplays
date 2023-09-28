@@ -64,7 +64,7 @@ public class TileEntityScreen extends BlockEntity {
 	public TileEntityScreen(BlockPos arg2, BlockState arg3) {
 		super(TileInit.SCREEN_BLOCK_ENTITY.get(), arg2, arg3);
 	}
-	
+
 	public static class Screen {
 		
 		public BlockSide side;
@@ -1140,7 +1140,27 @@ public class TileEntityScreen extends BlockEntity {
 			scr.upgrades.clear();
 		}
 		
-		WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), new S2CMessageCloseGui(getBlockPos()));
+		WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.turnOff(getBlockPos(), null));
+	}
+
+	public void disableScreen(BlockSide side) {
+		Screen remove = null;
+		for (Screen screen : screens) {
+			if (screen.side == side) {
+				remove = screen;
+				break;
+			}
+		}
+
+		if (remove == null) return;
+
+		if (level != null && !level.isClientSide) {
+			final Screen scrn = remove;
+			remove.upgrades.forEach(is -> dropUpgrade(is, scrn.side, null));
+		}
+
+		remove.upgrades.clear();
+		screens.remove(remove);
 	}
 	
 	public void setOwner(BlockSide side, Player newOwner) {
