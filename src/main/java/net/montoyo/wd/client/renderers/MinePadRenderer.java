@@ -115,8 +115,8 @@ public final class MinePadRenderer implements IItemRenderer {
 				double y2 = 14.0 / 32.0 + 0.002;
 				
 				stack.translate(0.063f, 0.28f, 0.001f);
-				RenderSystem.setShaderTexture(0, tex);
-
+//				RenderSystem.setShaderTexture(0, tex);
+				
 				RenderSystem.disableDepthTest();
 				RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 				RenderSystem.setShaderTexture(0, ((MCEFBrowser) pd.view).getRenderer().getTextureID());

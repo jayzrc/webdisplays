@@ -194,6 +194,8 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 		private final UUID id;
 		private long lastURLSent;
 		
+		public int activeCursor;
+		
 		private PadData(String url, UUID id) {
 			String webUrl;
 			try {
@@ -202,8 +204,12 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 				throw new RuntimeException(e);
 			}
 			view = MCEF.createBrowser(WebDisplays.applyBlacklist(webUrl), false);
-			if (view instanceof MCEFBrowser browser)
+			if (view instanceof MCEFBrowser browser) {
 				browser.resize((int) WebDisplays.INSTANCE.padResX, (int) WebDisplays.INSTANCE.padResY);
+				browser.setCursorChangeListener((cursor) -> {
+					activeCursor = cursor;
+				});
+			}
 			isInHotbar = true;
 			this.id = id;
 		}

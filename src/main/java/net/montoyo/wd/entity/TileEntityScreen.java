@@ -234,6 +234,10 @@ public class TileEntityScreen extends BlockEntity {
 					else
 						mcefBrowser.resize(resolution.x, resolution.y);
 					
+					// uh yes this is intentional
+					// basically: on my laptop, this line caused an error inexplicably
+					// reason: the compiler didn't update this file, so it stayed as a Consumer<Integer> in the bytecode
+					//noinspection RedundantCast
 					mcefBrowser.setCursorChangeListener((MCEFCursorChangeListener) (type) -> mouseType = type);
 				}
 				
