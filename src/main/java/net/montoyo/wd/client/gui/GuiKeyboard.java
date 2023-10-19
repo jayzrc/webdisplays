@@ -25,6 +25,8 @@ import net.montoyo.wd.utilities.Log;
 import net.montoyo.wd.utilities.TypeData;
 import net.montoyo.wd.utilities.Util;
 import org.lwjgl.glfw.GLFW;
+import org.vivecraft.client_vr.gameplay.VRPlayer;
+import org.vivecraft.client_vr.gameplay.screenhandlers.KeyboardHandler;
 //import org.vivecraft.gameplay.VRPlayer;
 //import org.vivecraft.gameplay.screenhandlers.KeyboardHandler;
 
@@ -136,16 +138,16 @@ public class GuiKeyboard extends WDScreen {
         defaultBackground = showWarning;
         syncTicks = 5;
     
-//        if (vivecraftPresent)
-//            if (VRPlayer.get() != null)
-//                KeyboardHandler.setOverlayShowing(true);
+        if (vivecraftPresent)
+            if (VRPlayer.get() != null)
+                KeyboardHandler.setOverlayShowing(true);
     }
     
     @Override
     public void onClose() {
-//        if (vivecraftPresent)
-//            if (VRPlayer.get() != null)
-//                KeyboardHandler.setOverlayShowing(false);
+        if (vivecraftPresent)
+            if (VRPlayer.get() != null)
+                KeyboardHandler.setOverlayShowing(false);
         super.onClose();
     }
     
