@@ -73,6 +73,7 @@ repositories{
     }
     flatDir { dirs 'libs' }
     maven { url 'https://mcef-download.cinemamod.com/repository/releases' }
+    maven { url = uri('https://mcef-download.cinemamod.com/repositories/releases') }
 }
 
 dependencies {
@@ -83,10 +84,14 @@ dependencies {
 //    implementation fg.deobf("curse.maven:SU-370704:4485052")
 //    implementation fg.deobf("curse.maven:spark-361579:4381167")
 
-    implementation fg.deobf("flatdir.lib:mcef:2.x")
+//    implementation fg.deobf("flatdir.lib:mcef:2.x")
 //    implementation fg.deobf("flatdir.lib:smallerunits:2.1.3")
 
 //    compileOnly fg.deobf("curse.maven:vivecraft-667903:4409427")
+
+    implementation fg.deobf("com.cinemamod:mcef-forge:2.0.1-1.20.1") {
+        transitive = false
+    }
 }
 
 sourceSets {

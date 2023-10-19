@@ -108,11 +108,6 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 		INSTANCE = this;
 	}
 	
-//	public static void blit(PoseStack p_93229_, int p_93230_, int p_93231_, int p_93232_, int p_93233_, int p_93234_, int p_93235_, int offset) {
-//		Gui.blit(p_93229_, p_93230_, p_93231_, offset, (float) p_93232_, (float) p_93233_, p_93234_, p_93235_, 256, 256);
-//	}
-	
-//	public static void renderCrosshair(Options options, int screenWidth, int screenHeight, int offset, PoseStack poseStack, CallbackInfo ci) {
 	public static void renderCrosshair(Options options, int screenWidth, int screenHeight, int offset, GuiGraphics poseStack, CallbackInfo ci) {
 		ItemStack stack = Minecraft.getInstance().player.getItemInHand(InteractionHand.MAIN_HAND);
 		ItemStack stack1 = Minecraft.getInstance().player.getItemInHand(InteractionHand.OFF_HAND);
@@ -263,6 +258,7 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 	public void preInit() {
 		super.preInit();
 		mc = Minecraft.getInstance();
+		MinecraftForge.EVENT_BUS.register(this);
 	}
 	
 	@Override
@@ -272,7 +268,8 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 	
 	@Override
 	public void onCefInit(/*CefInitEvent event*/) {
-		MinecraftForge.EVENT_BUS.register(this);
+		minePadRenderer = new MinePadRenderer();
+		laserPointerRenderer = new LaserPointerRenderer();
 
 		if (!MCEF.isInitialized()) return;
 
@@ -285,11 +282,9 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 		);
 
 //		jsDispatcher = new JSQueryDispatcher(this);
-		minePadRenderer = new MinePadRenderer();
-		laserPointerRenderer = new LaserPointerRenderer();
-		
 		MCEF.getClient().addDisplayHandler(this);
 //		mcef.registerJSQueryHandler(this);
+
 		findAdvancementToProgressField();
 	}
 	

@@ -4,6 +4,7 @@
 
 package net.montoyo.wd;
 
+import com.cinemamod.mcef.MCEF;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
@@ -30,21 +31,20 @@ public class SharedProxy {
     }
 
     public void init() {
-//        MinecraftForge.EVENT_BUS.addListener(this::onCefInit);
-        onCefInit();
+        MCEF.scheduleForInit((cef) -> onCefInit());
     }
-    
+
     public void postInit() {
     }
-    
+
     public void onCefInit(/*CefInitEvent event*/) {
     }
-    
+
     @Deprecated(forRemoval = true)
     public Level getWorld(ResourceKey<Level> dim) {
         return getServer().getLevel(dim);
     }
-    
+
     public BlockGetter getWorld(NetworkEvent.Context context) {
         if (context.getSender() != null) return context.getSender().level();
         return null;
