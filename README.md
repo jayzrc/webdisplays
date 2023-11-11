@@ -3,6 +3,8 @@ WebDisplays is a mod for creating and interacting with web browsers in Minecraft
 
 WebDisplays was originally written by montoyo. It is currently maintained by CinemaMod Group.
 
+Discussion: https://discord.gg/rNrh5kW8Ty
+
 Download WebDisplays from either:
 - CurseForge: https://legacy.curseforge.com/minecraft/mc-mods/webdisplays
 - Modrinth: TODO
