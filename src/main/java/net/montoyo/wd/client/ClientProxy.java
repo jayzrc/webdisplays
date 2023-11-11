@@ -58,7 +58,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.network.NetworkEvent;
 import net.montoyo.wd.SharedProxy;
 import net.montoyo.wd.WebDisplays;
-import net.montoyo.wd.block.BlockScreen;
+import net.montoyo.wd.block.ScreenBlock;
 import net.montoyo.wd.client.gui.*;
 import net.montoyo.wd.client.gui.loading.GuiLoader;
 import net.montoyo.wd.client.renderers.*;
@@ -898,7 +898,7 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 	public static void onDrawSelection(RenderHighlightEvent event) {
 		if (event.getTarget() instanceof BlockHitResult bhr) {
 			BlockState state = Minecraft.getInstance().level.getBlockState(bhr.getBlockPos());
-			if (state.getBlock() instanceof BlockScreen screen) {
+			if (state.getBlock() instanceof ScreenBlock screen) {
 				Vector3i vec = new Vector3i(bhr.getBlockPos().getX(), bhr.getBlockPos().getY(), bhr.getBlockPos().getZ());
 				BlockSide side = BlockSide.fromInt(bhr.getDirection().ordinal());
 				Multiblock.findOrigin(

@@ -25,7 +25,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.network.PacketDistributor;
 import net.montoyo.wd.WebDisplays;
-import net.montoyo.wd.block.BlockScreen;
+import net.montoyo.wd.block.ScreenBlock;
 import net.montoyo.wd.client.ClientProxy;
 import net.montoyo.wd.config.CommonConfig;
 import net.montoyo.wd.controls.builtin.ClickControl;
@@ -51,7 +51,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import static net.montoyo.wd.block.BlockPeripheral.point;
+import static net.montoyo.wd.block.PeripheralBlock.point;
 
 public class ScreenBlockEntity extends BlockEntity {
     public ScreenBlockEntity(BlockPos arg2, BlockState arg3) {
@@ -481,7 +481,7 @@ public class ScreenBlockEntity extends BlockEntity {
 
         if (!level.isClientSide) {
             if (screens.isEmpty()) //No more screens: remove tile entity
-                level.setBlockAndUpdate(getBlockPos(), BlockRegistry.SCREEN_BLOCk.get().defaultBlockState().setValue(BlockScreen.hasTE, false));
+                level.setBlockAndUpdate(getBlockPos(), BlockRegistry.SCREEN_BLOCk.get().defaultBlockState().setValue(ScreenBlock.hasTE, false));
             else
                 setChanged();
         }

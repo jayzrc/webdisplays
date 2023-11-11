@@ -37,12 +37,12 @@ import net.montoyo.wd.item.ItemLaserPointer;
 import net.montoyo.wd.utilities.*;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockScreen extends BaseEntityBlock {
+public class ScreenBlock extends BaseEntityBlock {
     public static final BooleanProperty hasTE = BooleanProperty.create("haste");
     public static final BooleanProperty emitting = BooleanProperty.create("emitting");
     private static final Property<?>[] properties = new Property<?>[]{hasTE, emitting};
 
-    public BlockScreen(Properties properties) {
+    public ScreenBlock(Properties properties) {
         super(properties.strength(1.5f, 10.f));
         this.registerDefaultState(this.defaultBlockState().setValue(hasTE, false).setValue(emitting, false));
     }
@@ -289,7 +289,7 @@ public class BlockScreen extends BaseEntityBlock {
         neighbors[5] = new Vector3i(pos.getX(), pos.getY(), pos.getZ() - 1);
 
         for (Vector3i neighbor : neighbors) {
-            if (world.getBlockState(neighbor.toBlock()).getBlock() instanceof BlockScreen) {
+            if (world.getBlockState(neighbor.toBlock()).getBlock() instanceof ScreenBlock) {
                 for (BlockSide bs : BlockSide.values())
                     destroySide(world, neighbor.clone(), bs, override, (whoDidThisShit instanceof Player) ? ((Player) whoDidThisShit) : null);
             }

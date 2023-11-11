@@ -17,7 +17,7 @@ import net.montoyo.wd.utilities.*;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static net.montoyo.wd.block.BlockScreen.hasTE;
+import static net.montoyo.wd.block.ScreenBlock.hasTE;
 
 public class S2CMessageAddScreen extends Packet {
 	private boolean clear;

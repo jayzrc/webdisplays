@@ -31,23 +31,23 @@ import net.montoyo.wd.utilities.BlockSide;
 import net.montoyo.wd.utilities.Vector3i;
 import org.jetbrains.annotations.NotNull;
 
-import static net.montoyo.wd.block.BlockKeyboardLeft.KEYBOARD_AABBS;
-import static net.montoyo.wd.block.BlockPeripheral.point;
+import static net.montoyo.wd.block.KeyboardBlockLeft.KEYBOARD_AABBS;
+import static net.montoyo.wd.block.PeripheralBlock.point;
 
 // TODO: merge into KeyboardLeft
-public class BlockKeyboardRight extends Block implements IPeripheral {
+public class KeyboardBlockRight extends Block implements IPeripheral {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
-    public BlockKeyboardRight() {
+    public KeyboardBlockRight() {
         super(Properties.copy(Blocks.STONE)
                 .strength(1.5f, 10.f));
     }
     
     private static void removeLeftPiece(BlockState state, Level world, BlockPos pos) {
-        BlockPos relative = pos.relative(BlockKeyboardLeft.mapDirection(state.getValue(FACING).getOpposite()));
+        BlockPos relative = pos.relative(KeyboardBlockLeft.mapDirection(state.getValue(FACING).getOpposite()));
         
         BlockState ns = world.getBlockState(relative);
-        if (ns.getBlock() instanceof BlockKeyboardLeft)
+        if (ns.getBlock() instanceof KeyboardBlockLeft)
             world.setBlock(relative, Blocks.AIR.defaultBlockState(), 3);
     }
     
@@ -82,7 +82,7 @@ public class BlockKeyboardRight extends Block implements IPeripheral {
 
     @Override
     public boolean connect(Level world, BlockPos pos, BlockState state, Vector3i scrPos, BlockSide scrSide) {
-        KeyboardBlockEntity keyboard = BlockKeyboardLeft.getTileEntity(state, world, pos);
+        KeyboardBlockEntity keyboard = KeyboardBlockLeft.getTileEntity(state, world, pos);
         return keyboard != null && keyboard.connect(world, pos, state, scrPos, scrSide);
     }
     
@@ -90,7 +90,7 @@ public class BlockKeyboardRight extends Block implements IPeripheral {
     public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
         double rpos = (entity.getY() - ((double) pos.getY())) * 16.0;
         if (!world.isClientSide && rpos >= 1.0 && rpos <= 2.0 && Math.random() < 0.25) {
-            KeyboardBlockEntity tek = BlockKeyboardLeft.getTileEntity(state, world, pos);
+            KeyboardBlockEntity tek = KeyboardBlockLeft.getTileEntity(state, world, pos);
 
             if (tek != null)
                 tek.simulateCat(entity);
@@ -102,7 +102,7 @@ public class BlockKeyboardRight extends Block implements IPeripheral {
         if (player.getItemInHand(hand).getItem() instanceof ItemLinker)
             return InteractionResult.PASS;
 
-        KeyboardBlockEntity tek = BlockKeyboardLeft.getTileEntity(state, level, pos);
+        KeyboardBlockEntity tek = KeyboardBlockLeft.getTileEntity(state, level, pos);
         if (tek != null)
             return tek.onRightClick(player, hand);
 

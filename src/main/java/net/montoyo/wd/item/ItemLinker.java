@@ -14,7 +14,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.montoyo.wd.WebDisplays;
-import net.montoyo.wd.block.BlockScreen;
+import net.montoyo.wd.block.ScreenBlock;
 import net.montoyo.wd.core.IPeripheral;
 import net.montoyo.wd.core.ScreenRights;
 import net.montoyo.wd.entity.ScreenBlockEntity;
@@ -80,7 +80,7 @@ public class ItemLinker extends Item implements WDItem {
             }
         }
 
-        if (!(context.getLevel().getBlockState(context.getClickedPos()).getBlock() instanceof BlockScreen)) {
+        if (!(context.getLevel().getBlockState(context.getClickedPos()).getBlock() instanceof ScreenBlock)) {
             Util.toast(context.getPlayer(), "notAScreen");
             return InteractionResult.SUCCESS;
         }

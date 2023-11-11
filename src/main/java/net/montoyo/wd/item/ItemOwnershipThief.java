@@ -12,7 +12,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.montoyo.wd.block.BlockScreen;
+import net.montoyo.wd.block.ScreenBlock;
 import net.montoyo.wd.config.CommonConfig;
 import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.utilities.*;
@@ -50,7 +50,7 @@ public class ItemOwnershipThief extends Item implements WDItem {
                 BlockPos bp = new BlockPos(tag.getInt("PosX"), tag.getInt("PosY"), tag.getInt("PosZ"));
                 BlockSide side = BlockSide.values()[tag.getByte("Side")];
 
-                if (!(context.getLevel().getBlockState(bp).getBlock() instanceof BlockScreen))
+                if (!(context.getLevel().getBlockState(bp).getBlock() instanceof ScreenBlock))
                     return InteractionResult.SUCCESS;
 
                 BlockEntity te = context.getLevel().getBlockEntity(bp);
@@ -70,7 +70,7 @@ public class ItemOwnershipThief extends Item implements WDItem {
             }
         }
 
-        if (!(context.getLevel().getBlockState(context.getClickedPos()).getBlock() instanceof BlockScreen))
+        if (!(context.getLevel().getBlockState(context.getClickedPos()).getBlock() instanceof ScreenBlock))
             return InteractionResult.SUCCESS;
 
         Vector3i pos = new Vector3i(context.getClickedPos());

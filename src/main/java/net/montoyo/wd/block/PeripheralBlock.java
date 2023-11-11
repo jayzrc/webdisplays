@@ -37,10 +37,10 @@ import net.montoyo.wd.net.client_bound.S2CMessageCloseGui;
 import net.montoyo.wd.utilities.Log;
 import org.jetbrains.annotations.Nullable;
 
-public class BlockPeripheral extends WDBlockContainer {
+public class PeripheralBlock extends WDContainerBlock {
     DefaultPeripheral type;
 
-    public BlockPeripheral(DefaultPeripheral type) {
+    public PeripheralBlock(DefaultPeripheral type) {
         super(BlockBehaviour.Properties.copy(Blocks.STONE).strength(1.5f, 10.f));
         this.type = type;
     }

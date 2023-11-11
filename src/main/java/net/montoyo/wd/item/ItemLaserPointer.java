@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.montoyo.wd.block.BlockScreen;
+import net.montoyo.wd.block.ScreenBlock;
 import net.montoyo.wd.client.ClientProxy;
 import net.montoyo.wd.config.ClientConfig;
 import net.montoyo.wd.controls.builtin.ClickControl;
@@ -69,7 +69,7 @@ public class ItemLaserPointer extends Item implements WDItem {
 					float hitZ = ((float) result.getLocation().z) - (float) pos.z;
 					Vector2i tmp = new Vector2i();
 					
-					if (BlockScreen.hit2pixels(side, bpos, new Vector3i(result.getBlockPos()), scr, hitX, hitY, hitZ, tmp)) {
+					if (ScreenBlock.hit2pixels(side, bpos, new Vector3i(result.getBlockPos()), scr, hitX, hitY, hitZ, tmp)) {
 						laserClick(te, side, scr, tmp);
 					}
 				}
@@ -135,7 +135,7 @@ public class ItemLaserPointer extends Item implements WDItem {
 			ScreenBlockEntity.Screen scr = te.getScreen(side);
 			
 			if (scr.browser != null) {
-				if (BlockScreen.hit2pixels(side, result.getBlockPos(), new Vector3i(result.getBlockPos()), scr, hitX, hitY, hitZ, tmp)) {
+				if (ScreenBlock.hit2pixels(side, result.getBlockPos(), new Vector3i(result.getBlockPos()), scr, hitX, hitY, hitZ, tmp)) {
 					te.handleMouseEvent(side, ClickControl.ControlType.MOVE, tmp, -1);
 					te.handleMouseEvent(side, press ? ClickControl.ControlType.DOWN : ClickControl.ControlType.UP, tmp, button);
 					

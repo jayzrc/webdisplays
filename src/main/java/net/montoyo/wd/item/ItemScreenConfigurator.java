@@ -10,7 +10,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.montoyo.wd.block.BlockScreen;
+import net.montoyo.wd.block.ScreenBlock;
 import net.montoyo.wd.data.ScreenConfigData;
 import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.utilities.BlockSide;
@@ -29,7 +29,7 @@ public class ItemScreenConfigurator extends Item implements WDItem {
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        if (context.getPlayer().isShiftKeyDown() || !(context.getLevel().getBlockState(context.getClickedPos()).getBlock() instanceof BlockScreen))
+        if (context.getPlayer().isShiftKeyDown() || !(context.getLevel().getBlockState(context.getClickedPos()).getBlock() instanceof ScreenBlock))
             return InteractionResult.PASS;
 
         if (context.getLevel().isClientSide)
