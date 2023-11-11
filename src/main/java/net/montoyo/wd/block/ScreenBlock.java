@@ -200,15 +200,21 @@ public class ScreenBlock extends BaseEntityBlock {
     }
 
     public static boolean hit2pixels(BlockSide side, BlockPos bpos, Vector3i pos, ScreenBlockEntity.Screen scr, float hitX, float hitY, float hitZ, Vector2i dst) {
+        if(side.right.x < 0)
+            hitX -= 1.f;
+
+        if(side.right.z < 0 || side == BlockSide.TOP || side == BlockSide.BOTTOM)
+            hitZ -= 1.f;
+
         Vector3f rel = new Vector3f(hitX, hitY, hitZ);
 
-        // how these dot products come in is beyond me
-        float cx = rel.dot(side.horizontal.toFloat()) - 2.f / 16.f;
-        float cy = rel.dot(side.vertical.toFloat()) - 2.f / 16.f;
+        float cx = rel.dot(side.right.toFloat()) - 2.f / 16.f;
+        float cy = rel.dot(side.up.toFloat()) - 2.f / 16.f;
+        float sw = ((float) scr.size.x) - 4.f / 16.f;
+        float sh = ((float) scr.size.y) - 4.f / 16.f;
 
-        // scale coordinate to be in the size mcef expects (0 -> 1)
-        cx /= ((float) scr.size.x) - 4.f / 16.f;
-        cy /= ((float) scr.size.y) - 4.f / 16.f;
+        cx /= sw;
+        cy /= sh;
 
         if (cx >= 0.f && cx <= 1.0 && cy >= 0.f && cy <= 1.f) {
             if (side != BlockSide.BOTTOM)
