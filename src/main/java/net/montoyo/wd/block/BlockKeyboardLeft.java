@@ -33,7 +33,6 @@ import net.montoyo.wd.net.client_bound.S2CMessageCloseGui;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockKeyboardLeft extends BlockPeripheral {
-
     public static final EnumProperty<DefaultPeripheral> TYPE = EnumProperty.create("type", DefaultPeripheral.class);
     public static final DirectionProperty FACING = DirectionProperty.create("facing", Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
 //    public static final DirectionProperty HALF = DirectionProperty.create("facing", Direction.EAST, Direction.WEST);

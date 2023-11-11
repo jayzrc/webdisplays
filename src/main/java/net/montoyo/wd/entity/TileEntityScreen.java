@@ -31,27 +31,22 @@ import net.montoyo.wd.config.CommonConfig;
 import net.montoyo.wd.controls.builtin.ClickControl;
 import net.montoyo.wd.core.DefaultUpgrade;
 import net.montoyo.wd.core.IUpgrade;
-import net.montoyo.wd.core.JSServerRequest;
 import net.montoyo.wd.core.ScreenRights;
 import net.montoyo.wd.data.ScreenConfigData;
-import net.montoyo.wd.init.BlockInit;
-import net.montoyo.wd.init.ItemInit;
-import net.montoyo.wd.init.TileInit;
+import net.montoyo.wd.registry.BlockRegistry;
+import net.montoyo.wd.registry.ItemRegistry;
+import net.montoyo.wd.registry.TileRegistry;
 import net.montoyo.wd.miniserv.SyncPlugin;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.client_bound.S2CMessageAddScreen;
-import net.montoyo.wd.net.client_bound.S2CMessageCloseGui;
-import net.montoyo.wd.net.client_bound.S2CMessageJSResponse;
 import net.montoyo.wd.net.client_bound.S2CMessageScreenUpdate;
 import net.montoyo.wd.utilities.*;
 import org.cef.browser.CefBrowser;
-import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -59,9 +54,8 @@ import java.util.function.Consumer;
 import static net.montoyo.wd.block.BlockPeripheral.point;
 
 public class TileEntityScreen extends BlockEntity {
-
     public TileEntityScreen(BlockPos arg2, BlockState arg3) {
-        super(TileInit.SCREEN_BLOCK_ENTITY.get(), arg2, arg3);
+        super(TileRegistry.SCREEN_BLOCK_ENTITY.get(), arg2, arg3);
     }
 
     public static class Screen {
@@ -277,6 +271,7 @@ public class TileEntityScreen extends BlockEntity {
                 scr.browser = null;
             }
         }
+        screens.clear();
 
         loaded = false;
     }
@@ -288,6 +283,14 @@ public class TileEntityScreen extends BlockEntity {
         ListTag list = tag.getList("WDScreens", Tag.TAG_COMPOUND);
         if (list.isEmpty())
             return;
+
+        // very important to close these
+        for (Screen screen : screens) {
+            if (screen.browser != null) {
+                screen.browser.close(true);
+                screen.browser = null;
+            }
+        }
 
         screens.clear();
         for (int i = 0; i < list.size(); i++)
@@ -403,15 +406,16 @@ public class TileEntityScreen extends BlockEntity {
     }
 
     public void clear() {
+        // very important that these get closed
+        for (Screen screen : screens)
+            if (screen.browser != null) {
+                screen.browser.close(true);
+                screen.browser = null;
+            }
         screens.clear();
 
         if (!level.isClientSide)
             setChanged();
-    }
-
-    public void requestData(ServerPlayer ep) {
-        if (!level.isClientSide)
-            WDNetworkRegistry.INSTANCE.send(PacketDistributor.PLAYER.with(() -> ep), new S2CMessageAddScreen(this));
     }
 
     public static String url(String url) throws IOException {
@@ -450,6 +454,7 @@ public class TileEntityScreen extends BlockEntity {
         }
     }
 
+    // TODO: is there a reason this is unused?
     public void removeScreen(BlockSide side) {
         int idx = -1;
         for (int i = 0; i < screens.size(); i++) {
@@ -476,7 +481,7 @@ public class TileEntityScreen extends BlockEntity {
 
         if (!level.isClientSide) {
             if (screens.isEmpty()) //No more screens: remove tile entity
-                level.setBlockAndUpdate(getBlockPos(), BlockInit.blockScreen.get().defaultBlockState().setValue(BlockScreen.hasTE, false));
+                level.setBlockAndUpdate(getBlockPos(), BlockRegistry.SCREEN_BLOCk.get().defaultBlockState().setValue(BlockScreen.hasTE, false));
             else
                 setChanged();
         }
@@ -512,7 +517,7 @@ public class TileEntityScreen extends BlockEntity {
 
     private static Player getLaserUser(Screen scr) {
         if (scr.laserUser != null) {
-            if (scr.laserUser.isRemoved() || !scr.laserUser.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(ItemInit.LASER_POINTER.get()))
+            if (scr.laserUser.isRemoved() || !scr.laserUser.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(ItemRegistry.LASER_POINTER.get()))
                 scr.laserUser = null;
         }
 
@@ -542,13 +547,6 @@ public class TileEntityScreen extends BlockEntity {
             Log.warning("TileEntityScreen.click() from client side is useless...");
         else if (getLaserUser(scr) == null)
             WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, ClickControl.ControlType.CLICK, vec));
-    }
-
-    void clickUnsafe(BlockSide side, ClickControl.ControlType action, int x, int y) {
-        if (level.isClientSide) {
-            Vector2i vec = (action == ClickControl.ControlType.UP) ? null : new Vector2i(x, y);
-            WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(level, getBlockPos())), S2CMessageScreenUpdate.click(this, side, action, vec));
-        }
     }
 
     public void handleMouseEvent(BlockSide side, ClickControl.ControlType event, @Nullable Vector2i vec, int button) {
@@ -791,6 +789,7 @@ public class TileEntityScreen extends BlockEntity {
     public void updateClientSideURL(CefBrowser target, String url) {
         for (Screen scr : screens) {
             if (scr.browser == target) {
+                // TODO: what? lol
                 String webUrl;
                 try {
                     webUrl = TileEntityScreen.url(url);
@@ -1255,5 +1254,4 @@ public class TileEntityScreen extends BlockEntity {
 //
 //        return oldState.getValue(BlockScreen.hasTE) != newState.getValue(BlockScreen.hasTE);
 //    }
-
 }

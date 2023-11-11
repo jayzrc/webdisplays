@@ -18,16 +18,15 @@ import net.montoyo.wd.utilities.Log;
 import net.montoyo.wd.utilities.Vector3i;
 
 public class KeyboardData extends GuiData {
-
     public Vector3i pos;
     public BlockSide side;
     public int kbX;
     public int kbY;
     public int kbZ;
-    
+
     public KeyboardData() {
     }
-    
+
     public KeyboardData(TileEntityScreen tes, BlockSide side, BlockPos kbPos) {
         pos = new Vector3i(tes.getBlockPos());
         this.side = side;
@@ -40,7 +39,7 @@ public class KeyboardData extends GuiData {
     @Override
     public Screen createGui(Screen old, Level world) {
         BlockEntity te = world.getBlockEntity(pos.toBlock());
-        if(te == null || !(te instanceof TileEntityScreen)) {
+        if (te == null || !(te instanceof TileEntityScreen)) {
             Log.error("TileEntity at %s is not a screen; can't open keyboard!", pos.toString());
             return null;
         }
@@ -52,7 +51,7 @@ public class KeyboardData extends GuiData {
     public String getName() {
         return "Keyboard";
     }
-    
+
     @Override
     public void serialize(FriendlyByteBuf buf) {
         buf.writeInt(pos.x);

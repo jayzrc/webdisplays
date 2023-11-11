@@ -12,19 +12,18 @@ import net.montoyo.wd.entity.TileEntityKeyboard;
 import net.montoyo.wd.entity.TileEntityRCtrl;
 import net.montoyo.wd.entity.TileEntityRedCtrl;
 import net.montoyo.wd.entity.TileEntityServer;
-import net.montoyo.wd.init.BlockInit;
+import net.montoyo.wd.registry.BlockRegistry;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
 
 public enum DefaultPeripheral implements StringRepresentable {
-
-    KEYBOARD("keyboard", "Keyboard", TileEntityKeyboard::new, BlockInit.blockKeyBoard),                          //WITH FACING (< 3)
+    KEYBOARD("keyboard", "Keyboard", TileEntityKeyboard::new, BlockRegistry.KEYBOARD_BLOCK),                          //WITH FACING (< 3)
 //    CC_INTERFACE("ccinterface", "ComputerCraft_Interface", TileEntityCCInterface.class),
 //    OC_INTERFACE("cointerface", "OpenComputers_Interface", TileEntityOCInterface.class),
-    REMOTE_CONTROLLER("remotectrl", "Remote_Controller", TileEntityRCtrl::new ,BlockInit.blockRControl),         //WITHOUT FACING (>= 3)
-    REDSTONE_CONTROLLER("redstonectrl", "Redstone_Controller", TileEntityRedCtrl::new ,BlockInit.blockRedControl),
-    SERVER("server", "Server", TileEntityServer::new, BlockInit.blockServer);
+    REMOTE_CONTROLLER("remotectrl", "Remote_Controller", TileEntityRCtrl::new , BlockRegistry.REMOTE_CONTROLLER_BLOCK),         //WITHOUT FACING (>= 3)
+    REDSTONE_CONTROLLER("redstonectrl", "Redstone_Controller", TileEntityRedCtrl::new , BlockRegistry.REDSTONE_CONTROL_BLOCK),
+    SERVER("server", "Server", TileEntityServer::new, BlockRegistry.SERVER_BLOCK);
 
     private final String name;
     private final String wikiName;

@@ -11,14 +11,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.block.BlockScreen;
 import net.montoyo.wd.client.ClientProxy;
 import net.montoyo.wd.config.ClientConfig;
 import net.montoyo.wd.controls.builtin.ClickControl;
 import net.montoyo.wd.core.DefaultUpgrade;
 import net.montoyo.wd.entity.TileEntityScreen;
-import net.montoyo.wd.init.BlockInit;
+import net.montoyo.wd.registry.BlockRegistry;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.server_bound.C2SMessageScreenCtrl;
 import net.montoyo.wd.utilities.BlockSide;
@@ -53,7 +52,7 @@ public class ItemLaserPointer extends Item implements WDItem {
 		
 		BlockPos bpos = result.getBlockPos();
 		
-		if (result.getType() == HitResult.Type.BLOCK && mc.level.getBlockState(bpos).getBlock() == BlockInit.blockScreen.get()) {
+		if (result.getType() == HitResult.Type.BLOCK && mc.level.getBlockState(bpos).getBlock() == BlockRegistry.SCREEN_BLOCk.get()) {
 			Vector3i pos = new Vector3i(result.getBlockPos());
 			BlockSide side = BlockSide.values()[result.getDirection().ordinal()];
 			

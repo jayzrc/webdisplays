@@ -8,7 +8,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.montoyo.wd.utilities.Util;
 
 public enum JSServerRequest {
-
     CLEAR_REDSTONE,
     SET_REDSTONE_AT(Integer.class, Integer.class, Boolean.class);
 
@@ -50,5 +49,4 @@ public enum JSServerRequest {
 
         return ret;
     }
-
 }

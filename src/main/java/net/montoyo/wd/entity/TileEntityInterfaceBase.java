@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public abstract class TileEntityInterfaceBase extends TileEntityPeripheralBase {
-
     public TileEntityInterfaceBase(BlockEntityType<?> arg, BlockPos arg2, BlockState arg3) {
         super(arg, arg2, arg3);
     }
@@ -406,5 +405,4 @@ public abstract class TileEntityInterfaceBase extends TileEntityPeripheralBase {
 
         return null;
     }
-
 }

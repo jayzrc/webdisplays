@@ -23,85 +23,84 @@ import net.montoyo.wd.utilities.NameUUIDPair;
 import net.montoyo.wd.utilities.Vector3i;
 
 public class ScreenConfigData extends GuiData {
-	
-	public boolean onlyUpdate;
-	public Vector3i pos;
-	public BlockSide side;
-	public NameUUIDPair[] friends;
-	public int friendRights;
-	public int otherRights;
-	
-	public ScreenConfigData() {
-	}
+    public boolean onlyUpdate;
+    public Vector3i pos;
+    public BlockSide side;
+    public NameUUIDPair[] friends;
+    public int friendRights;
+    public int otherRights;
 
-	public ScreenConfigData(Vector3i pos, BlockSide side, TileEntityScreen.Screen scr) {
-		this.pos = pos;
-		this.side = side;
-		friends = scr.friends.toArray(new NameUUIDPair[0]);
-		friendRights = scr.friendRights;
-		otherRights = scr.otherRights;
-		onlyUpdate = false;
-	}
-	
-	@OnlyIn(Dist.CLIENT)
-	@Override
-	public Screen createGui(Screen old, Level world) {
-		if (old != null && old instanceof GuiScreenConfig) {
-			GuiScreenConfig gsc = (GuiScreenConfig) old;
-			
-			if (gsc.isForBlock(pos.toBlock(), side)) {
-				gsc.updateFriends(friends);
-				gsc.updateFriendRights(friendRights);
-				gsc.updateOtherRights(otherRights);
-				gsc.updateMyRights();
-				
-				return null;
-			}
-		}
-		
-		if (onlyUpdate)
-			return null;
-		
-		BlockEntity te = world.getBlockEntity(pos.toBlock());
-		if (te == null || !(te instanceof TileEntityScreen)) {
-			Log.error("TileEntity at %s is not a screen; can't open gui!", pos.toString());
-			return null;
-		}
-		
-		return new GuiScreenConfig(Component.nullToEmpty(""), (TileEntityScreen) te, side, friends, friendRights, otherRights);
-	}
-	
-	@Override
-	public String getName() {
-		return "ScreenConfig";
-	}
-	
-	public ScreenConfigData updateOnly() {
-		onlyUpdate = true;
-		return this;
-	}
-	
-	public void sendTo(PacketDistributor.TargetPoint tp) {
-		WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> tp), new S2CMessageOpenGui(this));
-	}
-	
-	@Override
-	public void serialize(FriendlyByteBuf buf) {
-		buf.writeBoolean(onlyUpdate);
-		BufferUtils.writeVec3i(buf, pos);
-		BufferUtils.writeEnum(buf, side, (byte) 1);
-		BufferUtils.writeArray(buf, friends, (nameUUIDPair) -> nameUUIDPair.writeTo(buf));
-		buf.writeInt(friendRights);
-		buf.writeInt(otherRights);
-	}
-	
-	@Override
-	public void deserialize(FriendlyByteBuf buf) {
-		onlyUpdate = buf.readBoolean();
-		pos = BufferUtils.readVec3i(buf);
-		side = (BlockSide) BufferUtils.readEnum(buf, (v) -> BlockSide.values()[v], (byte) 1);
-		friends = BufferUtils.readArray(buf, new NameUUIDPair[0], () -> new NameUUIDPair(buf));
-		friendRights = buf.readInt();
-		otherRights = buf.readInt();
-	}
+    public ScreenConfigData() {
+    }
+
+    public ScreenConfigData(Vector3i pos, BlockSide side, TileEntityScreen.Screen scr) {
+        this.pos = pos;
+        this.side = side;
+        friends = scr.friends.toArray(new NameUUIDPair[0]);
+        friendRights = scr.friendRights;
+        otherRights = scr.otherRights;
+        onlyUpdate = false;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public Screen createGui(Screen old, Level world) {
+        if (old != null && old instanceof GuiScreenConfig) {
+            GuiScreenConfig gsc = (GuiScreenConfig) old;
+
+            if (gsc.isForBlock(pos.toBlock(), side)) {
+                gsc.updateFriends(friends);
+                gsc.updateFriendRights(friendRights);
+                gsc.updateOtherRights(otherRights);
+                gsc.updateMyRights();
+
+                return null;
+            }
+        }
+
+        if (onlyUpdate)
+            return null;
+
+        BlockEntity te = world.getBlockEntity(pos.toBlock());
+        if (te == null || !(te instanceof TileEntityScreen)) {
+            Log.error("TileEntity at %s is not a screen; can't open gui!", pos.toString());
+            return null;
+        }
+
+        return new GuiScreenConfig(Component.nullToEmpty(""), (TileEntityScreen) te, side, friends, friendRights, otherRights);
+    }
+
+    @Override
+    public String getName() {
+        return "ScreenConfig";
+    }
+
+    public ScreenConfigData updateOnly() {
+        onlyUpdate = true;
+        return this;
+    }
+
+    public void sendTo(PacketDistributor.TargetPoint tp) {
+        WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> tp), new S2CMessageOpenGui(this));
+    }
+
+    @Override
+    public void serialize(FriendlyByteBuf buf) {
+        buf.writeBoolean(onlyUpdate);
+        BufferUtils.writeVec3i(buf, pos);
+        BufferUtils.writeEnum(buf, side, (byte) 1);
+        BufferUtils.writeArray(buf, friends, (nameUUIDPair) -> nameUUIDPair.writeTo(buf));
+        buf.writeInt(friendRights);
+        buf.writeInt(otherRights);
+    }
+
+    @Override
+    public void deserialize(FriendlyByteBuf buf) {
+        onlyUpdate = buf.readBoolean();
+        pos = BufferUtils.readVec3i(buf);
+        side = (BlockSide) BufferUtils.readEnum(buf, (v) -> BlockSide.values()[v], (byte) 1);
+        friends = BufferUtils.readArray(buf, new NameUUIDPair[0], () -> new NameUUIDPair(buf));
+        friendRights = buf.readInt();
+        otherRights = buf.readInt();
+    }
 }

@@ -14,30 +14,29 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.montoyo.wd.core.ScreenRights;
 import net.montoyo.wd.data.RedstoneCtrlData;
-import net.montoyo.wd.init.TileInit;
+import net.montoyo.wd.registry.TileRegistry;
 import net.montoyo.wd.utilities.Util;
 
 import java.io.IOException;
 
 public class TileEntityRedCtrl extends TileEntityPeripheralBase {
-
     private String risingEdgeURL = "";
     private String fallingEdgeURL = "";
     private boolean state = false;
 
     public TileEntityRedCtrl(BlockPos arg2, BlockState arg3) {
-        super(TileInit.REDSTONE_CONTROLLER.get(), arg2, arg3);
+        super(TileRegistry.REDSTONE_CONTROLLER.get(), arg2, arg3);
     }
-    
+
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
-    
+
         risingEdgeURL = tag.getString("RisingEdgeURL");
         fallingEdgeURL = tag.getString("FallingEdgeURL");
         state = tag.getBoolean("Powered");
     }
-    
+
     @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
@@ -45,25 +44,25 @@ public class TileEntityRedCtrl extends TileEntityPeripheralBase {
         tag.putString("FallingEdgeURL", fallingEdgeURL);
         tag.putBoolean("Powered", state);
     }
-    
+
     @Override
     public InteractionResult onRightClick(Player player, InteractionHand hand) {
-        if(level.isClientSide)
+        if (level.isClientSide)
             return InteractionResult.SUCCESS;
 
-        if(!isScreenChunkLoaded()) {
+        if (!isScreenChunkLoaded()) {
             Util.toast(player, "chunkUnloaded");
             return InteractionResult.SUCCESS;
         }
 
         TileEntityScreen tes = getConnectedScreen();
-        if(tes == null) {
+        if (tes == null) {
             Util.toast(player, "notLinked");
             return InteractionResult.SUCCESS;
         }
 
         TileEntityScreen.Screen scr = tes.getScreen(screenSide);
-        if((scr.rightsFor(player) & ScreenRights.CHANGE_URL) == 0) {
+        if ((scr.rightsFor(player) & ScreenRights.CHANGE_URL) == 0) {
             Util.toast(player, "restrictions");
             return InteractionResult.SUCCESS;
         }
@@ -76,10 +75,10 @@ public class TileEntityRedCtrl extends TileEntityPeripheralBase {
     public void onNeighborChange(Block neighborType, BlockPos neighborPos) {
         boolean hasPower = (level.hasNeighborSignal(getBlockPos()) || level.hasNeighborSignal(getBlockPos().above())); //Same as dispenser
 
-        if(hasPower != state) {
+        if (hasPower != state) {
             state = hasPower;
 
-            if(state) //Rising edge
+            if (state) //Rising edge
                 changeURL(risingEdgeURL);
             else //Falling edge
                 changeURL(fallingEdgeURL);
@@ -93,10 +92,10 @@ public class TileEntityRedCtrl extends TileEntityPeripheralBase {
     }
 
     private void changeURL(String url) {
-        if(level.isClientSide || url.isEmpty())
+        if (level.isClientSide || url.isEmpty())
             return;
 
-        if(isScreenChunkLoaded()) {
+        if (isScreenChunkLoaded()) {
             TileEntityScreen tes = getConnectedScreen();
 
             if (tes != null)

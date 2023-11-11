@@ -8,7 +8,6 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 
 public final class Vector3i {
-
     public int x;
     public int y;
     public int z;
@@ -55,7 +54,7 @@ public final class Vector3i {
 
     @Override
     public boolean equals(Object o) {
-        if(o instanceof Vector3i) {
+        if (o instanceof Vector3i) {
             Vector3i src = (Vector3i) o;
 
             return (src.x == x && src.y == y && src.z == z);
@@ -155,48 +154,42 @@ public final class Vector3i {
         return this;
     }
 
-    public Vector3i set(int x, int y, int z)
-    {
+    public Vector3i set(int x, int y, int z) {
         this.x = x;
         this.y = y;
         this.z = z;
         return this;
     }
 
-    public Vector3i set(double x, double y, double z)
-    {
+    public Vector3i set(double x, double y, double z) {
         this.x = (int) x;
         this.y = (int) y;
         this.z = (int) z;
         return this;
     }
 
-    public Vector3i set(float x, float y, float z)
-    {
+    public Vector3i set(float x, float y, float z) {
         this.x = (int) x;
         this.y = (int) y;
         this.z = (int) z;
         return this;
     }
 
-    public Vector3i set(int val)
-    {
+    public Vector3i set(int val) {
         x = val;
         y = val;
         z = val;
         return this;
     }
 
-    public Vector3i set(Vector3i val)
-    {
+    public Vector3i set(Vector3i val) {
         x = val.x;
         y = val.y;
         z = val.z;
         return this;
     }
 
-    public Vector3i set(Vector3f vec)
-    {
+    public Vector3i set(Vector3f vec) {
         this.x = (int) vec.x;
         this.y = (int) vec.y;
         this.z = (int) vec.z;
@@ -210,6 +203,7 @@ public final class Vector3i {
     public Vector3f toFloat() {
         return new Vector3f((float) x, (float) y, (float) z);
     }
+
     public BlockPos toBlock() {
         return new BlockPos(x, y, z);
     }
@@ -218,8 +212,7 @@ public final class Vector3i {
         bp.set(x, y, z);
     }
 
-    public int getChunkLocalPos()
-    {
+    public int getChunkLocalPos() {
         int lx = x & 15;
         int ly = y & 255;
         int lz = z & 15;
@@ -232,5 +225,4 @@ public final class Vector3i {
         bb.writeInt(y);
         bb.writeInt(z);
     }
-
 }

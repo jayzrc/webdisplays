@@ -19,41 +19,40 @@ import java.util.StringJoiner;
 import java.util.UUID;
 
 public abstract class Util {
-    
     @Deprecated(forRemoval = true)
     public static void serialize(FriendlyByteBuf bb, Object f) {
         Class<?> cls = f.getClass();
 
-        if(cls == Integer.class || cls == Integer.TYPE)
+        if (cls == Integer.class || cls == Integer.TYPE)
             bb.writeInt((Integer) f);
-        else if(cls == Float.class || cls == Float.TYPE)
+        else if (cls == Float.class || cls == Float.TYPE)
             bb.writeFloat((Float) f);
-        else if(cls == Double.class || cls == Double.TYPE)
+        else if (cls == Double.class || cls == Double.TYPE)
             bb.writeDouble((Double) f);
-        else if(cls == Boolean.class || cls == Boolean.TYPE)
+        else if (cls == Boolean.class || cls == Boolean.TYPE)
             bb.writeBoolean((Boolean) f);
-        else if(cls == String.class)
+        else if (cls == String.class)
             bb.writeUtf((String) f);
-        else if(cls == NameUUIDPair.class)
+        else if (cls == NameUUIDPair.class)
             ((NameUUIDPair) f).writeTo(bb);
-        else if(cls.isEnum())
+        else if (cls.isEnum())
             bb.writeByte(((Enum<?>) f).ordinal());
-        else if(cls.isArray()) {
+        else if (cls.isArray()) {
             Object[] ray = (Object[]) f;
 
             bb.writeInt(ray.length);
-            for(Object o : ray)
+            for (Object o : ray)
                 serialize(bb, o);
         } else if (cls == ResourceLocation.class) {
             bb.writeUtf(f.toString());
-        } else if(!cls.isPrimitive()) {
+        } else if (!cls.isPrimitive()) {
             Field[] fields = cls.getFields();
 
-            for(Field ff : fields) {
+            for (Field ff : fields) {
                 try {
-                    if(ff.getAnnotation(DontSerialize.class) == null && !Modifier.isStatic(ff.getModifiers()))
+                    if (ff.getAnnotation(DontSerialize.class) == null && !Modifier.isStatic(ff.getModifiers()))
                         serialize(bb, ff.get(f));
-                } catch(IllegalAccessException e) {
+                } catch (IllegalAccessException e) {
                     e.printStackTrace();
                     throw new RuntimeException(String.format("Caught IllegalAccessException for %s.%s", cls.getName(), ff.getName()));
                 }
@@ -61,51 +60,51 @@ public abstract class Util {
         } else
             throw new RuntimeException(String.format("Cannot transmit class %s over network!", cls.getName()));
     }
-    
+
     @Deprecated(forRemoval = true)
     public static Object unserialize(FriendlyByteBuf bb, Class cls) {
-        if(cls == Integer.class || cls == Integer.TYPE)
+        if (cls == Integer.class || cls == Integer.TYPE)
             return bb.readInt();
-        else if(cls == Float.class || cls == Float.TYPE)
+        else if (cls == Float.class || cls == Float.TYPE)
             return bb.readFloat();
-        else if(cls == Double.class || cls == Double.TYPE)
+        else if (cls == Double.class || cls == Double.TYPE)
             return bb.readDouble();
-        else if(cls == Boolean.class || cls == Boolean.TYPE)
+        else if (cls == Boolean.class || cls == Boolean.TYPE)
             return bb.readBoolean();
-        else if(cls == String.class)
+        else if (cls == String.class)
             return bb.readUtf();
-        else if(cls == NameUUIDPair.class)
+        else if (cls == NameUUIDPair.class)
             return new NameUUIDPair(bb);
-        else if(cls.isEnum())
+        else if (cls.isEnum())
             return cls.getEnumConstants()[bb.readByte()];
-        else if(cls.isArray()) {
+        else if (cls.isArray()) {
             Object[] ray = new Object[bb.readInt()];
 
-            for(int i = 0; i < ray.length; i++)
+            for (int i = 0; i < ray.length; i++)
                 ray[i] = unserialize(bb, cls.getComponentType());
 
             return Arrays.copyOf(ray, ray.length, cls);
-        } else if(cls == ResourceLocation.class) {
+        } else if (cls == ResourceLocation.class) {
             return new ResourceLocation(bb.readUtf());
-        } else if(!cls.isPrimitive()) {
+        } else if (!cls.isPrimitive()) {
             Object ret;
             Field[] fields = cls.getFields();
 
             try {
                 ret = cls.newInstance();
-            } catch(InstantiationException e) {
+            } catch (InstantiationException e) {
                 e.printStackTrace();
                 throw new RuntimeException(String.format("Caught InstantiationException for class %s", cls.getName()));
-            } catch(IllegalAccessException e) {
+            } catch (IllegalAccessException e) {
                 e.printStackTrace();
                 throw new RuntimeException(String.format("Caught IllegalAccessException for class %s", cls.getName()));
             }
 
-            for(Field ff : fields) {
+            for (Field ff : fields) {
                 try {
-                    if(ff.getAnnotation(DontSerialize.class) == null && !Modifier.isStatic(ff.getModifiers()))
+                    if (ff.getAnnotation(DontSerialize.class) == null && !Modifier.isStatic(ff.getModifiers()))
                         ff.set(ret, unserialize(bb, ff.getType()));
-                } catch(IllegalAccessException e) {
+                } catch (IllegalAccessException e) {
                     throw new RuntimeException(String.format("Caught IllegalAccessException for %s.%s", cls.getName(), ff.getName()));
                 }
             }
@@ -117,12 +116,12 @@ public abstract class Util {
 
     public static String addSlashes(String str) {
         String out = "";
-        for(int i = 0; i < str.length(); i++) {
+        for (int i = 0; i < str.length(); i++) {
             char c = str.charAt(i);
 
-            if(c == '\\')
+            if (c == '\\')
                 out += "\\\\";
-            else if(c == '\"')
+            else if (c == '\"')
                 out += "\\\"";
             else
                 out += c;
@@ -150,7 +149,8 @@ public abstract class Util {
     public static void silentClose(Object obj) {
         try {
             obj.getClass().getMethod("close").invoke(obj);
-        } catch(Throwable t) {}
+        } catch (Throwable t) {
+        }
     }
 
     public static String addProtocol(String str) {
@@ -161,13 +161,13 @@ public abstract class Util {
         return fname.isEmpty() || fname.length() > 64 || fname.charAt(0) == '.' || fname.indexOf('/') >= 0 || fname.indexOf('\\') >= 0;
     }
 
-    public static final String[] SIZES = { "bytes", "KiB", "MiB", "GiB", "TiB" };
+    public static final String[] SIZES = {"bytes", "KiB", "MiB", "GiB", "TiB"};
 
     public static String sizeString(long l) {
         double d = (double) l;
         int size = 0;
 
-        while(l >= 1024L && size + 1 < SIZES.length) {
+        while (l >= 1024L && size + 1 < SIZES.length) {
             d /= 1024.0;
             l /= 1024L;
             size++;
@@ -183,7 +183,7 @@ public abstract class Util {
     }
 
     public static CompoundTag writeOwnerToNBT(CompoundTag tag, NameUUIDPair owner) {
-        if(owner != null) {
+        if (owner != null) {
             tag.putLong("OwnerMSB", owner.uuid.getMostSignificantBits());
             tag.putLong("OwnerLSB", owner.uuid.getLeastSignificantBits());
             tag.putString("OwnerName", owner.name);
@@ -199,5 +199,4 @@ public abstract class Util {
 
         return new NameUUIDPair(str, new UUID(msb, lsb));
     }
-
 }

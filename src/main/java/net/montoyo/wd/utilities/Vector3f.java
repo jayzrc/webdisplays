@@ -5,7 +5,6 @@
 package net.montoyo.wd.utilities;
 
 public final class Vector3f {
-
     public float x;
     public float y;
     public float z;
@@ -40,7 +39,7 @@ public final class Vector3f {
 
     @Override
     public boolean equals(Object o) {
-        if(o instanceof Vector3f) {
+        if (o instanceof Vector3f) {
             Vector3f src = (Vector3f) o;
 
             return (src.x == x && src.y == y && src.z == z);
@@ -182,5 +181,4 @@ public final class Vector3f {
 
         return this;
     }
-
 }

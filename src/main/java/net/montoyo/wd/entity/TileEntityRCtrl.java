@@ -12,32 +12,32 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
 import net.montoyo.wd.core.ScreenRights;
 import net.montoyo.wd.data.SetURLData;
-import net.montoyo.wd.init.TileInit;
+import net.montoyo.wd.registry.TileRegistry;
 import net.montoyo.wd.utilities.Util;
 
 public class TileEntityRCtrl extends TileEntityPeripheralBase {
     public TileEntityRCtrl(BlockPos arg2, BlockState arg3) {
-            super(TileInit.REMOTE_CONTROLLER.get(), arg2, arg3);
+        super(TileRegistry.REMOTE_CONTROLLER.get(), arg2, arg3);
     }
 
     @Override
     public InteractionResult onRightClick(Player player, InteractionHand hand) {
-        if(level.isClientSide)
+        if (level.isClientSide)
             return InteractionResult.SUCCESS;
 
-        if(!isScreenChunkLoaded()) {
+        if (!isScreenChunkLoaded()) {
             Util.toast(player, "chunkUnloaded");
             return InteractionResult.SUCCESS;
         }
 
         TileEntityScreen tes = getConnectedScreen();
-        if(tes == null) {
+        if (tes == null) {
             Util.toast(player, "notLinked");
             return InteractionResult.SUCCESS;
         }
 
         TileEntityScreen.Screen scr = tes.getScreen(screenSide);
-        if((scr.rightsFor(player) & ScreenRights.CHANGE_URL) == 0) {
+        if ((scr.rightsFor(player) & ScreenRights.CHANGE_URL) == 0) {
             Util.toast(player, "restrictions");
             return InteractionResult.SUCCESS;
         }
@@ -45,5 +45,4 @@ public class TileEntityRCtrl extends TileEntityPeripheralBase {
         (new SetURLData(screenPos, screenSide, scr.url, getBlockPos())).sendTo((ServerPlayer) player);
         return InteractionResult.SUCCESS;
     }
-
 }

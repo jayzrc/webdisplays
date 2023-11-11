@@ -49,12 +49,12 @@ public class BlockPeripheral extends WDBlockContainer {
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         BlockEntityType.BlockEntitySupplier<? extends BlockEntity> cls = type.getTEClass();
-        if(cls == null)
+        if (cls == null)
             return null;
 
         try {
             return cls.create(pos, state);
-        } catch(Throwable t) {
+        } catch (Throwable t) {
             Log.errorEx("Couldn't instantiate peripheral TileEntity:", t);
         }
 
@@ -68,17 +68,17 @@ public class BlockPeripheral extends WDBlockContainer {
 
     @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if(player.isShiftKeyDown())
+        if (player.isShiftKeyDown())
             return InteractionResult.FAIL;
 
-        if(player.getItemInHand(hand).getItem() instanceof ItemLinker)
+        if (player.getItemInHand(hand).getItem() instanceof ItemLinker)
             return InteractionResult.FAIL;
 
         BlockEntity te = world.getBlockEntity(pos);
 
-        if(te instanceof TileEntityPeripheralBase)
+        if (te instanceof TileEntityPeripheralBase)
             return ((TileEntityPeripheralBase) te).onRightClick(player, hand);
-        else if(te instanceof TileEntityServer) {
+        else if (te instanceof TileEntityServer) {
             ((TileEntityServer) te).onPlayerRightClick(player);
             return InteractionResult.SUCCESS;
         } else
@@ -92,15 +92,15 @@ public class BlockPeripheral extends WDBlockContainer {
 
     @Override
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        if(world.isClientSide)
+        if (world.isClientSide)
             return;
 
-        if(placer instanceof Player) {
+        if (placer instanceof Player) {
             BlockEntity te = world.getBlockEntity(pos);
 
-            if(te instanceof TileEntityServer)
+            if (te instanceof TileEntityServer)
                 ((TileEntityServer) te).setOwner((Player) placer);
-            else if(te instanceof TileEntityInterfaceBase)
+            else if (te instanceof TileEntityInterfaceBase)
                 ((TileEntityInterfaceBase) te).setOwner((Player) placer);
         }
     }
@@ -113,13 +113,13 @@ public class BlockPeripheral extends WDBlockContainer {
     @Override
     public void neighborChanged(BlockState state, Level world, BlockPos pos, Block neighborType, BlockPos neighbor, boolean isMoving) {
         BlockEntity te = world.getBlockEntity(pos);
-        if(te instanceof TileEntityPeripheralBase)
+        if (te instanceof TileEntityPeripheralBase)
             ((TileEntityPeripheralBase) te).onNeighborChange(neighborType, neighbor);
     }
 
     @Override
     public void playerDestroy(Level world, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
-        if(!world.isClientSide) {
+        if (!world.isClientSide) {
             WDNetworkRegistry.INSTANCE.send(PacketDistributor.NEAR.with(() -> point(world, pos)), new S2CMessageCloseGui(pos));
         }
         super.playerDestroy(world, player, pos, state, blockEntity, tool);
@@ -133,7 +133,7 @@ public class BlockPeripheral extends WDBlockContainer {
     public static PacketDistributor.TargetPoint point(Player exclude, Level world, BlockPos bp) {
         return new PacketDistributor.TargetPoint((ServerPlayer) exclude, bp.getX(), bp.getY(), bp.getZ(), 64.0, world.dimension());
     }
-    
+
     public static PacketDistributor.TargetPoint point(Level world, BlockPos bp) {
         return new PacketDistributor.TargetPoint(bp.getX(), bp.getY(), bp.getZ(), 64.0, world.dimension());
     }

@@ -19,16 +19,15 @@ import net.montoyo.wd.utilities.Log;
 import net.montoyo.wd.utilities.Vector3i;
 
 public class SetURLData extends GuiData {
-    
     public Vector3i pos;
     public BlockSide side;
     public String url;
     public boolean isRemote;
     public Vector3i remoteLocation;
-    
+
     public SetURLData() {
     }
-    
+
     public SetURLData(Vector3i pos, BlockSide side, String url) {
         this.pos = pos;
         this.side = side;
@@ -50,7 +49,7 @@ public class SetURLData extends GuiData {
     @Override
     public Screen createGui(Screen old, Level world) {
         BlockEntity te = world.getBlockEntity(pos.toBlock());
-        if(te == null || !(te instanceof TileEntityScreen)) {
+        if (te == null || !(te instanceof TileEntityScreen)) {
             Log.error("TileEntity at %s is not a screen; can't open gui!", pos.toString());
             return null;
         }
@@ -62,7 +61,7 @@ public class SetURLData extends GuiData {
     public String getName() {
         return "SetURL";
     }
-    
+
     @Override
     public void serialize(FriendlyByteBuf buf) {
         BufferUtils.writeVec3i(buf, pos);
@@ -71,7 +70,7 @@ public class SetURLData extends GuiData {
         buf.writeBoolean(isRemote);
         if (isRemote) BufferUtils.writeVec3i(buf, remoteLocation);
     }
-    
+
     @Override
     public void deserialize(FriendlyByteBuf buf) {
         pos = BufferUtils.readVec3i(buf);

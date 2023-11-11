@@ -20,7 +20,6 @@ import java.util.ArrayList;
 
 @Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = "computercraft")
 public class TileEntityCCInterface extends TileEntityInterfaceBase implements IPeripheral {
-
     private static final String[] METHOD_NAMES;
     private static final Method[] METHODS;
 
@@ -79,5 +78,4 @@ public class TileEntityCCInterface extends TileEntityInterfaceBase implements IP
     public boolean equals(@Nullable IPeripheral periph) {
         return periph == this;
     }
-
 }*/

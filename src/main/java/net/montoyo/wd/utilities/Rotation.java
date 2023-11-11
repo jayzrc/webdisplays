@@ -5,7 +5,6 @@
 package net.montoyo.wd.utilities;
 
 public enum Rotation {
-
     ROT_0(0.0f, false),
     ROT_90(90.0f, true),
     ROT_180(180.0f, false),
@@ -24,5 +23,4 @@ public enum Rotation {
     public int getAngleAsInt() {
         return (int) angle;
     }
-
 }

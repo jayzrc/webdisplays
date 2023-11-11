@@ -11,7 +11,5 @@ import net.montoyo.wd.utilities.BlockSide;
 import net.montoyo.wd.utilities.Vector3i;
 
 public interface IPeripheral {
-
     boolean connect(Level world, BlockPos blockPos, BlockState blockState, Vector3i screenPos, BlockSide screenSide);
-
 }

@@ -9,7 +9,6 @@ import net.minecraft.core.BlockPos;
 import java.util.Iterator;
 
 public final class ScreenIterator implements Iterator<BlockPos> {
-
     private final Vector3i vec1;
     private final Vector3i vec2;
     private final BlockSide side;
@@ -36,8 +35,8 @@ public final class ScreenIterator implements Iterator<BlockPos> {
     public final BlockPos next() {
         vec2.toBlock(blockPos);
 
-        if(++x >= size.x) {
-            if(++y >= size.y)
+        if (++x >= size.x) {
+            if (++y >= size.y)
                 hasNext = false;
             else {
                 x = 0;
@@ -60,5 +59,4 @@ public final class ScreenIterator implements Iterator<BlockPos> {
     public int getIndex() {
         return y * size.x + x;
     }
-
 }

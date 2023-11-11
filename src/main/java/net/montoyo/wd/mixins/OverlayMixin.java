@@ -14,19 +14,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Gui.class)
 public class OverlayMixin {
-	@Shadow
-	@Final
-	protected Minecraft minecraft;
-	
-	@Shadow
-	protected int screenWidth;
-	
-	@Shadow
-	protected int screenHeight;
-	
-	@Inject(at = @At("HEAD"), method = "renderCrosshair", cancellable = true)
-	public void preDrawCrosshair(GuiGraphics pGuiGraphics, CallbackInfo ci) {
+    @Shadow
+    @Final
+    protected Minecraft minecraft;
+
+    @Shadow
+    protected int screenWidth;
+
+    @Shadow
+    protected int screenHeight;
+
+    @Inject(at = @At("HEAD"), method = "renderCrosshair", cancellable = true)
+    public void preDrawCrosshair(GuiGraphics pGuiGraphics, CallbackInfo ci) {
 //		ClientProxy.renderCrosshair(minecraft.options, screenWidth, screenHeight, ((Gui) (Object) this).getBlitOffset(), poseStack, ci);
-		ClientProxy.renderCrosshair(minecraft.options, screenWidth, screenHeight, 0, pGuiGraphics, ci);
-	}
+        ClientProxy.renderCrosshair(minecraft.options, screenWidth, screenHeight, 0, pGuiGraphics, ci);
+    }
 }

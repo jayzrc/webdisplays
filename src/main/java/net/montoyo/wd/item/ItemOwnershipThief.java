@@ -23,45 +23,44 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ItemOwnershipThief extends Item implements WDItem {
-
     public ItemOwnershipThief(Properties properties) {
         super(properties
-                .stacksTo(1)
+                        .stacksTo(1)
 //                .tab(WebDisplays.CREATIVE_TAB)
         );
     }
 
     @Override
     public @NotNull InteractionResult useOn(UseOnContext context) {
-           if(context.getPlayer().isShiftKeyDown())
+        if (context.getPlayer().isShiftKeyDown())
             return InteractionResult.PASS;
 
-        if(context.getLevel().isClientSide)
+        if (context.getLevel().isClientSide)
             return InteractionResult.SUCCESS;
 
-        if(CommonConfig.disableOwnershipThief) {
+        if (CommonConfig.disableOwnershipThief) {
             Util.toast(context.getPlayer(), "otDisabled");
             return InteractionResult.SUCCESS;
         }
 
         ItemStack stack = context.getPlayer().getItemInHand(context.getHand());
-        if(stack.hasTag()) {
+        if (stack.hasTag()) {
             CompoundTag tag = stack.getTag();
 
-            if(tag.contains("PosX") && tag.contains("PosY") && tag.contains("PosZ") && tag.contains("Side")) {
+            if (tag.contains("PosX") && tag.contains("PosY") && tag.contains("PosZ") && tag.contains("Side")) {
                 BlockPos bp = new BlockPos(tag.getInt("PosX"), tag.getInt("PosY"), tag.getInt("PosZ"));
                 BlockSide side = BlockSide.values()[tag.getByte("Side")];
 
-                if(!(context.getLevel().getBlockState(bp).getBlock() instanceof BlockScreen))
+                if (!(context.getLevel().getBlockState(bp).getBlock() instanceof BlockScreen))
                     return InteractionResult.SUCCESS;
 
                 BlockEntity te = context.getLevel().getBlockEntity(bp);
-                if(te == null || !(te instanceof TileEntityScreen))
+                if (te == null || !(te instanceof TileEntityScreen))
                     return InteractionResult.SUCCESS;
 
                 TileEntityScreen tes = (TileEntityScreen) te;
                 TileEntityScreen.Screen scr = tes.getScreen(side);
-                if(scr == null)
+                if (scr == null)
                     return InteractionResult.SUCCESS;
 
                 Log.warning("Owner of screen at %d %d %d, side %s was changed from %s (UUID %s) to %s (UUID %s)", bp.getX(), bp.getY(), bp.getZ(), side.toString(), scr.owner.name, scr.owner.uuid.toString(), context.getPlayer().getName(), context.getPlayer().getGameProfile().getId().toString());
@@ -72,7 +71,7 @@ public class ItemOwnershipThief extends Item implements WDItem {
             }
         }
 
-        if(!(context.getLevel().getBlockState(context.getClickedPos()).getBlock() instanceof BlockScreen))
+        if (!(context.getLevel().getBlockState(context.getClickedPos()).getBlock() instanceof BlockScreen))
             return InteractionResult.SUCCESS;
 
         Vector3i pos = new Vector3i(context.getClickedPos());
@@ -80,12 +79,12 @@ public class ItemOwnershipThief extends Item implements WDItem {
         Multiblock.findOrigin(context.getLevel(), pos, side, null);
 
         BlockEntity te = context.getLevel().getBlockEntity(pos.toBlock());
-        if(te == null || !(te instanceof TileEntityScreen)) {
+        if (te == null || !(te instanceof TileEntityScreen)) {
             Util.toast(context.getPlayer(), "turnOn");
             return InteractionResult.SUCCESS;
         }
 
-        if(((TileEntityScreen) te).getScreen(side) == null)
+        if (((TileEntityScreen) te).getScreen(side) == null)
             Util.toast(context.getPlayer(), "turnOn");
         else {
             CompoundTag tag = new CompoundTag();
@@ -107,5 +106,4 @@ public class ItemOwnershipThief extends Item implements WDItem {
     public String getWikiName(@Nonnull ItemStack is) {
         return "Ownership_Thief";
     }
-
 }

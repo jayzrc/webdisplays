@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
 
 public class ItemUpgrade extends ItemMulti implements IUpgrade, WDItem {
     public final DefaultUpgrade type;
-    
+
     public ItemUpgrade(DefaultUpgrade type) {
         super(DefaultUpgrade.class, new Properties()/*.tab(WebDisplays.CREATIVE_TAB)*/);
         this.type = type;
@@ -31,7 +31,7 @@ public class ItemUpgrade extends ItemMulti implements IUpgrade, WDItem {
 
     @Override
     public boolean onRemove(@Nonnull TileEntityScreen tes, @Nonnull BlockSide screenSide, @Nullable Player player, @Nonnull ItemStack is) {
-        if(DefaultUpgrade.LASERMOUSE.matchesLaserMouse(is))
+        if (DefaultUpgrade.LASERMOUSE.matchesLaserMouse(is))
             tes.clearLaserUser(screenSide);
 
         return false;

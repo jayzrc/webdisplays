@@ -2,7 +2,7 @@
  * Copyright (C) 2018 BARBOTIN Nicolas
  */
 
-package net.montoyo.wd.init;
+package net.montoyo.wd.registry;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -11,38 +11,37 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
-import net.montoyo.wd.init.ItemInit;
 
-public class TabInit {
+public class WDTabs {
 	public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, "webdisplays");
 	
 	public static final RegistryObject<CreativeModeTab> EXAMPLE_TAB = TABS.register("main", () -> CreativeModeTab.builder()
 			// Set name of tab to display
 			.title(Component.translatable("itemGroup.webdisplays"))
 			// Set icon of creative tab
-			.icon(() -> new ItemStack(ItemInit.SCREEN.get()))
+			.icon(() -> new ItemStack(ItemRegistry.SCREEN.get()))
 			// Add default items to tab
 			.displayItems((params, output) -> {
 				// core items
-				output.accept(ItemInit.SCREEN.get());
-				output.accept(ItemInit.KEYBOARD.get());
-				output.accept(ItemInit.LINKER.get());
+				output.accept(ItemRegistry.SCREEN.get());
+				output.accept(ItemRegistry.KEYBOARD.get());
+				output.accept(ItemRegistry.LINKER.get());
 				// remote control
-				output.accept(ItemInit.REMOTE_CONTROLLER.get());
+				output.accept(ItemRegistry.REMOTE_CONTROLLER.get());
 				// redstone stuff
-				output.accept(ItemInit.REDSTONE_CONTROLLER.get());
+				output.accept(ItemRegistry.REDSTONE_CONTROLLER.get());
 				// admin tools
-				output.accept(ItemInit.OWNERSHIP_THEIF.get());
+				output.accept(ItemRegistry.OWNERSHIP_THEIF.get());
 				// tool items
-				output.accept(ItemInit.SERVER.get());
-				output.accept(ItemInit.CONFIGURATOR.get());
-				output.accept(ItemInit.MINEPAD.get());
-				output.accept(ItemInit.LASER_POINTER.get());
+				output.accept(ItemRegistry.SERVER.get());
+				output.accept(ItemRegistry.CONFIGURATOR.get());
+				output.accept(ItemRegistry.MINEPAD.get());
+				output.accept(ItemRegistry.LASER_POINTER.get());
 				
 				// upgrades
-				for (int i = 0; i < ItemInit.countUpgrades(); i++) output.accept(ItemInit.getUpgradeItem(i).get());
+				for (int i = 0; i < ItemRegistry.countUpgrades(); i++) output.accept(ItemRegistry.getUpgradeItem(i).get());
 				// cc
-				for (int i = 0; i < ItemInit.countCompCraftItems(); i++) output.accept(ItemInit.getComputerCraftItem(i).get());
+				for (int i = 0; i < ItemRegistry.countCompCraftItems(); i++) output.accept(ItemRegistry.getComputerCraftItem(i).get());
 			})
 			.build()
 	);

@@ -11,7 +11,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import java.util.UUID;
 
 public final class NameUUIDPair {
-
     public final String name;
     public final UUID uuid;
 
@@ -48,7 +47,7 @@ public final class NameUUIDPair {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj == null || !(obj instanceof NameUUIDPair))
+        if (obj == null || !(obj instanceof NameUUIDPair))
             return false;
 
         return ((NameUUIDPair) obj).uuid.equals(uuid);
@@ -68,5 +67,4 @@ public final class NameUUIDPair {
         bb.writeLong(uuid.getMostSignificantBits());
         bb.writeLong(uuid.getLeastSignificantBits());
     }
-
 }

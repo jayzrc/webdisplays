@@ -12,16 +12,15 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.data.ServerData;
-import net.montoyo.wd.init.TileInit;
+import net.montoyo.wd.registry.TileRegistry;
 import net.montoyo.wd.utilities.NameUUIDPair;
 import net.montoyo.wd.utilities.Util;
 
 public class TileEntityServer extends BlockEntity {
-
     private NameUUIDPair owner;
 
     public TileEntityServer(BlockPos arg2, BlockState arg3) {
-        super(TileInit.SERVER.get(), arg2, arg3);
+        super(TileRegistry.SERVER.get(), arg2, arg3);
     }
 
     @Override
@@ -29,7 +28,7 @@ public class TileEntityServer extends BlockEntity {
         super.load(tag);
         owner = Util.readOwnerFromNBT(tag);
     }
-    
+
     @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
@@ -42,13 +41,12 @@ public class TileEntityServer extends BlockEntity {
     }
 
     public void onPlayerRightClick(Player ply) {
-        if(level.isClientSide)
+        if (level.isClientSide)
             return;
 
-        if( WebDisplays.INSTANCE.miniservPort == 0)
+        if (WebDisplays.INSTANCE.miniservPort == 0)
             Util.toast(ply, "noMiniserv");
-        else if(owner != null && ply instanceof ServerPlayer)
+        else if (owner != null && ply instanceof ServerPlayer)
             (new ServerData(getBlockPos(), owner)).sendTo((ServerPlayer) ply);
     }
-
 }

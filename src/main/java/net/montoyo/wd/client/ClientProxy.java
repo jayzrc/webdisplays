@@ -10,13 +10,11 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -24,8 +22,6 @@ import net.minecraft.client.multiplayer.ClientAdvancements;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -66,14 +62,12 @@ import net.montoyo.wd.block.BlockScreen;
 import net.montoyo.wd.client.gui.*;
 import net.montoyo.wd.client.gui.loading.GuiLoader;
 import net.montoyo.wd.client.renderers.*;
-import net.montoyo.wd.config.ClientConfig;
 import net.montoyo.wd.core.HasAdvancement;
-import net.montoyo.wd.core.JSServerRequest;
 import net.montoyo.wd.data.GuiData;
 import net.montoyo.wd.entity.TileEntityScreen;
-import net.montoyo.wd.init.BlockInit;
-import net.montoyo.wd.init.ItemInit;
-import net.montoyo.wd.init.TileInit;
+import net.montoyo.wd.registry.BlockRegistry;
+import net.montoyo.wd.registry.ItemRegistry;
+import net.montoyo.wd.registry.TileRegistry;
 import net.montoyo.wd.item.ItemLaserPointer;
 import net.montoyo.wd.item.ItemMinePad2;
 import net.montoyo.wd.item.WDItem;
@@ -86,7 +80,6 @@ import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
 import org.cef.handler.CefDisplayHandler;
 import org.cef.misc.CefCursorType;
-import org.cef.network.CefRequest;
 import org.joml.Vector3d;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -150,7 +143,7 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 		
 		BlockPos bpos = result.getBlockPos();
 		
-		if (result.getType() != HitResult.Type.BLOCK || mc.level.getBlockState(bpos).getBlock() != BlockInit.blockScreen.get()) {
+		if (result.getType() != HitResult.Type.BLOCK || mc.level.getBlockState(bpos).getBlock() != BlockRegistry.SCREEN_BLOCk.get()) {
 			RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 
 			poseStack.blit(new ResourceLocation(
@@ -242,7 +235,7 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 	/**************************************** INHERITED METHODS ****************************************/
 	@SubscribeEvent
 	public static void onClientSetup(FMLClientSetupEvent event) {
-		BlockEntityRenderers.register(TileInit.SCREEN_BLOCK_ENTITY.get(), new ScreenRenderer.ScreenRendererProvider());
+		BlockEntityRenderers.register(TileRegistry.SCREEN_BLOCK_ENTITY.get(), new ScreenRenderer.ScreenRendererProvider());
 	}
 	
 	@SubscribeEvent
@@ -780,10 +773,10 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 		Item item = ev.getItemStack().getItem();
 		IItemRenderer renderer;
 		
-		if (ItemInit.MINEPAD.isPresent() && ItemInit.LASER_POINTER.isPresent()) {
-			if (item == ItemInit.MINEPAD.get())
+		if (ItemRegistry.MINEPAD.isPresent() && ItemRegistry.LASER_POINTER.isPresent()) {
+			if (item == ItemRegistry.MINEPAD.get())
 				renderer = minePadRenderer;
-			else if (item == ItemInit.LASER_POINTER.get())
+			else if (item == ItemRegistry.LASER_POINTER.get())
 				renderer = laserPointerRenderer;
 			else
 				return;
@@ -823,8 +816,8 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 		for (int i = 0; i < cnt; i++) {
 			ItemStack item = inv.get(i);
 			
-			if (ItemInit.MINEPAD.isPresent()) {
-				if (item.getItem() == ItemInit.MINEPAD.get()) {
+			if (ItemRegistry.MINEPAD.isPresent()) {
+				if (item.getItem() == ItemRegistry.MINEPAD.get()) {
 					CompoundTag tag = item.getTag();
 					
 					if (tag != null && tag.contains("PadID"))

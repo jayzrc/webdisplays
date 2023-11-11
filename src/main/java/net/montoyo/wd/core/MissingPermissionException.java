@@ -7,7 +7,6 @@ package net.montoyo.wd.core;
 import net.minecraft.server.level.ServerPlayer;
 
 public class MissingPermissionException extends Exception {
-
     private final int permission;
     private final ServerPlayer player;
 
@@ -24,5 +23,4 @@ public class MissingPermissionException extends Exception {
     public ServerPlayer getPlayer() {
         return player;
     }
-
 }

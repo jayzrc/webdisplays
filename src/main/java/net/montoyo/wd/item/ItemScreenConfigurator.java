@@ -21,20 +21,19 @@ import net.montoyo.wd.utilities.Vector3i;
 import org.jetbrains.annotations.NotNull;
 
 public class ItemScreenConfigurator extends Item implements WDItem {
-
     public ItemScreenConfigurator(Properties properties) {
         super(properties
-                .stacksTo(1)
+                        .stacksTo(1)
 //                .tab(WebDisplays.CREATIVE_TAB)
         );
     }
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        if(context.getPlayer().isShiftKeyDown() || !(context.getLevel().getBlockState(context.getClickedPos()).getBlock() instanceof BlockScreen))
+        if (context.getPlayer().isShiftKeyDown() || !(context.getLevel().getBlockState(context.getClickedPos()).getBlock() instanceof BlockScreen))
             return InteractionResult.PASS;
 
-        if(context.getLevel().isClientSide)
+        if (context.getLevel().isClientSide)
             return InteractionResult.SUCCESS;
 
         Vector3i origin = new Vector3i(context.getClickedPos());
@@ -43,13 +42,13 @@ public class ItemScreenConfigurator extends Item implements WDItem {
         Multiblock.findOrigin(context.getLevel(), origin, side, null);
         BlockEntity te = context.getLevel().getBlockEntity(origin.toBlock());
 
-        if(te == null || !(te instanceof TileEntityScreen)) {
+        if (te == null || !(te instanceof TileEntityScreen)) {
             Util.toast(context.getPlayer(), "turnOn");
             return InteractionResult.SUCCESS;
         }
 
         TileEntityScreen.Screen scr = ((TileEntityScreen) te).getScreen(side);
-        if(scr == null)
+        if (scr == null)
             Util.toast(context.getPlayer(), "turnOn");
         else
             (new ScreenConfigData(origin, side, scr)).sendTo((ServerPlayer) context.getPlayer());

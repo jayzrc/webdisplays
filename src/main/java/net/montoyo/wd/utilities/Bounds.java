@@ -5,7 +5,6 @@
 package net.montoyo.wd.utilities;
 
 public final class Bounds {
-
     public final int minX;
     public final int minY;
     public final int maxX;
@@ -25,5 +24,4 @@ public final class Bounds {
     public final int getHeight() {
         return maxY - minY;
     }
-
 }

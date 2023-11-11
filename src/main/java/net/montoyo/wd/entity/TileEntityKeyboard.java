@@ -15,15 +15,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.core.ScreenRights;
 import net.montoyo.wd.data.KeyboardData;
-import net.montoyo.wd.init.TileInit;
+import net.montoyo.wd.registry.TileRegistry;
 import net.montoyo.wd.utilities.Util;
 
 public class TileEntityKeyboard extends TileEntityPeripheralBase {
-
     private static final String RANDOM_CHARS = "AZERTYUIOPQSDFGHJKLMWXCVBNazertyuiopqsdfghjklmwxcvbn0123456789"; //Yes I have an AZERTY keyboard, u care?
 
     public TileEntityKeyboard(BlockPos arg2, BlockState arg3) {
-        super(TileInit.KEYBOARD.get(), arg2, arg3);
+        super(TileRegistry.KEYBOARD.get(), arg2, arg3);
     }
 
     @Override
@@ -72,10 +71,9 @@ public class TileEntityKeyboard extends TileEntityPeripheralBase {
                 tes.type(screenSide, "t" + rnd, getBlockPos());
 
                 Player owner = level.getPlayerByUUID(scr.owner.uuid);
-                if(owner != null && owner instanceof ServerPlayer && ent instanceof Ocelot)
+                if(owner instanceof ServerPlayer && ent instanceof Ocelot)
                     WebDisplays.INSTANCE.criterionKeyboardCat.trigger(((ServerPlayer) owner).getAdvancements());
             }
         }
     }
-
 }

@@ -13,10 +13,8 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
@@ -35,13 +33,11 @@ import net.montoyo.wd.core.IUpgrade;
 import net.montoyo.wd.core.ScreenRights;
 import net.montoyo.wd.data.SetURLData;
 import net.montoyo.wd.entity.TileEntityScreen;
-import net.montoyo.wd.init.BlockInit;
 import net.montoyo.wd.item.ItemLaserPointer;
 import net.montoyo.wd.utilities.*;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockScreen extends BaseEntityBlock {
-
     public static final BooleanProperty hasTE = BooleanProperty.create("haste");
     public static final BooleanProperty emitting = BooleanProperty.create("emitting");
     private static final Property<?>[] properties = new Property<?>[]{hasTE, emitting};
@@ -52,46 +48,10 @@ public class BlockScreen extends BaseEntityBlock {
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(properties);
-    }
-
-    @Override
-    public RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
-    }
-
-    public static boolean isntScreenBlock(Level world, Vector3i pos) {
-        return world.getBlockState(pos.toBlock()).getBlock() != BlockInit.blockScreen.get();
-    }
-
-    @org.jetbrains.annotations.Nullable
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return super.getStateForPlacement(context);
-    }
-
-    @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos currentPos, BlockPos neighborPos) {
-        return super.updateShape(state, direction, neighborState, level, currentPos, neighborPos);
-    }
-
-    public int getMetaFromState(BlockState state) {
-        int ret = 0;
-        if (state.getValue(hasTE))
-            ret |= 1;
-
-        if (state.getValue(emitting))
-            ret |= 2;
-
-        return ret;
-    }
-
-    @Override
     public void onRemove(BlockState p_60515_, Level p_60516_, BlockPos p_60517_, BlockState p_60518_, boolean p_60519_) {
         // TODO: make this also get called on client?
         if (p_60518_.getBlock() == p_60515_.getBlock()) return;
-        
+
         for (BlockSide value : BlockSide.values()) {
             Vector3i vec = new Vector3i(p_60517_.getX(), p_60517_.getY(), p_60517_.getZ());
             Multiblock.findOrigin(p_60516_, vec, value, null);
@@ -118,7 +78,7 @@ public class BlockScreen extends BaseEntityBlock {
             return InteractionResult.FAIL;
         else if (heldItem.getItem() instanceof ItemLaserPointer)
             return InteractionResult.FAIL; // laser pointer already handles stuff
-        
+
         // handling the off hand leads to double clicking
         if (!isUpgrade && hand == InteractionHand.OFF_HAND)
             return InteractionResult.FAIL;
@@ -138,7 +98,7 @@ public class BlockScreen extends BaseEntityBlock {
             TileEntityScreen.Screen scr = te.getScreen(side);
 
             if (sneaking) { //Right Click
-                if((scr.rightsFor(player) & ScreenRights.CHANGE_URL) == 0)
+                if ((scr.rightsFor(player) & ScreenRights.CHANGE_URL) == 0)
                     Util.toast(player, "restrictions");
                 else
                     (new SetURLData(pos, scr.side, scr.url)).sendTo((ServerPlayer) player);
@@ -170,11 +130,11 @@ public class BlockScreen extends BaseEntityBlock {
                 }
 
                 Vector2i tmp = new Vector2i();
-                
+
                 float hitX = ((float) hit.getLocation().x) - (float) te.getBlockPos().getX();
                 float hitY = ((float) hit.getLocation().y) - (float) te.getBlockPos().getY();
                 float hitZ = ((float) hit.getLocation().z) - (float) te.getBlockPos().getZ();
-                
+
                 if (hit2pixels(side, hit.getBlockPos(), new Vector3i(hit.getBlockPos()), scr, hitX, hitY, hitZ, tmp))
                     te.click(side, tmp);
                 return InteractionResult.CONSUME;
@@ -218,7 +178,7 @@ public class BlockScreen extends BaseEntityBlock {
 
     @Override
     public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos source,
-    boolean isMoving){
+                                boolean isMoving) {
         if (block != this && !world.isClientSide && !state.getValue(emitting)) {
             for (BlockSide side : BlockSide.values()) {
                 Vector3i vec = new Vector3i(pos);
@@ -233,79 +193,57 @@ public class BlockScreen extends BaseEntityBlock {
             }
         }
     }
-    
+
     public static boolean hit2pixels(BlockSide side, BlockPos bpos, Vector3i pos, TileEntityScreen.Screen scr, float hitX, float hitY, float hitZ, Vector2i dst) {
-        if(side.right.x < 0)
-            hitX -= 1.f;
-        
-        if(side.right.z < 0 || side == BlockSide.TOP || side == BlockSide.BOTTOM)
-            hitZ -= 1.f;
-        
-        Vector3f rel = new Vector3f(bpos.getX(), bpos.getY(), bpos.getZ());
-        rel.sub((float) pos.x, (float) pos.y, (float) pos.z);
-        rel.add(hitX, hitY, hitZ);
-        
-        float cx = rel.dot(side.right.toFloat()) - 2.f / 16.f;
-        float cy = rel.dot(side.up.toFloat()) - 2.f / 16.f;
-        float sw = ((float) scr.size.x) - 4.f / 16.f;
-        float sh = ((float) scr.size.y) - 4.f / 16.f;
-        
-        cx /= sw;
-        cy /= sh;
-        
-        if(cx >= 0.f && cx <= 1.0 && cy >= 0.f && cy <= 1.f) {
-            if(side != BlockSide.BOTTOM)
+        Vector3f rel = new Vector3f(hitX, hitY, hitZ);
+
+        // how these dot products come in is beyond me
+        float cx = rel.dot(side.horizontal.toFloat()) - 2.f / 16.f;
+        float cy = rel.dot(side.vertical.toFloat()) - 2.f / 16.f;
+
+        // scale coordinate to be in the size mcef expects (0 -> 1)
+        cx /= ((float) scr.size.x) - 4.f / 16.f;
+        cy /= ((float) scr.size.y) - 4.f / 16.f;
+
+        if (cx >= 0.f && cx <= 1.0 && cy >= 0.f && cy <= 1.f) {
+            if (side != BlockSide.BOTTOM)
                 cy = 1.f - cy;
-            
-            switch(scr.rotation) {
+
+            switch (scr.rotation) {
                 case ROT_90:
                     cy = 1.0f - cy;
                     break;
-                
+
                 case ROT_180:
                     cx = 1.0f - cx;
                     cy = 1.0f - cy;
                     break;
-                
+
                 case ROT_270:
                     cx = 1.0f - cx;
                     break;
-                
-                default:
-                    break;
             }
-            
+
             cx *= (float) scr.resolution.x;
             cy *= (float) scr.resolution.y;
-            
-            if(scr.rotation.isVertical) {
+
+            if (scr.rotation.isVertical) {
                 dst.x = (int) cy;
                 dst.y = (int) cx;
             } else {
                 dst.x = (int) cx;
                 dst.y = (int) cy;
             }
-            
+
             return true;
         }
-        
+
         return false;
-    }
-
-    @org.jetbrains.annotations.Nullable
-    @Override
-    public BlockEntity newBlockEntity (BlockPos pos, BlockState state){
-        int meta = getMetaFromState(state);
-
-        if ((meta & 1) == 0)
-            return null;
-
-        return ((meta & 1) == 0) ? null : new TileEntityScreen(pos, state);
     }
 
     /************************************************* DESTRUCTION HANDLING *************************************************/
 
-    private void onDestroy (Level world, BlockPos pos, Player ply){
+    private void onDestroy(Level world, BlockPos pos, Player ply) {
         if (!world.isClientSide) {
             Vector3i bp = new Vector3i(pos);
             Multiblock.BlockOverride override = new Multiblock.BlockOverride(bp, Multiblock.OverrideAction.SIMULATE);
@@ -315,8 +253,8 @@ public class BlockScreen extends BaseEntityBlock {
         }
     }
 
-    private void destroySide (Level world, Vector3i pos, BlockSide side, Multiblock.BlockOverride override, Player
-    source){
+    private void destroySide(Level world, Vector3i pos, BlockSide side, Multiblock.BlockOverride override, Player
+            source) {
         Multiblock.findOrigin(world, pos, side, override);
         BlockPos bp = pos.toBlock();
         BlockEntity te = world.getBlockEntity(bp);
@@ -328,15 +266,15 @@ public class BlockScreen extends BaseEntityBlock {
     }
 
     @Override
-    public boolean onDestroyedByPlayer (BlockState state, Level level, BlockPos pos, Player player,
-    boolean willHarvest, FluidState fluid){
+    public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player,
+                                       boolean willHarvest, FluidState fluid) {
         onDestroy(level, pos, player);
         return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
     }
 
     @Override
-    public void setPlacedBy (Level world, @NotNull BlockPos pos, @NotNull BlockState
-    state, @org.jetbrains.annotations.Nullable LivingEntity whoDidThisShit, @NotNull ItemStack stack){
+    public void setPlacedBy(Level world, @NotNull BlockPos pos, @NotNull BlockState
+            state, @org.jetbrains.annotations.Nullable LivingEntity whoDidThisShit, @NotNull ItemStack stack) {
         if (world.isClientSide)
             return;
 
@@ -358,18 +296,35 @@ public class BlockScreen extends BaseEntityBlock {
         }
     }
 
+    /************************************************* STUFF THAT'S UNLIKELY TO BE TOUCHED BUT NEEDS TO BE HERE *************************************************/
+
     @Override
-    public @NotNull PushReaction getPistonPushReaction (BlockState state){
+    public @NotNull PushReaction getPistonPushReaction(BlockState state) {
         return PushReaction.IGNORE;
     }
 
     @Override
-    public int getSignal (BlockState state, BlockGetter level, BlockPos pos, Direction direction){
+    public int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
         return state.getValue(emitting) ? 15 : 0;
     }
 
     @Override
-    public boolean isSignalSource (BlockState state){
+    public boolean isSignalSource(BlockState state) {
         return state.getValue(emitting);
+    }
+
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return state.getValue(hasTE) ? new TileEntityScreen(pos, state) : null;
+    }
+
+    @Override
+    public RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(properties);
     }
 }

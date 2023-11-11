@@ -36,7 +36,6 @@ import static net.montoyo.wd.block.BlockPeripheral.point;
 
 // TODO: merge into KeyboardLeft
 public class BlockKeyboardRight extends Block implements IPeripheral {
-
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     public BlockKeyboardRight() {
