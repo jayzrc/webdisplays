@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.montoyo.wd.core.ScreenRights;
 import net.montoyo.wd.data.RedstoneCtrlData;
 import net.montoyo.wd.registry.TileRegistry;
-import net.montoyo.wd.utilities.Util;
+import net.montoyo.wd.utilities.serialization.Util;
 
 import java.io.IOException;
 

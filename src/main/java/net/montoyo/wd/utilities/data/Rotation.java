@@ -2,7 +2,7 @@
  * Copyright (C) 2018 BARBOTIN Nicolas
  */
 
-package net.montoyo.wd.utilities;
+package net.montoyo.wd.utilities.data;
 
 public enum Rotation {
     ROT_0(0.0f, false),

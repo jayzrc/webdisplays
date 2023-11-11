@@ -20,9 +20,9 @@ import net.montoyo.wd.item.ItemMinePad2;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.server_bound.C2SMessageMinepadUrl;
 import net.montoyo.wd.net.server_bound.C2SMessageScreenCtrl;
-import net.montoyo.wd.utilities.BlockSide;
-import net.montoyo.wd.utilities.Util;
-import net.montoyo.wd.utilities.Vector3i;
+import net.montoyo.wd.utilities.data.BlockSide;
+import net.montoyo.wd.utilities.serialization.Util;
+import net.montoyo.wd.utilities.math.Vector3i;
 
 import java.io.IOException;
 import java.util.Map;

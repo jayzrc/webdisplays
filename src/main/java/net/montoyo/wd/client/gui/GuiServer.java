@@ -23,9 +23,11 @@ import net.montoyo.wd.miniserv.Constants;
 import net.montoyo.wd.miniserv.client.*;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.utilities.*;
+import net.montoyo.wd.utilities.math.Vector3i;
+import net.montoyo.wd.utilities.data.BlockSide;
+import net.montoyo.wd.utilities.serialization.NameUUIDPair;
+import net.montoyo.wd.utilities.serialization.Util;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 import javax.swing.filechooser.FileSystemView;

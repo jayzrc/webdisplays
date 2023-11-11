@@ -8,7 +8,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.net.Packet;
-import net.montoyo.wd.utilities.NameUUIDPair;
+import net.montoyo.wd.utilities.serialization.NameUUIDPair;
 
 public class S2CMessageACResult extends Packet {
     private static NameUUIDPair[] result;

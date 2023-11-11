@@ -20,6 +20,10 @@ import net.montoyo.wd.item.WDItem;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.server_bound.C2SMessageScreenCtrl;
 import net.montoyo.wd.utilities.*;
+import net.montoyo.wd.utilities.math.Vector2i;
+import net.montoyo.wd.utilities.data.BlockSide;
+import net.montoyo.wd.utilities.data.Rotation;
+import net.montoyo.wd.utilities.serialization.NameUUIDPair;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;

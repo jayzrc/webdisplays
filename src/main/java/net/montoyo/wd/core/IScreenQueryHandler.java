@@ -6,7 +6,7 @@
 //
 //import net.montoyo.mcef.api.IJSQueryCallback;
 //import net.montoyo.wd.entity.TileEntityScreen;
-//import net.montoyo.wd.utilities.BlockSide;
+//import net.montoyo.wd.utilities.orientation.BlockSide;
 //
 //import javax.annotation.Nonnull;
 //

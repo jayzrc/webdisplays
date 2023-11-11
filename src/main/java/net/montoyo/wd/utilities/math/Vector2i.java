@@ -2,7 +2,7 @@
  * Copyright (C) 2018 BARBOTIN Nicolas
  */
 
-package net.montoyo.wd.utilities;
+package net.montoyo.wd.utilities.math;
 
 import io.netty.buffer.ByteBuf;
 

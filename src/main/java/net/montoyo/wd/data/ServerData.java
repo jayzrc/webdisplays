@@ -12,8 +12,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.montoyo.wd.client.gui.GuiServer;
 import net.montoyo.wd.net.BufferUtils;
-import net.montoyo.wd.utilities.NameUUIDPair;
-import net.montoyo.wd.utilities.Vector3i;
+import net.montoyo.wd.utilities.serialization.NameUUIDPair;
+import net.montoyo.wd.utilities.math.Vector3i;
 
 public class ServerData extends GuiData {
     public Vector3i pos;

@@ -2,7 +2,7 @@
  * Copyright (C) 2018 BARBOTIN Nicolas
  */
 
-package net.montoyo.wd.utilities;
+package net.montoyo.wd.utilities.serialization;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

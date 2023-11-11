@@ -15,8 +15,8 @@ import net.montoyo.wd.core.ScreenRights;
 import net.montoyo.wd.entity.RedstoneControlBlockEntity;
 import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.net.Packet;
-import net.montoyo.wd.utilities.Util;
-import net.montoyo.wd.utilities.Vector3i;
+import net.montoyo.wd.utilities.serialization.Util;
+import net.montoyo.wd.utilities.math.Vector3i;
 
 public class C2SMessageRedstoneCtrl extends Packet implements Runnable {
 	private Player player;

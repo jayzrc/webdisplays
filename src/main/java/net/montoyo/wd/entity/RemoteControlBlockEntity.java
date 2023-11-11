@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.montoyo.wd.core.ScreenRights;
 import net.montoyo.wd.data.SetURLData;
 import net.montoyo.wd.registry.TileRegistry;
-import net.montoyo.wd.utilities.Util;
+import net.montoyo.wd.utilities.serialization.Util;
 
 public class RemoteControlBlockEntity extends AbstractPeripheralBlockEntity {
     public RemoteControlBlockEntity(BlockPos arg2, BlockState arg3) {

@@ -13,7 +13,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.montoyo.wd.client.gui.GuiRedstoneCtrl;
 import net.montoyo.wd.net.BufferUtils;
-import net.montoyo.wd.utilities.Vector3i;
+import net.montoyo.wd.utilities.math.Vector3i;
 
 public class RedstoneCtrlData extends GuiData {
     public ResourceLocation dimension;

@@ -27,8 +27,8 @@ import net.montoyo.wd.entity.KeyboardBlockEntity;
 import net.montoyo.wd.item.ItemLinker;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.client_bound.S2CMessageCloseGui;
-import net.montoyo.wd.utilities.BlockSide;
-import net.montoyo.wd.utilities.Vector3i;
+import net.montoyo.wd.utilities.data.BlockSide;
+import net.montoyo.wd.utilities.math.Vector3i;
 import org.jetbrains.annotations.NotNull;
 
 import static net.montoyo.wd.block.KeyboardBlockLeft.KEYBOARD_AABBS;

@@ -9,7 +9,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.NetworkEvent;
 import net.montoyo.wd.core.MissingPermissionException;
 import net.montoyo.wd.entity.ScreenBlockEntity;
-import net.montoyo.wd.utilities.BlockSide;
+import net.montoyo.wd.utilities.data.BlockSide;
 
 import java.util.Objects;
 import java.util.function.Function;

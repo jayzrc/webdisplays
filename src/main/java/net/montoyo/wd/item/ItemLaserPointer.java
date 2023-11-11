@@ -20,10 +20,10 @@ import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.registry.BlockRegistry;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.server_bound.C2SMessageScreenCtrl;
-import net.montoyo.wd.utilities.BlockSide;
+import net.montoyo.wd.utilities.data.BlockSide;
 import net.montoyo.wd.utilities.Multiblock;
-import net.montoyo.wd.utilities.Vector2i;
-import net.montoyo.wd.utilities.Vector3i;
+import net.montoyo.wd.utilities.math.Vector2i;
+import net.montoyo.wd.utilities.math.Vector3i;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

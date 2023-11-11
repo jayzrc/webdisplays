@@ -16,7 +16,7 @@ import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.core.ScreenRights;
 import net.montoyo.wd.data.KeyboardData;
 import net.montoyo.wd.registry.TileRegistry;
-import net.montoyo.wd.utilities.Util;
+import net.montoyo.wd.utilities.serialization.Util;
 
 public class KeyboardBlockEntity extends AbstractPeripheralBlockEntity {
     private static final String RANDOM_CHARS = "AZERTYUIOPQSDFGHJKLMWXCVBNazertyuiopqsdfghjklmwxcvbn0123456789"; //Yes I have an AZERTY keyboard, u care?

@@ -13,8 +13,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.data.ServerData;
 import net.montoyo.wd.registry.TileRegistry;
-import net.montoyo.wd.utilities.NameUUIDPair;
-import net.montoyo.wd.utilities.Util;
+import net.montoyo.wd.utilities.serialization.NameUUIDPair;
+import net.montoyo.wd.utilities.serialization.Util;
 
 public class ServerBlockEntity extends BlockEntity {
     private NameUUIDPair owner;

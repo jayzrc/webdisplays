@@ -2,7 +2,7 @@
  * Copyright (C) 2019 BARBOTIN Nicolas
  */
 
-package net.montoyo.wd.utilities;
+package net.montoyo.wd.utilities.serialization;
 
 import com.google.gson.annotations.SerializedName;
 

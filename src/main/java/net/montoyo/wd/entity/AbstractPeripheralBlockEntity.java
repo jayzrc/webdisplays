@@ -16,9 +16,9 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.montoyo.wd.core.IPeripheral;
-import net.montoyo.wd.utilities.BlockSide;
+import net.montoyo.wd.utilities.data.BlockSide;
 import net.montoyo.wd.utilities.Log;
-import net.montoyo.wd.utilities.Vector3i;
+import net.montoyo.wd.utilities.math.Vector3i;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

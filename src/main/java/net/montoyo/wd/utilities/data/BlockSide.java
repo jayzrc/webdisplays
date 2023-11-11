@@ -2,7 +2,9 @@
  * Copyright (C) 2018 BARBOTIN Nicolas
  */
 
-package net.montoyo.wd.utilities;
+package net.montoyo.wd.utilities.data;
+
+import net.montoyo.wd.utilities.math.Vector3i;
 
 public enum BlockSide {
     BOTTOM(new Vector3i(0, 0, -1), new Vector3i(1, 0, 0), new Vector3i(0, -1, 0)),

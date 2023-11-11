@@ -10,7 +10,7 @@ import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.controls.ScreenControl;
 import net.montoyo.wd.core.MissingPermissionException;
 import net.montoyo.wd.entity.ScreenBlockEntity;
-import net.montoyo.wd.utilities.BlockSide;
+import net.montoyo.wd.utilities.data.BlockSide;
 
 import java.util.function.Function;
 

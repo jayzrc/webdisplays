@@ -1,7 +1,7 @@
 package net.montoyo.wd.net;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.montoyo.wd.utilities.Vector3i;
+import net.montoyo.wd.utilities.math.Vector3i;
 
 import java.util.Arrays;
 import java.util.function.Consumer;

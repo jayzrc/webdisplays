@@ -2,7 +2,7 @@
  * Copyright (C) 2018 BARBOTIN Nicolas
  */
 
-package net.montoyo.wd.utilities;
+package net.montoyo.wd.utilities.serialization;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;

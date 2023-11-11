@@ -9,7 +9,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.net.Packet;
-import net.montoyo.wd.utilities.BlockSide;
+import net.montoyo.wd.utilities.data.BlockSide;
 
 import java.util.Arrays;
 

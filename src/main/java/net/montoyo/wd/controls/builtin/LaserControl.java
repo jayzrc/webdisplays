@@ -10,8 +10,8 @@ import net.minecraftforge.network.NetworkEvent;
 import net.montoyo.wd.controls.ScreenControl;
 import net.montoyo.wd.core.MissingPermissionException;
 import net.montoyo.wd.entity.ScreenBlockEntity;
-import net.montoyo.wd.utilities.BlockSide;
-import net.montoyo.wd.utilities.Vector2i;
+import net.montoyo.wd.utilities.data.BlockSide;
+import net.montoyo.wd.utilities.math.Vector2i;
 
 import java.util.function.Function;
 

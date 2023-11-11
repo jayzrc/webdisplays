@@ -41,6 +41,14 @@ import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.client_bound.S2CMessageAddScreen;
 import net.montoyo.wd.net.client_bound.S2CMessageScreenUpdate;
 import net.montoyo.wd.utilities.*;
+import net.montoyo.wd.utilities.math.MutableAABB;
+import net.montoyo.wd.utilities.math.Vector2i;
+import net.montoyo.wd.utilities.math.Vector3f;
+import net.montoyo.wd.utilities.math.Vector3i;
+import net.montoyo.wd.utilities.data.BlockSide;
+import net.montoyo.wd.utilities.data.Rotation;
+import net.montoyo.wd.utilities.serialization.NameUUIDPair;
+import net.montoyo.wd.utilities.serialization.TypeData;
 import org.cef.browser.CefBrowser;
 
 import javax.annotation.Nonnull;
@@ -196,6 +204,7 @@ public class ScreenBlockEntity extends BlockEntity {
             final Direction facing = VALUES[side.reverse().ordinal()];
             final ScreenIterator it = new ScreenIterator(start, side, size);
 
+            // TODO: cache chunk
             while (it.hasNext()) {
                 int idx = it.getIndex();
                 redstoneStatus.set(idx, world.getSignal(it.next(), facing));
@@ -246,6 +255,7 @@ public class ScreenBlockEntity extends BlockEntity {
         if (scr != null) {
             ScreenIterator it = new ScreenIterator(getBlockPos(), side, scr.size);
 
+            // TODO: cache chunk
             while (it.hasNext())
                 func.accept(it.next());
         }

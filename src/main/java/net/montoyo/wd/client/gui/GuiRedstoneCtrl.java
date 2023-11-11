@@ -7,16 +7,11 @@ package net.montoyo.wd.client.gui;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.montoyo.wd.WebDisplays;
-import net.montoyo.wd.client.ClientProxy;
 import net.montoyo.wd.client.gui.controls.Button;
 import net.montoyo.wd.client.gui.controls.TextField;
 import net.montoyo.wd.client.gui.loading.FillControl;
-import net.montoyo.wd.net.WDNetworkRegistry;
-import net.montoyo.wd.net.server_bound.C2SMessageRedstoneCtrl;
-import net.montoyo.wd.utilities.BlockSide;
-import net.montoyo.wd.utilities.Util;
-import net.montoyo.wd.utilities.Vector3i;
+import net.montoyo.wd.utilities.data.BlockSide;
+import net.montoyo.wd.utilities.math.Vector3i;
 
 import javax.annotation.Nullable;
 

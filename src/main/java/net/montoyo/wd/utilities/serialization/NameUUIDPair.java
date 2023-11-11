@@ -2,10 +2,9 @@
  * Copyright (C) 2018 BARBOTIN Nicolas
  */
 
-package net.montoyo.wd.utilities;
+package net.montoyo.wd.utilities.serialization;
 
 import com.mojang.authlib.GameProfile;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.UUID;

@@ -12,8 +12,8 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.montoyo.wd.entity.ScreenBlockEntity;
-import net.montoyo.wd.utilities.Vector3f;
-import net.montoyo.wd.utilities.Vector3i;
+import net.montoyo.wd.utilities.math.Vector3f;
+import net.montoyo.wd.utilities.math.Vector3i;
 import org.jetbrains.annotations.NotNull;
 
 import static com.mojang.math.Axis.*;

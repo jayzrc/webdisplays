@@ -18,14 +18,14 @@ public final class NibbleArray {
         data = d;
     }
 
-    public final int get(int idx) {
+    public int get(int idx) {
         if ((idx & 1) == 0)
             return (data[idx >> 1] >> 4) & 0x0F; //MSB
         else
             return data[idx >> 1] & 0x0F; //LSB
     }
 
-    public final void set(int idx, int val) {
+    public void set(int idx, int val) {
         val &= 0x0F;
 
         if ((idx & 1) == 0) {

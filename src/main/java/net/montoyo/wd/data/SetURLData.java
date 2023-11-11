@@ -14,9 +14,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.montoyo.wd.client.gui.GuiSetURL2;
 import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.net.BufferUtils;
-import net.montoyo.wd.utilities.BlockSide;
+import net.montoyo.wd.utilities.data.BlockSide;
 import net.montoyo.wd.utilities.Log;
-import net.montoyo.wd.utilities.Vector3i;
+import net.montoyo.wd.utilities.math.Vector3i;
 
 public class SetURLData extends GuiData {
     public Vector3i pos;

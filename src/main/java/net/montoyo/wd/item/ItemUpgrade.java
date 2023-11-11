@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.montoyo.wd.core.DefaultUpgrade;
 import net.montoyo.wd.core.IUpgrade;
 import net.montoyo.wd.entity.ScreenBlockEntity;
-import net.montoyo.wd.utilities.BlockSide;
+import net.montoyo.wd.utilities.data.BlockSide;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;

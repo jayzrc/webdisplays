@@ -18,10 +18,10 @@ import net.montoyo.wd.block.ScreenBlock;
 import net.montoyo.wd.core.IPeripheral;
 import net.montoyo.wd.core.ScreenRights;
 import net.montoyo.wd.entity.ScreenBlockEntity;
-import net.montoyo.wd.utilities.BlockSide;
+import net.montoyo.wd.utilities.data.BlockSide;
 import net.montoyo.wd.utilities.Multiblock;
-import net.montoyo.wd.utilities.Util;
-import net.montoyo.wd.utilities.Vector3i;
+import net.montoyo.wd.utilities.serialization.Util;
+import net.montoyo.wd.utilities.math.Vector3i;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

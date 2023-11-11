@@ -51,7 +51,7 @@ import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.client_bound.S2CMessageServerInfo;
 import net.montoyo.wd.utilities.DistSafety;
 import net.montoyo.wd.utilities.Log;
-import net.montoyo.wd.utilities.Util;
+import net.montoyo.wd.utilities.serialization.Util;
 
 import java.io.*;
 import java.net.MalformedURLException;

@@ -13,7 +13,11 @@ import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.core.IComputerArgs;
 import net.montoyo.wd.core.IUpgrade;
 import net.montoyo.wd.core.ScreenRights;
-import net.montoyo.wd.utilities.*;
+import net.montoyo.wd.utilities.math.Vector2i;
+import net.montoyo.wd.utilities.data.Rotation;
+import net.montoyo.wd.utilities.serialization.NameUUIDPair;
+import net.montoyo.wd.utilities.serialization.TypeData;
+import net.montoyo.wd.utilities.serialization.Util;
 
 import java.io.IOException;
 import java.lang.annotation.ElementType;

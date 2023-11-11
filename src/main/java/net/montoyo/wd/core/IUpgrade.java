@@ -7,7 +7,7 @@ package net.montoyo.wd.core;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.montoyo.wd.entity.ScreenBlockEntity;
-import net.montoyo.wd.utilities.BlockSide;
+import net.montoyo.wd.utilities.data.BlockSide;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

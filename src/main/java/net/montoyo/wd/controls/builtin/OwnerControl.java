@@ -9,8 +9,8 @@ import net.minecraftforge.network.NetworkEvent;
 import net.montoyo.wd.controls.ScreenControl;
 import net.montoyo.wd.core.MissingPermissionException;
 import net.montoyo.wd.entity.ScreenBlockEntity;
-import net.montoyo.wd.utilities.BlockSide;
-import net.montoyo.wd.utilities.NameUUIDPair;
+import net.montoyo.wd.utilities.data.BlockSide;
+import net.montoyo.wd.utilities.serialization.NameUUIDPair;
 
 import java.util.function.Function;
 

@@ -9,7 +9,7 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.network.NetworkEvent;
 import net.montoyo.wd.controls.builtin.*;
 import net.montoyo.wd.entity.ScreenBlockEntity;
-import net.montoyo.wd.utilities.BlockSide;
+import net.montoyo.wd.utilities.data.BlockSide;
 import net.montoyo.wd.utilities.Log;
 
 import java.lang.reflect.Method;

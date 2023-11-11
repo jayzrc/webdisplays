@@ -4,7 +4,6 @@
 
 package net.montoyo.wd.client.gui;
 
-import com.cinemamod.mcef.MCEF;
 import com.cinemamod.mcef.MCEFBrowser;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -16,8 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.client.ClientProxy;
-import net.montoyo.wd.utilities.BlockSide;
-import org.cef.browser.CefBrowserOsr;
+import net.montoyo.wd.utilities.data.BlockSide;
 import org.cef.misc.CefCursorType;
 import org.lwjgl.glfw.GLFW;
 
