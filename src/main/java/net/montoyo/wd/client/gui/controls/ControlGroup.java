@@ -7,17 +7,13 @@ package net.montoyo.wd.client.gui.controls;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.montoyo.wd.client.gui.loading.JsonOWrapper;
-import net.montoyo.wd.utilities.Bounds;
-import org.lwjgl.opengl.GL11;
+import net.montoyo.wd.utilities.data.Bounds;
 
 import java.util.Arrays;
-
-import static org.lwjgl.opengl.GL11.*;
 
 public class ControlGroup extends Container {
 

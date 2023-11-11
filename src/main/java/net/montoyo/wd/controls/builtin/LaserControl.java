@@ -9,9 +9,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.NetworkEvent;
 import net.montoyo.wd.controls.ScreenControl;
 import net.montoyo.wd.core.MissingPermissionException;
-import net.montoyo.wd.entity.TileEntityScreen;
-import net.montoyo.wd.utilities.BlockSide;
-import net.montoyo.wd.utilities.Vector2i;
+import net.montoyo.wd.entity.ScreenBlockEntity;
+import net.montoyo.wd.utilities.data.BlockSide;
+import net.montoyo.wd.utilities.math.Vector2i;
 
 import java.util.function.Function;
 
@@ -54,7 +54,7 @@ public class LaserControl extends ScreenControl {
 	}
 	
 	@Override
-	public void handleServer(BlockPos pos, BlockSide side, TileEntityScreen tes, NetworkEvent.Context ctx, Function<Integer, Boolean> permissionChecker) throws MissingPermissionException {
+	public void handleServer(BlockPos pos, BlockSide side, ScreenBlockEntity tes, NetworkEvent.Context ctx, Function<Integer, Boolean> permissionChecker) throws MissingPermissionException {
 		// feel like this makes sense, but I wanna get opinions first
 //		checkPerms(ScreenRights.INTERACT, permissionChecker, ctx.getSender());
 		ServerPlayer sender = ctx.getSender();
@@ -67,7 +67,7 @@ public class LaserControl extends ScreenControl {
 	
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void handleClient(BlockPos pos, BlockSide side, TileEntityScreen tes, NetworkEvent.Context ctx) {
+	public void handleClient(BlockPos pos, BlockSide side, ScreenBlockEntity tes, NetworkEvent.Context ctx) {
 		if (coord != null)
 			tes.handleMouseEvent(side, ClickControl.ControlType.MOVE, coord, -1);
 		

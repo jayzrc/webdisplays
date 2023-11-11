@@ -14,20 +14,18 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.montoyo.wd.client.gui.WDScreen;
 import net.montoyo.wd.client.gui.loading.JsonOWrapper;
-import net.montoyo.wd.utilities.Bounds;
+import net.montoyo.wd.utilities.data.Bounds;
 import org.joml.Matrix4f;
 
 import java.util.Arrays;
 
 import static com.mojang.math.Axis.XP;
-import static org.lwjgl.opengl.GL11.*;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class Control {

@@ -15,14 +15,14 @@ import net.montoyo.wd.client.ClientProxy;
 import net.montoyo.wd.client.gui.controls.Button;
 import net.montoyo.wd.client.gui.controls.TextField;
 import net.montoyo.wd.client.gui.loading.FillControl;
-import net.montoyo.wd.entity.TileEntityScreen;
+import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.item.ItemMinePad2;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.server_bound.C2SMessageMinepadUrl;
 import net.montoyo.wd.net.server_bound.C2SMessageScreenCtrl;
-import net.montoyo.wd.utilities.BlockSide;
-import net.montoyo.wd.utilities.Util;
-import net.montoyo.wd.utilities.Vector3i;
+import net.montoyo.wd.utilities.data.BlockSide;
+import net.montoyo.wd.utilities.serialization.Util;
+import net.montoyo.wd.utilities.math.Vector3i;
 
 import java.io.IOException;
 import java.util.Map;
@@ -32,7 +32,7 @@ import java.util.UUID;
 public class GuiSetURL2 extends WDScreen {
 	
 	//Screen data
-	private TileEntityScreen tileEntity;
+	private ScreenBlockEntity tileEntity;
 	private BlockSide screenSide;
 	private Vector3i remoteLocation;
 	
@@ -55,7 +55,7 @@ public class GuiSetURL2 extends WDScreen {
 	@FillControl
 	private Button btnOk;
 	
-	public GuiSetURL2(TileEntityScreen tes, BlockSide side, String url, Vector3i rl) {
+	public GuiSetURL2(ScreenBlockEntity tes, BlockSide side, String url, Vector3i rl) {
 		super(Component.nullToEmpty(null));
 		tileEntity = tes;
 		screenSide = side;
@@ -120,7 +120,7 @@ public class GuiSetURL2 extends WDScreen {
 		if (!url.isEmpty()) {
 			
 			try {
-				TileEntityScreen.url(url);
+				ScreenBlockEntity.url(url);
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}

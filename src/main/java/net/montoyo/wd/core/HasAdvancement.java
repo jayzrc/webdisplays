@@ -5,9 +5,7 @@
 package net.montoyo.wd.core;
 
 public enum HasAdvancement {
-
     DONT_KNOW,
     YES,
     NO
-
 }

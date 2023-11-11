@@ -6,7 +6,7 @@ package net.montoyo.wd.client.gui.controls;
 
 import net.minecraft.network.chat.Component;
 import net.montoyo.wd.client.gui.loading.JsonOWrapper;
-import net.montoyo.wd.utilities.Util;
+import net.montoyo.wd.utilities.serialization.Util;
 import net.montoyo.wd.utilities.VideoType;
 
 import java.net.MalformedURLException;

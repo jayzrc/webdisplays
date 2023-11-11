@@ -17,13 +17,13 @@ import net.montoyo.wd.client.gui.controls.Button;
 import net.montoyo.wd.client.gui.controls.Control;
 import net.montoyo.wd.client.gui.controls.Label;
 import net.montoyo.wd.client.gui.loading.FillControl;
-import net.montoyo.wd.entity.TileEntityScreen;
+import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.server_bound.C2SMessageScreenCtrl;
-import net.montoyo.wd.utilities.BlockSide;
+import net.montoyo.wd.utilities.data.BlockSide;
 import net.montoyo.wd.utilities.Log;
-import net.montoyo.wd.utilities.TypeData;
-import net.montoyo.wd.utilities.Util;
+import net.montoyo.wd.utilities.serialization.TypeData;
+import net.montoyo.wd.utilities.serialization.Util;
 import org.lwjgl.glfw.GLFW;
 import org.vivecraft.client_vr.gameplay.VRPlayer;
 import org.vivecraft.client_vr.gameplay.screenhandlers.KeyboardHandler;
@@ -40,7 +40,7 @@ public class GuiKeyboard extends WDScreen {
 
     private static final String WARNING_FNAME = "wd_keyboard_warning.txt";
 
-    private TileEntityScreen tes;
+    private ScreenBlockEntity tes;
     private BlockSide side;
     private final ArrayList<TypeData> evStack = new ArrayList<>();
     private BlockPos kbPos;
@@ -56,7 +56,7 @@ public class GuiKeyboard extends WDScreen {
         super(Component.nullToEmpty(null));
     }
 
-    public GuiKeyboard(TileEntityScreen tes, BlockSide side, BlockPos kbPos) {
+    public GuiKeyboard(ScreenBlockEntity tes, BlockSide side, BlockPos kbPos) {
         this();
         this.tes = tes;
         this.side = side;

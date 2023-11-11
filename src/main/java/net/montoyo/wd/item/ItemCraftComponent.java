@@ -10,7 +10,6 @@ import net.montoyo.wd.core.CraftComponent;
 import org.jetbrains.annotations.NotNull;
 
 public class ItemCraftComponent extends ItemMulti implements WDItem {
-
     public ItemCraftComponent(Properties properties) {
         super(CraftComponent.class, properties
 //                .tab(WebDisplays.CREATIVE_TAB)

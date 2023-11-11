@@ -14,10 +14,9 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public interface WDItem {
-
     static void addInformation(@Nullable List<String> tt) {
-        if(tt != null && WebDisplays.PROXY.isShiftDown())
-            tt.add("" + ChatFormatting.GRAY + I18n.get("item.webdisplays.wiki"));
+        if (tt != null && WebDisplays.PROXY.isShiftDown())
+            tt.add(ChatFormatting.GRAY + I18n.get("item.webdisplays.wiki"));
     }
 
     String getWikiName(@Nonnull ItemStack is);

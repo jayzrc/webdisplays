@@ -10,9 +10,8 @@ import net.minecraftforge.network.NetworkEvent;
 import net.montoyo.wd.controls.ScreenControl;
 import net.montoyo.wd.core.JSServerRequest;
 import net.montoyo.wd.core.MissingPermissionException;
-import net.montoyo.wd.entity.TileEntityScreen;
-import net.montoyo.wd.utilities.BlockSide;
-import net.montoyo.wd.utilities.Log;
+import net.montoyo.wd.entity.ScreenBlockEntity;
+import net.montoyo.wd.utilities.data.BlockSide;
 
 import java.util.function.Function;
 
@@ -49,7 +48,7 @@ public class JSRequestControl extends ScreenControl {
 	}
 	
 	@Override
-	public void handleServer(BlockPos pos, BlockSide side, TileEntityScreen tes, NetworkEvent.Context ctx, Function<Integer, Boolean> permissionChecker) throws MissingPermissionException {
+	public void handleServer(BlockPos pos, BlockSide side, ScreenBlockEntity tes, NetworkEvent.Context ctx, Function<Integer, Boolean> permissionChecker) throws MissingPermissionException {
 		ServerPlayer player = ctx.getSender();
 //		if (reqType == null || data == null) Log.warning("Caught invalid JS request from player %s (UUID %s)", player.getName(), player.getGameProfile().getId().toString());
 //		else tes.handleJSRequest(player, side, reqId, reqType, data);
@@ -57,7 +56,7 @@ public class JSRequestControl extends ScreenControl {
 	
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void handleClient(BlockPos pos, BlockSide side, TileEntityScreen tes, NetworkEvent.Context ctx) {
+	public void handleClient(BlockPos pos, BlockSide side, ScreenBlockEntity tes, NetworkEvent.Context ctx) {
 		throw new RuntimeException("TODO");
 	}
 }

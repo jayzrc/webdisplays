@@ -18,14 +18,11 @@ import javax.annotation.Nonnull;
 import java.util.concurrent.Callable;
 
 public class WDDCapability implements IWDDCapability {
-
     public static class Factory implements Callable<IWDDCapability> {
-
         @Override
         public IWDDCapability call() {
             return new WDDCapability();
         }
-
     }
 
     public static class Provider implements ICapabilitySerializable<CompoundTag> {
@@ -38,7 +35,7 @@ public class WDDCapability implements IWDDCapability {
         @NotNull
         @Override
         public <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, @org.jetbrains.annotations.Nullable Direction arg) {
-            return cap == capability ?  INSTANCE.cast() : LazyOptional.empty();
+            return cap == capability ? INSTANCE.cast() : LazyOptional.empty();
         }
 
         @Override
@@ -78,8 +75,7 @@ public class WDDCapability implements IWDDCapability {
 
     @Override
     public void cloneTo(IWDDCapability dst) {
-        if(!isFirstRun())
+        if (!isFirstRun())
             dst.clearFirstRun();
     }
-
 }

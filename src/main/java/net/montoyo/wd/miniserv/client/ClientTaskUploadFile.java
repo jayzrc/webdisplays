@@ -8,7 +8,7 @@ import net.montoyo.wd.miniserv.Constants;
 import net.montoyo.wd.miniserv.OutgoingPacket;
 import net.montoyo.wd.miniserv.PacketID;
 import net.montoyo.wd.utilities.Log;
-import net.montoyo.wd.utilities.Util;
+import net.montoyo.wd.utilities.serialization.Util;
 
 import java.io.File;
 import java.io.FileInputStream;

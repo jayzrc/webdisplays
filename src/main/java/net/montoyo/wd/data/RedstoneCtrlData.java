@@ -13,19 +13,18 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.montoyo.wd.client.gui.GuiRedstoneCtrl;
 import net.montoyo.wd.net.BufferUtils;
-import net.montoyo.wd.utilities.Vector3i;
+import net.montoyo.wd.utilities.math.Vector3i;
 
 public class RedstoneCtrlData extends GuiData {
-
     public ResourceLocation dimension;
     public Vector3i pos;
     public String risingEdgeURL;
     public String fallingEdgeURL;
-    
+
     public RedstoneCtrlData() {
         super();
     }
-    
+
     public RedstoneCtrlData(ResourceLocation d, BlockPos p, String r, String f) {
         dimension = d;
         pos = new Vector3i(p);
@@ -43,7 +42,7 @@ public class RedstoneCtrlData extends GuiData {
     public String getName() {
         return "RedstoneCtrl";
     }
-    
+
     @Override
     public void serialize(FriendlyByteBuf buf) {
         buf.writeUtf(dimension.toString());
@@ -51,7 +50,7 @@ public class RedstoneCtrlData extends GuiData {
         buf.writeUtf(risingEdgeURL);
         buf.writeUtf(fallingEdgeURL);
     }
-    
+
     @Override
     public void deserialize(FriendlyByteBuf buf) {
         dimension = new ResourceLocation(buf.readUtf());

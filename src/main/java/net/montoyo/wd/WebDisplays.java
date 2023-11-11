@@ -42,16 +42,16 @@ import net.montoyo.wd.config.ClientConfig;
 import net.montoyo.wd.config.CommonConfig;
 import net.montoyo.wd.controls.ScreenControlRegistry;
 import net.montoyo.wd.core.*;
-import net.montoyo.wd.init.BlockInit;
-import net.montoyo.wd.init.ItemInit;
-import net.montoyo.wd.init.TabInit;
-import net.montoyo.wd.init.TileInit;
+import net.montoyo.wd.registry.BlockRegistry;
+import net.montoyo.wd.registry.ItemRegistry;
+import net.montoyo.wd.registry.WDTabs;
+import net.montoyo.wd.registry.TileRegistry;
 import net.montoyo.wd.miniserv.server.Server;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.client_bound.S2CMessageServerInfo;
 import net.montoyo.wd.utilities.DistSafety;
 import net.montoyo.wd.utilities.Log;
-import net.montoyo.wd.utilities.Util;
+import net.montoyo.wd.utilities.serialization.Util;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -130,10 +130,10 @@ public class WebDisplays {
         WDNetworkRegistry.init();
         SOUNDS.register(bus);
         onRegisterSounds();
-        TabInit.init(bus);
-        BlockInit.init(bus);
-        ItemInit.init(bus);
-        TileInit.init(bus);
+        WDTabs.init(bus);
+        BlockRegistry.init(bus);
+        ItemRegistry.init(bus);
+        TileRegistry.init(bus);
         
         PROXY.preInit();
         
@@ -253,7 +253,7 @@ public class WebDisplays {
         if(!ev.getEntity().level().isClientSide) {
             ItemStack is = ev.getEntity().getItem();
 
-            if(is.getItem() == ItemInit.MINEPAD.get()) {
+            if(is.getItem() == ItemRegistry.MINEPAD.get()) {
                 CompoundTag tag = is.getTag();
 
                 if(tag == null) {
@@ -271,7 +271,7 @@ public class WebDisplays {
 
     @SubscribeEvent
     public void onPlayerCraft(PlayerEvent.ItemCraftedEvent ev) {
-        if(CommonConfig.hardRecipes && ItemInit.isCompCraftItem(ev.getCrafting().getItem()) && (CraftComponent.EXTCARD.makeItemStack().is(ev.getCrafting().getItem()))) {
+        if(CommonConfig.hardRecipes && ItemRegistry.isCompCraftItem(ev.getCrafting().getItem()) && (CraftComponent.EXTCARD.makeItemStack().is(ev.getCrafting().getItem()))) {
             if((ev.getEntity() instanceof ServerPlayer && !hasPlayerAdvancement((ServerPlayer) ev.getEntity(), ADV_PAD_BREAK)) || PROXY.hasClientPlayerAdvancement(ADV_PAD_BREAK) != HasAdvancement.YES) {
                 ev.getCrafting().setDamageValue(CraftComponent.BADEXTCARD.ordinal());
 

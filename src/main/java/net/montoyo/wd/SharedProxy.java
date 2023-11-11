@@ -14,14 +14,18 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import net.montoyo.wd.core.HasAdvancement;
 import net.montoyo.wd.core.JSServerRequest;
 import net.montoyo.wd.data.GuiData;
-import net.montoyo.wd.entity.TileEntityScreen;
+import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.utilities.*;
+import net.montoyo.wd.utilities.math.Vector2i;
+import net.montoyo.wd.utilities.math.Vector3i;
+import net.montoyo.wd.utilities.data.BlockSide;
+import net.montoyo.wd.utilities.data.Rotation;
+import net.montoyo.wd.utilities.serialization.NameUUIDPair;
 
 import javax.annotation.Nonnull;
 import java.util.UUID;
@@ -58,7 +62,7 @@ public class SharedProxy {
         Log.error("Called SharedProxy.displayGui() on server side...");
     }
 
-    public void trackScreen(TileEntityScreen tes, boolean track) {
+    public void trackScreen(ScreenBlockEntity tes, boolean track) {
     }
 
     public void onAutocompleteResult(NameUUIDPair pairs[]) {

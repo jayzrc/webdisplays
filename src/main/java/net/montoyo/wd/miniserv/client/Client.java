@@ -9,7 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.montoyo.wd.miniserv.*;
 import net.montoyo.wd.net.server_bound.C2SMessageMiniservConnect;
 import net.montoyo.wd.utilities.Log;
-import net.montoyo.wd.utilities.Util;
+import net.montoyo.wd.utilities.serialization.Util;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;

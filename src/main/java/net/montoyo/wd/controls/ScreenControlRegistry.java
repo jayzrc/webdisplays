@@ -8,8 +8,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.network.NetworkEvent;
 import net.montoyo.wd.controls.builtin.*;
-import net.montoyo.wd.entity.TileEntityScreen;
-import net.montoyo.wd.utilities.BlockSide;
+import net.montoyo.wd.entity.ScreenBlockEntity;
+import net.montoyo.wd.utilities.data.BlockSide;
 import net.montoyo.wd.utilities.Log;
 
 import java.lang.reflect.Method;
@@ -32,7 +32,7 @@ public class ScreenControlRegistry {
 			if (FMLEnvironment.dist.isClient()) {
 				boolean shouldThrow = false;
 				try {
-					Method m = type.clazz.getMethod("handleClient", BlockPos.class, BlockSide.class, TileEntityScreen.class, NetworkEvent.Context.class);
+					Method m = type.clazz.getMethod("handleClient", BlockPos.class, BlockSide.class, ScreenBlockEntity.class, NetworkEvent.Context.class);
 					OnlyIn onlyIn = m.getAnnotation(OnlyIn.class);
 					if (onlyIn == null) shouldThrow = true;
 					Dist d = onlyIn.value(); // idc if this throws, lol

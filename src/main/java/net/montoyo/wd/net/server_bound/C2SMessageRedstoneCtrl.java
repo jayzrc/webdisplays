@@ -12,11 +12,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.network.NetworkEvent;
 import net.montoyo.wd.core.ScreenRights;
-import net.montoyo.wd.entity.TileEntityRedCtrl;
-import net.montoyo.wd.entity.TileEntityScreen;
+import net.montoyo.wd.entity.RedstoneControlBlockEntity;
+import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.net.Packet;
-import net.montoyo.wd.utilities.Util;
-import net.montoyo.wd.utilities.Vector3i;
+import net.montoyo.wd.utilities.serialization.Util;
+import net.montoyo.wd.utilities.math.Vector3i;
 
 public class C2SMessageRedstoneCtrl extends Packet implements Runnable {
 	private Player player;
@@ -50,16 +50,16 @@ public class C2SMessageRedstoneCtrl extends Packet implements Runnable {
 			return;
 		
 		BlockEntity te = world.getBlockEntity(blockPos);
-		if (te == null || !(te instanceof TileEntityRedCtrl))
+		if (te == null || !(te instanceof RedstoneControlBlockEntity))
 			return;
 		
-		TileEntityRedCtrl redCtrl = (TileEntityRedCtrl) te;
+		RedstoneControlBlockEntity redCtrl = (RedstoneControlBlockEntity) te;
 		if (!redCtrl.isScreenChunkLoaded()) {
 			Util.toast(player, "chunkUnloaded");
 			return;
 		}
 		
-		TileEntityScreen tes = redCtrl.getConnectedScreen();
+		ScreenBlockEntity tes = redCtrl.getConnectedScreen();
 		if (tes == null)
 			return;
 		

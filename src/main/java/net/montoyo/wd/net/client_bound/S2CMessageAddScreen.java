@@ -10,36 +10,41 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.NetworkEvent;
 import net.montoyo.wd.WebDisplays;
-import net.montoyo.wd.entity.TileEntityScreen;
+import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.net.Packet;
 import net.montoyo.wd.utilities.*;
+import net.montoyo.wd.utilities.math.Vector2i;
+import net.montoyo.wd.utilities.math.Vector3i;
+import net.montoyo.wd.utilities.data.BlockSide;
+import net.montoyo.wd.utilities.data.Rotation;
+import net.montoyo.wd.utilities.serialization.NameUUIDPair;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static net.montoyo.wd.block.BlockScreen.hasTE;
+import static net.montoyo.wd.block.ScreenBlock.hasTE;
 
 public class S2CMessageAddScreen extends Packet {
 	private boolean clear;
 	private Vector3i pos;
-	private TileEntityScreen.Screen[] screens;
+	private ScreenBlockEntity.Screen[] screens;
 	
-	public S2CMessageAddScreen(TileEntityScreen tes) {
+	public S2CMessageAddScreen(ScreenBlockEntity tes) {
 		clear = true;
 		pos = new Vector3i(tes.getBlockPos());
-		screens = new TileEntityScreen.Screen[tes.screenCount()];
+		screens = new ScreenBlockEntity.Screen[tes.screenCount()];
 		
 		for (int i = 0; i < tes.screenCount(); i++)
 			screens[i] = tes.getScreen(i);
 	}
 	
-	public S2CMessageAddScreen(TileEntityScreen tes, TileEntityScreen.Screen... toSend) {
+	public S2CMessageAddScreen(ScreenBlockEntity tes, ScreenBlockEntity.Screen... toSend) {
 		clear = false;
 		pos = new Vector3i(tes.getBlockPos());
 		screens = toSend;
 	}
 	
-	public S2CMessageAddScreen(boolean clear, Vector3i pos, TileEntityScreen.Screen[] screens) {
+	public S2CMessageAddScreen(boolean clear, Vector3i pos, ScreenBlockEntity.Screen[] screens) {
 		this.clear = clear;
 		this.pos = pos;
 		this.screens = screens;
@@ -53,9 +58,9 @@ public class S2CMessageAddScreen extends Packet {
 		
 		int cnt = buf.readByte() & 7;
 		
-		screens = new TileEntityScreen.Screen[cnt];
+		screens = new ScreenBlockEntity.Screen[cnt];
 		for (int i = 0; i < cnt; i++) {
-			screens[i] = new TileEntityScreen.Screen();
+			screens[i] = new ScreenBlockEntity.Screen();
 			screens[i].side = BlockSide.values()[buf.readByte()];
 			screens[i].size = new Vector2i(buf);
 			screens[i].url = buf.readUtf();
@@ -76,7 +81,7 @@ public class S2CMessageAddScreen extends Packet {
 		pos.writeTo(buf);
 		buf.writeByte(screens.length);
 		
-		for (TileEntityScreen.Screen scr : screens) {
+		for (ScreenBlockEntity.Screen scr : screens) {
 			buf.writeByte(scr.side.ordinal());
 			scr.size.writeTo(buf);
 			buf.writeUtf(scr.url);
@@ -95,11 +100,11 @@ public class S2CMessageAddScreen extends Packet {
 			ctx.enqueueWork(() -> {
 				Level lvl = (Level) WebDisplays.PROXY.getWorld(ctx);
 				BlockEntity te = lvl.getBlockEntity(pos.toBlock());
-				if (!(te instanceof TileEntityScreen)) {
+				if (!(te instanceof ScreenBlockEntity)) {
 					lvl.setBlockAndUpdate(pos.toBlock(), lvl.getBlockState(pos.toBlock()).setValue(hasTE, true));
 					te = lvl.getBlockEntity(pos.toBlock());
 					
-					if (!(te instanceof TileEntityScreen)) {
+					if (!(te instanceof ScreenBlockEntity)) {
 						if (clear)
 							Log.error("CMessageAddScreen: Can't add screen to invalid tile entity at %s", pos.toString());
 						
@@ -107,17 +112,17 @@ public class S2CMessageAddScreen extends Packet {
 					}
 				}
 				
-				TileEntityScreen tes = (TileEntityScreen) te;
+				ScreenBlockEntity tes = (ScreenBlockEntity) te;
 				if (clear)
 					tes.clear();
 				
-				for (TileEntityScreen.Screen entry : screens) {
-					TileEntityScreen.Screen scr = tes.addScreen(entry.side, entry.size, entry.resolution, null, false);
+				for (ScreenBlockEntity.Screen entry : screens) {
+					ScreenBlockEntity.Screen scr = tes.addScreen(entry.side, entry.size, entry.resolution, null, false);
 					scr.rotation = entry.rotation;
 					String webUrl;
 					
 					try {
-						webUrl = TileEntityScreen.url(entry.url);
+						webUrl = ScreenBlockEntity.url(entry.url);
 					} catch (IOException e) {
 						throw new RuntimeException(e);
 					}

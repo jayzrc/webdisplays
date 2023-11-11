@@ -5,7 +5,7 @@
 package net.montoyo.wd.core;
 
 import net.minecraft.world.item.ItemStack;
-import net.montoyo.wd.init.ItemInit;
+import net.montoyo.wd.registry.ItemRegistry;
 
 public enum CraftComponent {
     STONEKEY("stonekey", "StoneKey"),
@@ -32,6 +32,6 @@ public enum CraftComponent {
     }
 
     public ItemStack makeItemStack() {
-        return new ItemStack(ItemInit.getComputerCraftItem(ordinal()).get(), 1);
+        return new ItemStack(ItemRegistry.getComputerCraftItem(ordinal()).get(), 1);
     }
 }
