@@ -79,7 +79,6 @@ repositories{
         name = "cursemaven"
         url = "https://www.cursemaven.com"
     }
-    flatDir { dirs 'libs' }
     maven { url 'https://mcef-download.cinemamod.com/repositories/releases/' }
 }
 
