@@ -5,6 +5,7 @@ WebDisplays was originally written by montoyo. It is currently maintained by Cin
 
 Discussion: https://discord.gg/rNrh5kW8Ty
 
+## Install
 Download WebDisplays from either:
 - CurseForge: https://legacy.curseforge.com/minecraft/mc-mods/webdisplays
 - Modrinth: TODO
