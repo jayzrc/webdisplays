@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.montoyo.wd.client.gui.GuiSetURL2;
-import net.montoyo.wd.entity.TileEntityScreen;
+import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.net.BufferUtils;
 import net.montoyo.wd.utilities.BlockSide;
 import net.montoyo.wd.utilities.Log;
@@ -49,12 +49,12 @@ public class SetURLData extends GuiData {
     @Override
     public Screen createGui(Screen old, Level world) {
         BlockEntity te = world.getBlockEntity(pos.toBlock());
-        if (te == null || !(te instanceof TileEntityScreen)) {
+        if (te == null || !(te instanceof ScreenBlockEntity)) {
             Log.error("TileEntity at %s is not a screen; can't open gui!", pos.toString());
             return null;
         }
 
-        return new GuiSetURL2((TileEntityScreen) te, side, url, isRemote ? remoteLocation : null);
+        return new GuiSetURL2((ScreenBlockEntity) te, side, url, isRemote ? remoteLocation : null);
     }
 
     @Override

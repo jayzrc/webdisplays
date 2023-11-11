@@ -23,8 +23,8 @@ import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Map;
 
-public abstract class TileEntityInterfaceBase extends TileEntityPeripheralBase {
-    public TileEntityInterfaceBase(BlockEntityType<?> arg, BlockPos arg2, BlockState arg3) {
+public abstract class AbstractInterfaceBlockEntity extends AbstractPeripheralBlockEntity {
+    public AbstractInterfaceBlockEntity(BlockEntityType<?> arg, BlockPos arg2, BlockState arg3) {
         super(arg, arg2, arg3);
     }
 
@@ -107,7 +107,7 @@ public abstract class TileEntityInterfaceBase extends TileEntityPeripheralBase {
                 throw new IllegalArgumentException("invalid right name");
         }
 
-        TileEntityScreen tes = getConnectedScreenEx();
+        ScreenBlockEntity tes = getConnectedScreenEx();
         if(owner == null || tes == null)
             return null;
         else
@@ -118,7 +118,7 @@ public abstract class TileEntityInterfaceBase extends TileEntityPeripheralBase {
     public Object[] hasUpgrade(IComputerArgs args) {
         String name = args.checkString(0);
 
-        TileEntityScreen tes = getConnectedScreenEx();
+        ScreenBlockEntity tes = getConnectedScreenEx();
         if(owner == null || tes == null)
             return null;
         else
@@ -127,7 +127,7 @@ public abstract class TileEntityInterfaceBase extends TileEntityPeripheralBase {
 
     @ComputerFunc
     public Object[] getSize(IComputerArgs args) {
-        TileEntityScreen tes = getConnectedScreenEx();
+        ScreenBlockEntity tes = getConnectedScreenEx();
 
         if(owner == null || tes == null)
             return null;
@@ -139,7 +139,7 @@ public abstract class TileEntityInterfaceBase extends TileEntityPeripheralBase {
 
     @ComputerFunc
     public Object[] getResolution(IComputerArgs args) {
-        TileEntityScreen tes = getConnectedScreenEx();
+        ScreenBlockEntity tes = getConnectedScreenEx();
 
         if(owner == null || tes == null)
             return null;
@@ -151,7 +151,7 @@ public abstract class TileEntityInterfaceBase extends TileEntityPeripheralBase {
 
     @ComputerFunc
     public Object[] getRotation(IComputerArgs args) {
-        TileEntityScreen tes = getConnectedScreenEx();
+        ScreenBlockEntity tes = getConnectedScreenEx();
 
         if(owner == null || tes == null)
             return null;
@@ -161,7 +161,7 @@ public abstract class TileEntityInterfaceBase extends TileEntityPeripheralBase {
 
     @ComputerFunc
     public Object[] getURL(IComputerArgs args) {
-        TileEntityScreen tes = getConnectedScreenEx();
+        ScreenBlockEntity tes = getConnectedScreenEx();
 
         if(owner == null || tes == null)
             return null;
@@ -205,12 +205,12 @@ public abstract class TileEntityInterfaceBase extends TileEntityPeripheralBase {
 //                throw new IllegalArgumentException("bad action name");
 //        }
 
-        TileEntityScreen scr = getConnectedScreenEx();
+        ScreenBlockEntity scr = getConnectedScreenEx();
 
         if(owner == null || scr == null)
             return err("notlinked");
         else {
-            TileEntityScreen.Screen scrscr = scr.getScreen(screenSide);
+            ScreenBlockEntity.Screen scrscr = scr.getScreen(screenSide);
 
             if((scrscr.rightsFor(owner.uuid) & ScreenRights.INTERACT) == 0)
                 return err("restrictions");
@@ -244,7 +244,7 @@ public abstract class TileEntityInterfaceBase extends TileEntityPeripheralBase {
     }
 
     private Object[] realType(String what) {
-        TileEntityScreen scr = getConnectedScreenEx();
+        ScreenBlockEntity scr = getConnectedScreenEx();
 
         if(owner == null || scr == null)
             return err("notlinked");
@@ -325,7 +325,7 @@ public abstract class TileEntityInterfaceBase extends TileEntityPeripheralBase {
     @ComputerFunc
     public Object[] setURL(IComputerArgs args) {
         String url = args.checkString(0);
-        TileEntityScreen scr = getConnectedScreenEx();
+        ScreenBlockEntity scr = getConnectedScreenEx();
 
         if(owner == null || scr == null)
             return err("notlinked");
@@ -345,7 +345,7 @@ public abstract class TileEntityInterfaceBase extends TileEntityPeripheralBase {
     public Object[] setResolution(IComputerArgs args) {
         int rx = args.checkInteger(0);
         int ry = args.checkInteger(1);
-        TileEntityScreen scr = getConnectedScreenEx();
+        ScreenBlockEntity scr = getConnectedScreenEx();
 
         if(owner == null || scr == null)
             return err("notlinked");
@@ -368,7 +368,7 @@ public abstract class TileEntityInterfaceBase extends TileEntityPeripheralBase {
         rot /= 90;
         rot &= 3;
 
-        TileEntityScreen scr = getConnectedScreenEx();
+        ScreenBlockEntity scr = getConnectedScreenEx();
 
         if(owner == null || scr == null)
             return err("notlinked");
@@ -383,7 +383,7 @@ public abstract class TileEntityInterfaceBase extends TileEntityPeripheralBase {
     @ComputerFunc
     public Object[] runJS(IComputerArgs args) {
         String code = args.checkString(0);
-        TileEntityScreen scr = getConnectedScreenEx();
+        ScreenBlockEntity scr = getConnectedScreenEx();
 
         if(owner == null || scr == null)
             return err("notlinked");

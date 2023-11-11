@@ -18,10 +18,10 @@ import net.montoyo.wd.data.KeyboardData;
 import net.montoyo.wd.registry.TileRegistry;
 import net.montoyo.wd.utilities.Util;
 
-public class TileEntityKeyboard extends TileEntityPeripheralBase {
+public class KeyboardBlockEntity extends AbstractPeripheralBlockEntity {
     private static final String RANDOM_CHARS = "AZERTYUIOPQSDFGHJKLMWXCVBNazertyuiopqsdfghjklmwxcvbn0123456789"; //Yes I have an AZERTY keyboard, u care?
 
-    public TileEntityKeyboard(BlockPos arg2, BlockState arg3) {
+    public KeyboardBlockEntity(BlockPos arg2, BlockState arg3) {
         super(TileRegistry.KEYBOARD.get(), arg2, arg3);
     }
 
@@ -35,13 +35,13 @@ public class TileEntityKeyboard extends TileEntityPeripheralBase {
             return InteractionResult.SUCCESS;
         }
 
-        TileEntityScreen tes = getConnectedScreen();
+        ScreenBlockEntity tes = getConnectedScreen();
         if(tes == null) {
             Util.toast(player, "notLinked");
             return InteractionResult.SUCCESS;
         }
 
-        TileEntityScreen.Screen scr = tes.getScreen(screenSide);
+        ScreenBlockEntity.Screen scr = tes.getScreen(screenSide);
         if((scr.rightsFor(player) & ScreenRights.INTERACT) == 0) {
             Util.toast(player, "restrictions");
             return InteractionResult.SUCCESS;
@@ -55,10 +55,10 @@ public class TileEntityKeyboard extends TileEntityPeripheralBase {
         if(!isScreenChunkLoaded())
             return;
         
-        TileEntityScreen tes = getConnectedScreen();
+        ScreenBlockEntity tes = getConnectedScreen();
 
         if(tes != null) {
-            TileEntityScreen.Screen scr = tes.getScreen(screenSide);
+            ScreenBlockEntity.Screen scr = tes.getScreen(screenSide);
             boolean ok;
 
             if(ent instanceof Player)

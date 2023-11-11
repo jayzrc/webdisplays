@@ -19,12 +19,12 @@ import net.montoyo.wd.utilities.Util;
 
 import java.io.IOException;
 
-public class TileEntityRedCtrl extends TileEntityPeripheralBase {
+public class RedstoneControlBlockEntity extends AbstractPeripheralBlockEntity {
     private String risingEdgeURL = "";
     private String fallingEdgeURL = "";
     private boolean state = false;
 
-    public TileEntityRedCtrl(BlockPos arg2, BlockState arg3) {
+    public RedstoneControlBlockEntity(BlockPos arg2, BlockState arg3) {
         super(TileRegistry.REDSTONE_CONTROLLER.get(), arg2, arg3);
     }
 
@@ -55,13 +55,13 @@ public class TileEntityRedCtrl extends TileEntityPeripheralBase {
             return InteractionResult.SUCCESS;
         }
 
-        TileEntityScreen tes = getConnectedScreen();
+        ScreenBlockEntity tes = getConnectedScreen();
         if (tes == null) {
             Util.toast(player, "notLinked");
             return InteractionResult.SUCCESS;
         }
 
-        TileEntityScreen.Screen scr = tes.getScreen(screenSide);
+        ScreenBlockEntity.Screen scr = tes.getScreen(screenSide);
         if ((scr.rightsFor(player) & ScreenRights.CHANGE_URL) == 0) {
             Util.toast(player, "restrictions");
             return InteractionResult.SUCCESS;
@@ -96,7 +96,7 @@ public class TileEntityRedCtrl extends TileEntityPeripheralBase {
             return;
 
         if (isScreenChunkLoaded()) {
-            TileEntityScreen tes = getConnectedScreen();
+            ScreenBlockEntity tes = getConnectedScreen();
 
             if (tes != null)
                 try {

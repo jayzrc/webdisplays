@@ -13,8 +13,7 @@ import net.minecraftforge.fml.common.Optional;
 import net.montoyo.wd.core.OCArguments;
 
 @Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "opencomputers")
-public class TileEntityOCInterface extends TileEntityInterfaceBase implements SimpleComponent {
-
+public class OCInterfaceBlockEntity extends AbstractInterfaceBlockEntity implements SimpleComponent {
     @Override
     public String getComponentName() {
         return "webdisplays";
@@ -133,5 +132,4 @@ public class TileEntityOCInterface extends TileEntityInterfaceBase implements Si
     public Object[] unlink(Context ctx, Arguments args) {
         return unlink(new OCArguments(args));
     }
-
 }*/

@@ -16,10 +16,10 @@ import net.montoyo.wd.registry.TileRegistry;
 import net.montoyo.wd.utilities.NameUUIDPair;
 import net.montoyo.wd.utilities.Util;
 
-public class TileEntityServer extends BlockEntity {
+public class ServerBlockEntity extends BlockEntity {
     private NameUUIDPair owner;
 
-    public TileEntityServer(BlockPos arg2, BlockState arg3) {
+    public ServerBlockEntity(BlockPos arg2, BlockState arg3) {
         super(TileRegistry.SERVER.get(), arg2, arg3);
     }
 

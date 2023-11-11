@@ -14,7 +14,7 @@ import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.controls.ScreenControl;
 import net.montoyo.wd.controls.ScreenControlRegistry;
 import net.montoyo.wd.controls.builtin.*;
-import net.montoyo.wd.entity.TileEntityScreen;
+import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.net.BufferUtils;
 import net.montoyo.wd.net.Packet;
 import net.montoyo.wd.utilities.*;
@@ -39,49 +39,49 @@ public class S2CMessageScreenUpdate extends Packet  {
         this.control = ScreenControlRegistry.parse(buf);
     }
     
-    public static S2CMessageScreenUpdate setURL(TileEntityScreen screen, BlockSide side, String weburl) {
+    public static S2CMessageScreenUpdate setURL(ScreenBlockEntity screen, BlockSide side, String weburl) {
         S2CMessageScreenUpdate screenUpdate = new S2CMessageScreenUpdate(screen.getBlockPos(), side);
         screenUpdate.control = new SetURLControl(weburl, new Vector3i(screenUpdate.pos));
         return screenUpdate;
     }
     
-    public static S2CMessageScreenUpdate setResolution(TileEntityScreen screen, BlockSide side, Vector2i res) {
+    public static S2CMessageScreenUpdate setResolution(ScreenBlockEntity screen, BlockSide side, Vector2i res) {
         S2CMessageScreenUpdate screenUpdate = new S2CMessageScreenUpdate(screen.getBlockPos(), side);
         screenUpdate.control = new ScreenModifyControl(res);
         return screenUpdate;
     }
     
-    public static S2CMessageScreenUpdate rotation(TileEntityScreen screen, BlockSide side, Rotation rot) {
+    public static S2CMessageScreenUpdate rotation(ScreenBlockEntity screen, BlockSide side, Rotation rot) {
         S2CMessageScreenUpdate screenUpdate = new S2CMessageScreenUpdate(screen.getBlockPos(), side);
         screenUpdate.control = new ScreenModifyControl(rot);
         return screenUpdate;
     }
     
-    public static S2CMessageScreenUpdate upgrade(TileEntityScreen screen, BlockSide side, boolean adding, ItemStack stack) {
+    public static S2CMessageScreenUpdate upgrade(ScreenBlockEntity screen, BlockSide side, boolean adding, ItemStack stack) {
         S2CMessageScreenUpdate screenUpdate = new S2CMessageScreenUpdate(screen.getBlockPos(), side);
         screenUpdate.control = new ManageRightsAndUpdgradesControl(adding, stack);
         return screenUpdate;
     }
     
-    public static S2CMessageScreenUpdate click(TileEntityScreen screen, BlockSide side, ClickControl.ControlType mouseMove, Vector2i pos) {
+    public static S2CMessageScreenUpdate click(ScreenBlockEntity screen, BlockSide side, ClickControl.ControlType mouseMove, Vector2i pos) {
         S2CMessageScreenUpdate screenUpdate = new S2CMessageScreenUpdate(screen.getBlockPos(), side);
         screenUpdate.control = new ClickControl(mouseMove, pos);
         return screenUpdate;
     }
     
-    public static S2CMessageScreenUpdate type(TileEntityScreen screen, BlockSide side, String text) {
+    public static S2CMessageScreenUpdate type(ScreenBlockEntity screen, BlockSide side, String text) {
         S2CMessageScreenUpdate screenUpdate = new S2CMessageScreenUpdate(screen.getBlockPos(), side);
         screenUpdate.control = new KeyTypedControl(text, screenUpdate.pos);
         return screenUpdate;
     }
     
-    public static S2CMessageScreenUpdate autoVolume(TileEntityScreen screen, BlockSide side, boolean av) {
+    public static S2CMessageScreenUpdate autoVolume(ScreenBlockEntity screen, BlockSide side, boolean av) {
         S2CMessageScreenUpdate screenUpdate = new S2CMessageScreenUpdate(screen.getBlockPos(), side);
         screenUpdate.control = new AutoVolumeControl(av);
         return screenUpdate;
     }
     
-    public static S2CMessageScreenUpdate owner(TileEntityScreen screen, BlockSide side, NameUUIDPair owner) {
+    public static S2CMessageScreenUpdate owner(ScreenBlockEntity screen, BlockSide side, NameUUIDPair owner) {
         S2CMessageScreenUpdate screenUpdate = new S2CMessageScreenUpdate(screen.getBlockPos(), side);
         screenUpdate.control = new OwnerControl(owner);
         return screenUpdate;
@@ -107,7 +107,7 @@ public class S2CMessageScreenUpdate extends Packet  {
             ctx.enqueueWork(() -> {
                 Level level = (Level) WebDisplays.PROXY.getWorld(ctx);
                 BlockEntity be = level.getBlockEntity(pos);
-                if (be instanceof TileEntityScreen tes) {
+                if (be instanceof ScreenBlockEntity tes) {
                     control.handleClient(pos, side, tes, ctx);
                 }
             });

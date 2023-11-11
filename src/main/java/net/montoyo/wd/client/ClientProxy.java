@@ -64,7 +64,7 @@ import net.montoyo.wd.client.gui.loading.GuiLoader;
 import net.montoyo.wd.client.renderers.*;
 import net.montoyo.wd.core.HasAdvancement;
 import net.montoyo.wd.data.GuiData;
-import net.montoyo.wd.entity.TileEntityScreen;
+import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.registry.BlockRegistry;
 import net.montoyo.wd.registry.ItemRegistry;
 import net.montoyo.wd.registry.TileRegistry;
@@ -157,9 +157,9 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 		BlockSide side = BlockSide.values()[result.getDirection().ordinal()];
 		
 		Multiblock.findOrigin(mc.level, pos, side, null);
-		TileEntityScreen te = (TileEntityScreen) mc.level.getBlockEntity(pos.toBlock());
+		ScreenBlockEntity te = (ScreenBlockEntity) mc.level.getBlockEntity(pos.toBlock());
 		
-		TileEntityScreen.Screen sc = te.getScreen(side);
+		ScreenBlockEntity.Screen sc = te.getScreen(side);
 		
 		if (sc == null) return;
 
@@ -191,7 +191,7 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 		private PadData(String url, UUID id) {
 			String webUrl;
 			try {
-				webUrl = TileEntityScreen.url(url);
+				webUrl = ScreenBlockEntity.url(url);
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
@@ -224,7 +224,7 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 	private Map advancementToProgress;
 	
 	//Tracking
-	private final ArrayList<TileEntityScreen> screenTracking = new ArrayList<>();
+	private final ArrayList<ScreenBlockEntity> screenTracking = new ArrayList<>();
 	private int lastTracked = 0;
 	
 	//MinePads Management
@@ -313,7 +313,7 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 	}
 	
 	@Override
-	public void trackScreen(TileEntityScreen tes, boolean track) {
+	public void trackScreen(ScreenBlockEntity tes, boolean track) {
 		int idx = -1;
 		for (int i = 0; i < screenTracking.size(); i++) {
 			if (screenTracking.get(i) == tes) {
@@ -534,7 +534,7 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 				}
 			}
 			
-			for (TileEntityScreen tes : screenTracking)
+			for (ScreenBlockEntity tes : screenTracking)
 				tes.updateClientSideURL(browser, url);
 		}
 	}
@@ -644,7 +644,7 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 		
 		int id = lastTracked % screenTracking.size();
 		
-		TileEntityScreen tes = screenTracking.get(id);
+		ScreenBlockEntity tes = screenTracking.get(id);
 		
 		if (!tes.getLevel().equals(ev.level))
 			return;
@@ -658,7 +658,7 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 		} else {
 			double dist = Double.POSITIVE_INFINITY;
 			for (int i = 0; i < tes.screenCount(); i++) {
-				TileEntityScreen.Screen scrn = tes.getScreen(i);
+				ScreenBlockEntity.Screen scrn = tes.getScreen(i);
 				
 				Vector3d pos = new Vector3d(
 						scrn.side.right.x * scrn.size.x + scrn.size.y * scrn.side.up.x,
@@ -849,15 +849,15 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 	
 	public static final class ScreenSidePair {
 		
-		public TileEntityScreen tes;
+		public ScreenBlockEntity tes;
 		public BlockSide side;
 		
 	}
 	
 	public boolean findScreenFromBrowser(CefBrowser browser, ScreenSidePair pair) {
-		for (TileEntityScreen tes : screenTracking) {
+		for (ScreenBlockEntity tes : screenTracking) {
 			for (int i = 0; i < tes.screenCount(); i++) {
-				TileEntityScreen.Screen scr = tes.getScreen(i);
+				ScreenBlockEntity.Screen scr = tes.getScreen(i);
 				
 				if (scr.browser == browser) {
 					pair.tes = tes;
@@ -910,7 +910,7 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 				BlockEntity be = Minecraft.getInstance().level.getBlockEntity(
 						pos
 				);
-				if (be instanceof TileEntityScreen tes) {
+				if (be instanceof ScreenBlockEntity tes) {
 					if (tes.getScreen(side) != null) {
 						event.setCanceled(true);
 					}

@@ -28,9 +28,9 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.PacketDistributor;
 import net.montoyo.wd.core.DefaultPeripheral;
-import net.montoyo.wd.entity.TileEntityInterfaceBase;
-import net.montoyo.wd.entity.TileEntityPeripheralBase;
-import net.montoyo.wd.entity.TileEntityServer;
+import net.montoyo.wd.entity.AbstractInterfaceBlockEntity;
+import net.montoyo.wd.entity.AbstractPeripheralBlockEntity;
+import net.montoyo.wd.entity.ServerBlockEntity;
 import net.montoyo.wd.item.ItemLinker;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.client_bound.S2CMessageCloseGui;
@@ -76,10 +76,10 @@ public class BlockPeripheral extends WDBlockContainer {
 
         BlockEntity te = world.getBlockEntity(pos);
 
-        if (te instanceof TileEntityPeripheralBase)
-            return ((TileEntityPeripheralBase) te).onRightClick(player, hand);
-        else if (te instanceof TileEntityServer) {
-            ((TileEntityServer) te).onPlayerRightClick(player);
+        if (te instanceof AbstractPeripheralBlockEntity)
+            return ((AbstractPeripheralBlockEntity) te).onRightClick(player, hand);
+        else if (te instanceof ServerBlockEntity) {
+            ((ServerBlockEntity) te).onPlayerRightClick(player);
             return InteractionResult.SUCCESS;
         } else
             return InteractionResult.FAIL;
@@ -98,10 +98,10 @@ public class BlockPeripheral extends WDBlockContainer {
         if (placer instanceof Player) {
             BlockEntity te = world.getBlockEntity(pos);
 
-            if (te instanceof TileEntityServer)
-                ((TileEntityServer) te).setOwner((Player) placer);
-            else if (te instanceof TileEntityInterfaceBase)
-                ((TileEntityInterfaceBase) te).setOwner((Player) placer);
+            if (te instanceof ServerBlockEntity)
+                ((ServerBlockEntity) te).setOwner((Player) placer);
+            else if (te instanceof AbstractInterfaceBlockEntity)
+                ((AbstractInterfaceBlockEntity) te).setOwner((Player) placer);
         }
     }
 
@@ -113,8 +113,8 @@ public class BlockPeripheral extends WDBlockContainer {
     @Override
     public void neighborChanged(BlockState state, Level world, BlockPos pos, Block neighborType, BlockPos neighbor, boolean isMoving) {
         BlockEntity te = world.getBlockEntity(pos);
-        if (te instanceof TileEntityPeripheralBase)
-            ((TileEntityPeripheralBase) te).onNeighborChange(neighborType, neighbor);
+        if (te instanceof AbstractPeripheralBlockEntity)
+            ((AbstractPeripheralBlockEntity) te).onNeighborChange(neighborType, neighbor);
     }
 
     @Override

@@ -16,7 +16,7 @@ import net.montoyo.wd.client.ClientProxy;
 import net.montoyo.wd.config.ClientConfig;
 import net.montoyo.wd.controls.builtin.ClickControl;
 import net.montoyo.wd.core.DefaultUpgrade;
-import net.montoyo.wd.entity.TileEntityScreen;
+import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.registry.BlockRegistry;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.server_bound.C2SMessageScreenCtrl;
@@ -38,7 +38,7 @@ public class ItemLaserPointer extends Item implements WDItem {
 	}
 	
 	//Laser pointer
-	private static TileEntityScreen pointedScreen;
+	private static ScreenBlockEntity pointedScreen;
 	private static BlockSide pointedScreenSide;
 	private static long lastPointPacket;
 	
@@ -57,11 +57,11 @@ public class ItemLaserPointer extends Item implements WDItem {
 			BlockSide side = BlockSide.values()[result.getDirection().ordinal()];
 			
 			Multiblock.findOrigin(mc.level, pos, side, null);
-			TileEntityScreen te = (TileEntityScreen) mc.level.getBlockEntity(pos.toBlock());
+			ScreenBlockEntity te = (ScreenBlockEntity) mc.level.getBlockEntity(pos.toBlock());
 			
 			if (te != null && te.hasUpgrade(side, DefaultUpgrade.LASERMOUSE)) { //hasUpgrade returns false is there's no screen on side 'side'
 				//Since rights aren't synchronized, let the server check them for us...
-				TileEntityScreen.Screen scr = te.getScreen(side);
+				ScreenBlockEntity.Screen scr = te.getScreen(side);
 				
 				if (scr.browser != null) {
 					float hitX = ((float) result.getLocation().x) - (float) pos.x;
@@ -81,7 +81,7 @@ public class ItemLaserPointer extends Item implements WDItem {
 		deselectScreen();
 	}
 	
-	private static void laserClick(TileEntityScreen tes, BlockSide side, TileEntityScreen.Screen scr, Vector2i hit) {
+	private static void laserClick(ScreenBlockEntity tes, BlockSide side, ScreenBlockEntity.Screen scr, Vector2i hit) {
 		tes.handleMouseEvent(side, ClickControl.ControlType.MOVE, hit, -1);
 		if (pointedScreen == tes && pointedScreenSide == side) {
 			long t = System.currentTimeMillis();
@@ -125,14 +125,14 @@ public class ItemLaserPointer extends Item implements WDItem {
 		Vector2i tmp = new Vector2i();
 		
 		BlockEntity be = mc.level.getBlockEntity(pos.toBlock());
-		if (!(be instanceof TileEntityScreen)) return;
+		if (!(be instanceof ScreenBlockEntity)) return;
 		
 		//noinspection PatternVariableCanBeUsed
-		TileEntityScreen te = (TileEntityScreen) be;
+		ScreenBlockEntity te = (ScreenBlockEntity) be;
 		
 		if (te.hasUpgrade(side, DefaultUpgrade.LASERMOUSE)) { //hasUpgrade returns false is there's no screen on side 'side'
 			//Since rights aren't synchronized, let the server check them for us...
-			TileEntityScreen.Screen scr = te.getScreen(side);
+			ScreenBlockEntity.Screen scr = te.getScreen(side);
 			
 			if (scr.browser != null) {
 				if (BlockScreen.hit2pixels(side, result.getBlockPos(), new Vector3i(result.getBlockPos()), scr, hitX, hitY, hitZ, tmp)) {

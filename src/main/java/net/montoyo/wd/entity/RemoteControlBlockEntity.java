@@ -15,8 +15,8 @@ import net.montoyo.wd.data.SetURLData;
 import net.montoyo.wd.registry.TileRegistry;
 import net.montoyo.wd.utilities.Util;
 
-public class TileEntityRCtrl extends TileEntityPeripheralBase {
-    public TileEntityRCtrl(BlockPos arg2, BlockState arg3) {
+public class RemoteControlBlockEntity extends AbstractPeripheralBlockEntity {
+    public RemoteControlBlockEntity(BlockPos arg2, BlockState arg3) {
         super(TileRegistry.REMOTE_CONTROLLER.get(), arg2, arg3);
     }
 
@@ -30,13 +30,13 @@ public class TileEntityRCtrl extends TileEntityPeripheralBase {
             return InteractionResult.SUCCESS;
         }
 
-        TileEntityScreen tes = getConnectedScreen();
+        ScreenBlockEntity tes = getConnectedScreen();
         if (tes == null) {
             Util.toast(player, "notLinked");
             return InteractionResult.SUCCESS;
         }
 
-        TileEntityScreen.Screen scr = tes.getScreen(screenSide);
+        ScreenBlockEntity.Screen scr = tes.getScreen(screenSide);
         if ((scr.rightsFor(player) & ScreenRights.CHANGE_URL) == 0) {
             Util.toast(player, "restrictions");
             return InteractionResult.SUCCESS;

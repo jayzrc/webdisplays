@@ -3,6 +3,7 @@
  */
 
 package net.montoyo.wd.entity;
+
 /*
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.LuaException;
@@ -19,17 +20,17 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 @Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = "computercraft")
-public class TileEntityCCInterface extends TileEntityInterfaceBase implements IPeripheral {
+public class CCInterfaceBlockEntity extends AbstractInterfaceBlockEntity implements IPeripheral {
     private static final String[] METHOD_NAMES;
     private static final Method[] METHODS;
 
     static {
         ArrayList<String> names = new ArrayList<>();
         ArrayList<Method> methods = new ArrayList<>();
-        Method[] src = TileEntityInterfaceBase.class.getMethods();
+        Method[] src = AbstractInterfaceBlockEntity.class.getMethods();
 
         for(Method m: src) {
-            if(m.getAnnotation(TileEntityInterfaceBase.ComputerFunc.class) != null) {
+            if(m.getAnnotation(AbstractInterfaceBlockEntity.ComputerFunc.class) != null) {
                 if(m.getParameterCount() != 1 || m.getParameterTypes()[0] != IComputerArgs.class)
                     throw new RuntimeException("Found @ComputerFunc method with invalid arguments");
 

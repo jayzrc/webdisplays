@@ -24,11 +24,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-public abstract class TileEntityPeripheralBase extends BlockEntity implements IPeripheral {
+public abstract class AbstractPeripheralBlockEntity extends BlockEntity implements IPeripheral {
     protected Vector3i screenPos;
     protected BlockSide screenSide;
 
-    public TileEntityPeripheralBase(BlockEntityType<?> arg, BlockPos arg2, BlockState arg3) {
+    public AbstractPeripheralBlockEntity(BlockEntityType<?> arg, BlockPos arg2, BlockState arg3) {
         super(arg, arg2, arg3);
     }
 
@@ -78,12 +78,12 @@ public abstract class TileEntityPeripheralBase extends BlockEntity implements IP
     @Override
     public boolean connect(Level world_, BlockPos blockPos, BlockState blockState, Vector3i pos, BlockSide side) {
         BlockEntity te = world_.getBlockEntity(pos.toBlock());
-        if (!(te instanceof TileEntityScreen)) {
+        if (!(te instanceof ScreenBlockEntity)) {
             Log.error("TileEntityPeripheralBase.connect(): Tile entity at %s is not a screen!", pos.toString());
             return false;
         }
 
-        if (((TileEntityScreen) te).getScreen(side) == null) {
+        if (((ScreenBlockEntity) te).getScreen(side) == null) {
             Log.error("TileEntityPeripheralBase.connect(): There is no screen at %s on side %s!", pos.toString(), side.toString());
             return false;
         }
@@ -107,31 +107,31 @@ public abstract class TileEntityPeripheralBase extends BlockEntity implements IP
     }
 
     @Nullable
-    public TileEntityScreen getConnectedScreen() {
+    public ScreenBlockEntity getConnectedScreen() {
         if (screenPos == null || screenSide == null)
             return null;
 
         BlockEntity te = level.getBlockEntity(screenPos.toBlock());
-        if (!(te instanceof TileEntityScreen) || ((TileEntityScreen) te).getScreen(screenSide) == null) {
+        if (!(te instanceof ScreenBlockEntity) || ((ScreenBlockEntity) te).getScreen(screenSide) == null) {
             screenPos = null;
             screenSide = null;
             setChanged();
             return null;
         }
 
-        return (TileEntityScreen) te;
+        return (ScreenBlockEntity) te;
     }
 
     @Nullable
-    public TileEntityScreen getConnectedScreenEx() {
+    public ScreenBlockEntity getConnectedScreenEx() {
         if (screenPos == null || screenSide == null)
             return null;
 
         BlockEntity te = level.getBlockEntity(screenPos.toBlock());
-        if (!(te instanceof TileEntityScreen) || ((TileEntityScreen) te).getScreen(screenSide) == null)
+        if (!(te instanceof ScreenBlockEntity) || ((ScreenBlockEntity) te).getScreen(screenSide) == null)
             return null;
 
-        return (TileEntityScreen) te;
+        return (ScreenBlockEntity) te;
     }
 
     @Nullable

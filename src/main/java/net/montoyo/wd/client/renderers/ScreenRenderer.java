@@ -11,21 +11,20 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.montoyo.wd.entity.TileEntityScreen;
+import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.utilities.Vector3f;
 import net.montoyo.wd.utilities.Vector3i;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.opengl.GL11;
 
 import static com.mojang.math.Axis.*;
 
-public class ScreenRenderer implements BlockEntityRenderer<TileEntityScreen> {
+public class ScreenRenderer implements BlockEntityRenderer<ScreenBlockEntity> {
 	public ScreenRenderer() {
 	}
 	
-	public static class ScreenRendererProvider implements BlockEntityRendererProvider<TileEntityScreen> {
+	public static class ScreenRendererProvider implements BlockEntityRendererProvider<ScreenBlockEntity> {
 		@Override
-		public @NotNull BlockEntityRenderer<TileEntityScreen> create(@NotNull Context arg) {
+		public @NotNull BlockEntityRenderer<ScreenBlockEntity> create(@NotNull Context arg) {
 			return new ScreenRenderer();
 		}
 	}
@@ -35,7 +34,7 @@ public class ScreenRenderer implements BlockEntityRenderer<TileEntityScreen> {
 	private final Vector3f tmpf = new Vector3f();
 	
 	@Override
-	public void render(TileEntityScreen te, float partialTick, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
+	public void render(ScreenBlockEntity te, float partialTick, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
 		if (!te.isLoaded())
 			return;
 		
@@ -45,7 +44,7 @@ public class ScreenRenderer implements BlockEntityRenderer<TileEntityScreen> {
 		RenderSystem.disableBlend();
 		
 		for (int i = 0; i < te.screenCount(); i++) {
-			TileEntityScreen.Screen scr = te.getScreen(i);
+			ScreenBlockEntity.Screen scr = te.getScreen(i);
 			if (scr.browser == null) {
 				scr.createBrowser(true);
 			}

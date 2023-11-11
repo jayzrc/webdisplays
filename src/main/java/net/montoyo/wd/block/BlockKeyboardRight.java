@@ -23,7 +23,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.PacketDistributor;
 import net.montoyo.wd.core.IPeripheral;
-import net.montoyo.wd.entity.TileEntityKeyboard;
+import net.montoyo.wd.entity.KeyboardBlockEntity;
 import net.montoyo.wd.item.ItemLinker;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.client_bound.S2CMessageCloseGui;
@@ -82,7 +82,7 @@ public class BlockKeyboardRight extends Block implements IPeripheral {
 
     @Override
     public boolean connect(Level world, BlockPos pos, BlockState state, Vector3i scrPos, BlockSide scrSide) {
-        TileEntityKeyboard keyboard = BlockKeyboardLeft.getTileEntity(state, world, pos);
+        KeyboardBlockEntity keyboard = BlockKeyboardLeft.getTileEntity(state, world, pos);
         return keyboard != null && keyboard.connect(world, pos, state, scrPos, scrSide);
     }
     
@@ -90,7 +90,7 @@ public class BlockKeyboardRight extends Block implements IPeripheral {
     public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
         double rpos = (entity.getY() - ((double) pos.getY())) * 16.0;
         if (!world.isClientSide && rpos >= 1.0 && rpos <= 2.0 && Math.random() < 0.25) {
-            TileEntityKeyboard tek = BlockKeyboardLeft.getTileEntity(state, world, pos);
+            KeyboardBlockEntity tek = BlockKeyboardLeft.getTileEntity(state, world, pos);
 
             if (tek != null)
                 tek.simulateCat(entity);
@@ -102,7 +102,7 @@ public class BlockKeyboardRight extends Block implements IPeripheral {
         if (player.getItemInHand(hand).getItem() instanceof ItemLinker)
             return InteractionResult.PASS;
 
-        TileEntityKeyboard tek = BlockKeyboardLeft.getTileEntity(state, level, pos);
+        KeyboardBlockEntity tek = BlockKeyboardLeft.getTileEntity(state, level, pos);
         if (tek != null)
             return tek.onRightClick(player, hand);
 

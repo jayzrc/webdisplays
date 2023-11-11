@@ -8,22 +8,22 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.montoyo.wd.entity.TileEntityKeyboard;
-import net.montoyo.wd.entity.TileEntityRCtrl;
-import net.montoyo.wd.entity.TileEntityRedCtrl;
-import net.montoyo.wd.entity.TileEntityServer;
+import net.montoyo.wd.entity.KeyboardBlockEntity;
+import net.montoyo.wd.entity.RemoteControlBlockEntity;
+import net.montoyo.wd.entity.RedstoneControlBlockEntity;
+import net.montoyo.wd.entity.ServerBlockEntity;
 import net.montoyo.wd.registry.BlockRegistry;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
 
 public enum DefaultPeripheral implements StringRepresentable {
-    KEYBOARD("keyboard", "Keyboard", TileEntityKeyboard::new, BlockRegistry.KEYBOARD_BLOCK),                          //WITH FACING (< 3)
+    KEYBOARD("keyboard", "Keyboard", KeyboardBlockEntity::new, BlockRegistry.KEYBOARD_BLOCK),                          //WITH FACING (< 3)
 //    CC_INTERFACE("ccinterface", "ComputerCraft_Interface", TileEntityCCInterface.class),
 //    OC_INTERFACE("cointerface", "OpenComputers_Interface", TileEntityOCInterface.class),
-    REMOTE_CONTROLLER("remotectrl", "Remote_Controller", TileEntityRCtrl::new , BlockRegistry.REMOTE_CONTROLLER_BLOCK),         //WITHOUT FACING (>= 3)
-    REDSTONE_CONTROLLER("redstonectrl", "Redstone_Controller", TileEntityRedCtrl::new , BlockRegistry.REDSTONE_CONTROL_BLOCK),
-    SERVER("server", "Server", TileEntityServer::new, BlockRegistry.SERVER_BLOCK);
+    REMOTE_CONTROLLER("remotectrl", "Remote_Controller", RemoteControlBlockEntity::new , BlockRegistry.REMOTE_CONTROLLER_BLOCK),         //WITHOUT FACING (>= 3)
+    REDSTONE_CONTROLLER("redstonectrl", "Redstone_Controller", RedstoneControlBlockEntity::new , BlockRegistry.REDSTONE_CONTROL_BLOCK),
+    SERVER("server", "Server", ServerBlockEntity::new, BlockRegistry.SERVER_BLOCK);
 
     private final String name;
     private final String wikiName;

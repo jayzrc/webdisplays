@@ -9,7 +9,7 @@ import net.minecraftforge.network.NetworkEvent;
 import net.montoyo.wd.controls.ScreenControl;
 import net.montoyo.wd.core.MissingPermissionException;
 import net.montoyo.wd.core.ScreenRights;
-import net.montoyo.wd.entity.TileEntityScreen;
+import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.utilities.BlockSide;
 import net.montoyo.wd.utilities.Rotation;
 import net.montoyo.wd.utilities.Vector2i;
@@ -55,7 +55,7 @@ public class ScreenModifyControl extends ScreenControl {
 	}
 	
 	@Override
-	public void handleServer(BlockPos pos, BlockSide side, TileEntityScreen tes, NetworkEvent.Context ctx, Function<Integer, Boolean> permissionChecker) throws MissingPermissionException {
+	public void handleServer(BlockPos pos, BlockSide side, ScreenBlockEntity tes, NetworkEvent.Context ctx, Function<Integer, Boolean> permissionChecker) throws MissingPermissionException {
 		checkPerms(ScreenRights.MODIFY_SCREEN, permissionChecker, ctx.getSender());
 		switch (type) {
 			case RESOLUTION -> tes.setResolution(side, res);
@@ -65,7 +65,7 @@ public class ScreenModifyControl extends ScreenControl {
 	
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void handleClient(BlockPos pos, BlockSide side, TileEntityScreen tes, NetworkEvent.Context ctx) {
+	public void handleClient(BlockPos pos, BlockSide side, ScreenBlockEntity tes, NetworkEvent.Context ctx) {
 		switch (type) {
 			case RESOLUTION -> tes.setResolution(side, res);
 			case ROTATION -> tes.setRotation(side, rotation);

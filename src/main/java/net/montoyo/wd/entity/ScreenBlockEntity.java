@@ -53,8 +53,8 @@ import java.util.function.Consumer;
 
 import static net.montoyo.wd.block.BlockPeripheral.point;
 
-public class TileEntityScreen extends BlockEntity {
-    public TileEntityScreen(BlockPos arg2, BlockState arg3) {
+public class ScreenBlockEntity extends BlockEntity {
+    public ScreenBlockEntity(BlockPos arg2, BlockState arg3) {
         super(TileRegistry.SCREEN_BLOCK_ENTITY.get(), arg2, arg3);
     }
 
@@ -792,7 +792,7 @@ public class TileEntityScreen extends BlockEntity {
                 // TODO: what? lol
                 String webUrl;
                 try {
-                    webUrl = TileEntityScreen.url(url);
+                    webUrl = ScreenBlockEntity.url(url);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

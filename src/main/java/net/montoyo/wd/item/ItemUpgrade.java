@@ -7,10 +7,9 @@ package net.montoyo.wd.item;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.core.DefaultUpgrade;
 import net.montoyo.wd.core.IUpgrade;
-import net.montoyo.wd.entity.TileEntityScreen;
+import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.utilities.BlockSide;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,11 +25,11 @@ public class ItemUpgrade extends ItemMulti implements IUpgrade, WDItem {
     }
 
     @Override
-    public void onInstall(@Nonnull TileEntityScreen tes, @Nonnull BlockSide screenSide, @Nullable Player player, @Nonnull ItemStack is) {
+    public void onInstall(@Nonnull ScreenBlockEntity tes, @Nonnull BlockSide screenSide, @Nullable Player player, @Nonnull ItemStack is) {
     }
 
     @Override
-    public boolean onRemove(@Nonnull TileEntityScreen tes, @Nonnull BlockSide screenSide, @Nullable Player player, @Nonnull ItemStack is) {
+    public boolean onRemove(@Nonnull ScreenBlockEntity tes, @Nonnull BlockSide screenSide, @Nullable Player player, @Nonnull ItemStack is) {
         if (DefaultUpgrade.LASERMOUSE.matchesLaserMouse(is))
             tes.clearLaserUser(screenSide);
 

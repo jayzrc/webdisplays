@@ -32,7 +32,7 @@ import net.montoyo.wd.core.DefaultUpgrade;
 import net.montoyo.wd.core.IUpgrade;
 import net.montoyo.wd.core.ScreenRights;
 import net.montoyo.wd.data.SetURLData;
-import net.montoyo.wd.entity.TileEntityScreen;
+import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.item.ItemLaserPointer;
 import net.montoyo.wd.utilities.*;
 import org.jetbrains.annotations.NotNull;
@@ -92,10 +92,10 @@ public class BlockScreen extends BaseEntityBlock {
         BlockSide side = BlockSide.values()[hit.getDirection().ordinal()];
 
         Multiblock.findOrigin(world, pos, side, null);
-        TileEntityScreen te = (TileEntityScreen) world.getBlockEntity(pos.toBlock());
+        ScreenBlockEntity te = (ScreenBlockEntity) world.getBlockEntity(pos.toBlock());
 
         if (te != null && te.getScreen(side) != null) {
-            TileEntityScreen.Screen scr = te.getScreen(side);
+            ScreenBlockEntity.Screen scr = te.getScreen(side);
 
             if (sneaking) { //Right Click
                 if ((scr.rightsFor(player) & ScreenRights.CHANGE_URL) == 0)
@@ -168,7 +168,7 @@ public class BlockScreen extends BaseEntityBlock {
         if (te == null) {
             BlockPos bp = pos.toBlock();
             world.setBlockAndUpdate(bp, world.getBlockState(bp).setValue(hasTE, true));
-            te = (TileEntityScreen) world.getBlockEntity(bp);
+            te = (ScreenBlockEntity) world.getBlockEntity(bp);
             created = true;
         }
 
@@ -184,7 +184,7 @@ public class BlockScreen extends BaseEntityBlock {
                 Vector3i vec = new Vector3i(pos);
                 Multiblock.findOrigin(world, vec, side, null);
 
-                TileEntityScreen tes = (TileEntityScreen) world.getBlockEntity(vec.toBlock());
+                ScreenBlockEntity tes = (ScreenBlockEntity) world.getBlockEntity(vec.toBlock());
                 if (tes != null && tes.hasUpgrade(side, DefaultUpgrade.REDINPUT)) {
                     Direction facing = Direction.from2DDataValue(side.reverse().ordinal()); //Opposite face
                     vec.sub(pos.getX(), pos.getY(), pos.getZ()).neg();
@@ -194,7 +194,7 @@ public class BlockScreen extends BaseEntityBlock {
         }
     }
 
-    public static boolean hit2pixels(BlockSide side, BlockPos bpos, Vector3i pos, TileEntityScreen.Screen scr, float hitX, float hitY, float hitZ, Vector2i dst) {
+    public static boolean hit2pixels(BlockSide side, BlockPos bpos, Vector3i pos, ScreenBlockEntity.Screen scr, float hitX, float hitY, float hitZ, Vector2i dst) {
         Vector3f rel = new Vector3f(hitX, hitY, hitZ);
 
         // how these dot products come in is beyond me
@@ -259,8 +259,8 @@ public class BlockScreen extends BaseEntityBlock {
         BlockPos bp = pos.toBlock();
         BlockEntity te = world.getBlockEntity(bp);
 
-        if (te instanceof TileEntityScreen) {
-            ((TileEntityScreen) te).onDestroy(source);
+        if (te instanceof ScreenBlockEntity) {
+            ((ScreenBlockEntity) te).onDestroy(source);
             world.setBlock(bp, world.getBlockState(bp).setValue(hasTE, false), Block.UPDATE_ALL_IMMEDIATE); //Destroy tile entity.
         }
     }
@@ -315,7 +315,7 @@ public class BlockScreen extends BaseEntityBlock {
 
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return state.getValue(hasTE) ? new TileEntityScreen(pos, state) : null;
+        return state.getValue(hasTE) ? new ScreenBlockEntity(pos, state) : null;
     }
 
     @Override

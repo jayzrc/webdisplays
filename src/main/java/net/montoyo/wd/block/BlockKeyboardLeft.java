@@ -26,7 +26,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.PacketDistributor;
 import net.montoyo.wd.core.DefaultPeripheral;
-import net.montoyo.wd.entity.TileEntityKeyboard;
+import net.montoyo.wd.entity.KeyboardBlockEntity;
 import net.montoyo.wd.item.ItemLinker;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.client_bound.S2CMessageCloseGui;
@@ -51,11 +51,11 @@ public class BlockKeyboardLeft extends BlockPeripheral {
     }
     
     // TODO: make non static (for extensibility purposes)
-    public static TileEntityKeyboard getTileEntity(BlockState state, Level world, BlockPos pos) {
+    public static KeyboardBlockEntity getTileEntity(BlockState state, Level world, BlockPos pos) {
         if (state.getBlock() instanceof BlockKeyboardLeft) {
             BlockEntity te = world.getBlockEntity(pos); // TODO: check?
-            if (te instanceof TileEntityKeyboard)
-                return (TileEntityKeyboard) te;
+            if (te instanceof KeyboardBlockEntity)
+                return (KeyboardBlockEntity) te;
         }
     
         BlockPos relative = pos.relative(BlockKeyboardLeft.mapDirection(state.getValue(FACING).getOpposite()));
@@ -63,8 +63,8 @@ public class BlockKeyboardLeft extends BlockPeripheral {
         
         if (ns.getBlock() instanceof BlockPeripheral) {
             BlockEntity te = world.getBlockEntity(relative); // TODO: check?
-            if (te instanceof TileEntityKeyboard)
-                return (TileEntityKeyboard) te;
+            if (te instanceof KeyboardBlockEntity)
+                return (KeyboardBlockEntity) te;
         }
         
         return null;
@@ -89,7 +89,7 @@ public class BlockKeyboardLeft extends BlockPeripheral {
     public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
         double rpos = (entity.getY() - ((double) pos.getY())) * 16.0;
         if (!world.isClientSide && rpos >= 1.0 && rpos <= 2.0 && Math.random() < 0.25) {
-            TileEntityKeyboard tek = BlockKeyboardLeft.getTileEntity(state, world, pos);
+            KeyboardBlockEntity tek = BlockKeyboardLeft.getTileEntity(state, world, pos);
             
             if (tek != null)
                 tek.simulateCat(entity);
@@ -101,7 +101,7 @@ public class BlockKeyboardLeft extends BlockPeripheral {
         if (player.getItemInHand(hand).getItem() instanceof ItemLinker)
             return InteractionResult.PASS;
         
-        TileEntityKeyboard tek = BlockKeyboardLeft.getTileEntity(state, level, pos);
+        KeyboardBlockEntity tek = BlockKeyboardLeft.getTileEntity(state, level, pos);
         if (tek != null)
             return tek.onRightClick(player, hand);
         

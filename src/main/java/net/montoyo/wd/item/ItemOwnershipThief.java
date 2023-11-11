@@ -12,10 +12,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.block.BlockScreen;
 import net.montoyo.wd.config.CommonConfig;
-import net.montoyo.wd.entity.TileEntityScreen;
+import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.utilities.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -55,11 +54,11 @@ public class ItemOwnershipThief extends Item implements WDItem {
                     return InteractionResult.SUCCESS;
 
                 BlockEntity te = context.getLevel().getBlockEntity(bp);
-                if (te == null || !(te instanceof TileEntityScreen))
+                if (te == null || !(te instanceof ScreenBlockEntity))
                     return InteractionResult.SUCCESS;
 
-                TileEntityScreen tes = (TileEntityScreen) te;
-                TileEntityScreen.Screen scr = tes.getScreen(side);
+                ScreenBlockEntity tes = (ScreenBlockEntity) te;
+                ScreenBlockEntity.Screen scr = tes.getScreen(side);
                 if (scr == null)
                     return InteractionResult.SUCCESS;
 
@@ -79,12 +78,12 @@ public class ItemOwnershipThief extends Item implements WDItem {
         Multiblock.findOrigin(context.getLevel(), pos, side, null);
 
         BlockEntity te = context.getLevel().getBlockEntity(pos.toBlock());
-        if (te == null || !(te instanceof TileEntityScreen)) {
+        if (te == null || !(te instanceof ScreenBlockEntity)) {
             Util.toast(context.getPlayer(), "turnOn");
             return InteractionResult.SUCCESS;
         }
 
-        if (((TileEntityScreen) te).getScreen(side) == null)
+        if (((ScreenBlockEntity) te).getScreen(side) == null)
             Util.toast(context.getPlayer(), "turnOn");
         else {
             CompoundTag tag = new CompoundTag();

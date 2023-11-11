@@ -15,7 +15,7 @@ import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.client.gui.controls.*;
 import net.montoyo.wd.client.gui.loading.FillControl;
 import net.montoyo.wd.core.ScreenRights;
-import net.montoyo.wd.entity.TileEntityScreen;
+import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.item.WDItem;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.server_bound.C2SMessageScreenCtrl;
@@ -30,7 +30,7 @@ import java.util.UUID;
 public class GuiScreenConfig extends WDScreen {
 
     //Screen data
-    private final TileEntityScreen tes;
+    private final ScreenBlockEntity tes;
     private final BlockSide side;
     private NameUUIDPair owner;
     private NameUUIDPair[] friends;
@@ -119,7 +119,7 @@ public class GuiScreenConfig extends WDScreen {
     private CheckBox[] friendBoxes;
     private CheckBox[] otherBoxes;
 
-    public GuiScreenConfig(Component component, TileEntityScreen tes, BlockSide side, NameUUIDPair[] friends, int fr, int or) {
+    public GuiScreenConfig(Component component, ScreenBlockEntity tes, BlockSide side, NameUUIDPair[] friends, int fr, int or) {
         super(component);
         this.tes = tes;
         this.side = side;
@@ -147,7 +147,7 @@ public class GuiScreenConfig extends WDScreen {
         boxOClick.setUserdata(ScreenRights.INTERACT);
         boxOSetUrl.setUserdata(ScreenRights.CHANGE_URL);
 
-        TileEntityScreen.Screen scr = tes.getScreen(side);
+        ScreenBlockEntity.Screen scr = tes.getScreen(side);
         if(scr != null) {
             owner = scr.owner;
             rotation = scr.rotation;
@@ -191,7 +191,7 @@ public class GuiScreenConfig extends WDScreen {
     }
 
     private void clickSetRes() {
-        TileEntityScreen.Screen scr = tes.getScreen(side);
+        ScreenBlockEntity.Screen scr = tes.getScreen(side);
         if(scr == null)
             return; //WHATDAFUQ?
 
