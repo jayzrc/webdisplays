@@ -17,6 +17,7 @@ import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.block.BlockScreen;
 import net.montoyo.wd.core.IPeripheral;
 import net.montoyo.wd.core.ScreenRights;
+import net.montoyo.wd.entity.ScreenData;
 import net.montoyo.wd.entity.TileEntityScreen;
 import net.montoyo.wd.utilities.BlockSide;
 import net.montoyo.wd.utilities.Multiblock;
@@ -96,7 +97,7 @@ public class ItemLinker extends Item implements WDItem {
             return InteractionResult.SUCCESS;
         }
 
-        TileEntityScreen.Screen scr = ((TileEntityScreen) te).getScreen(side);
+        ScreenData scr = ((TileEntityScreen) te).getScreen(side);
         if(scr == null)
             Util.toast(context.getPlayer(), "turnOn");
         else if((scr.rightsFor(context.getPlayer()) & ScreenRights.MANAGE_UPGRADES) == 0)

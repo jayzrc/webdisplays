@@ -42,7 +42,7 @@ public class TileEntityKeyboard extends TileEntityPeripheralBase {
             return InteractionResult.SUCCESS;
         }
 
-        TileEntityScreen.Screen scr = tes.getScreen(screenSide);
+        ScreenData scr = tes.getScreen(screenSide);
         if((scr.rightsFor(player) & ScreenRights.INTERACT) == 0) {
             Util.toast(player, "restrictions");
             return InteractionResult.SUCCESS;
@@ -59,7 +59,7 @@ public class TileEntityKeyboard extends TileEntityPeripheralBase {
         TileEntityScreen tes = getConnectedScreen();
 
         if(tes != null) {
-            TileEntityScreen.Screen scr = tes.getScreen(screenSide);
+            ScreenData scr = tes.getScreen(screenSide);
             boolean ok;
 
             if(ent instanceof Player)

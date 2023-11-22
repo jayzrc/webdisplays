@@ -13,6 +13,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.PacketDistributor;
 import net.montoyo.wd.client.gui.GuiScreenConfig;
+import net.montoyo.wd.entity.ScreenData;
 import net.montoyo.wd.entity.TileEntityScreen;
 import net.montoyo.wd.net.BufferUtils;
 import net.montoyo.wd.net.WDNetworkRegistry;
@@ -34,7 +35,7 @@ public class ScreenConfigData extends GuiData {
 	public ScreenConfigData() {
 	}
 
-	public ScreenConfigData(Vector3i pos, BlockSide side, TileEntityScreen.Screen scr) {
+	public ScreenConfigData(Vector3i pos, BlockSide side, ScreenData scr) {
 		this.pos = pos;
 		this.side = side;
 		friends = scr.friends.toArray(new NameUUIDPair[0]);

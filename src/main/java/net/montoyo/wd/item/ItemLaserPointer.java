@@ -17,6 +17,7 @@ import net.montoyo.wd.client.ClientProxy;
 import net.montoyo.wd.config.ClientConfig;
 import net.montoyo.wd.controls.builtin.ClickControl;
 import net.montoyo.wd.core.DefaultUpgrade;
+import net.montoyo.wd.entity.ScreenData;
 import net.montoyo.wd.entity.TileEntityScreen;
 import net.montoyo.wd.init.BlockInit;
 import net.montoyo.wd.net.WDNetworkRegistry;
@@ -62,7 +63,7 @@ public class ItemLaserPointer extends Item implements WDItem {
 			
 			if (te != null && te.hasUpgrade(side, DefaultUpgrade.LASERMOUSE)) { //hasUpgrade returns false is there's no screen on side 'side'
 				//Since rights aren't synchronized, let the server check them for us...
-				TileEntityScreen.Screen scr = te.getScreen(side);
+				ScreenData scr = te.getScreen(side);
 				
 				if (scr.browser != null) {
 					float hitX = ((float) result.getLocation().x) - (float) pos.x;
@@ -82,7 +83,7 @@ public class ItemLaserPointer extends Item implements WDItem {
 		deselectScreen();
 	}
 	
-	private static void laserClick(TileEntityScreen tes, BlockSide side, TileEntityScreen.Screen scr, Vector2i hit) {
+	private static void laserClick(TileEntityScreen tes, BlockSide side, ScreenData scr, Vector2i hit) {
 		tes.handleMouseEvent(side, ClickControl.ControlType.MOVE, hit, -1);
 		if (pointedScreen == tes && pointedScreenSide == side) {
 			long t = System.currentTimeMillis();
@@ -133,7 +134,7 @@ public class ItemLaserPointer extends Item implements WDItem {
 		
 		if (te.hasUpgrade(side, DefaultUpgrade.LASERMOUSE)) { //hasUpgrade returns false is there's no screen on side 'side'
 			//Since rights aren't synchronized, let the server check them for us...
-			TileEntityScreen.Screen scr = te.getScreen(side);
+			ScreenData scr = te.getScreen(side);
 			
 			if (scr.browser != null) {
 				if (BlockScreen.hit2pixels(side, result.getBlockPos(), new Vector3i(result.getBlockPos()), scr, hitX, hitY, hitZ, tmp)) {

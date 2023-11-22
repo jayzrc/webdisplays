@@ -15,6 +15,7 @@ import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.client.gui.controls.*;
 import net.montoyo.wd.client.gui.loading.FillControl;
 import net.montoyo.wd.core.ScreenRights;
+import net.montoyo.wd.entity.ScreenData;
 import net.montoyo.wd.entity.TileEntityScreen;
 import net.montoyo.wd.item.WDItem;
 import net.montoyo.wd.net.WDNetworkRegistry;
@@ -147,7 +148,7 @@ public class GuiScreenConfig extends WDScreen {
         boxOClick.setUserdata(ScreenRights.INTERACT);
         boxOSetUrl.setUserdata(ScreenRights.CHANGE_URL);
 
-        TileEntityScreen.Screen scr = tes.getScreen(side);
+        ScreenData scr = tes.getScreen(side);
         if(scr != null) {
             owner = scr.owner;
             rotation = scr.rotation;
@@ -191,7 +192,7 @@ public class GuiScreenConfig extends WDScreen {
     }
 
     private void clickSetRes() {
-        TileEntityScreen.Screen scr = tes.getScreen(side);
+        ScreenData scr = tes.getScreen(side);
         if(scr == null)
             return; //WHATDAFUQ?
 

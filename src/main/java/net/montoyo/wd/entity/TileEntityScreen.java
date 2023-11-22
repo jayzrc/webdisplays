@@ -64,190 +64,8 @@ public class TileEntityScreen extends BlockEntity {
         super(TileInit.SCREEN_BLOCK_ENTITY.get(), arg2, arg3);
     }
 
-    public static class Screen {
-
-        public BlockSide side;
-        public Vector2i size;
-        public Vector2i resolution;
-        public Rotation rotation = Rotation.ROT_0;
-        public String url;
-        private VideoType videoType;
-        public NameUUIDPair owner;
-        public ArrayList<NameUUIDPair> friends;
-        public int friendRights;
-        public int otherRights;
-        public CefBrowser browser;
-        public ArrayList<ItemStack> upgrades;
-        public boolean doTurnOnAnim;
-        public long turnOnTime;
-        public Player laserUser;
-        public final Vector2i lastMousePos = new Vector2i();
-        public NibbleArray redstoneStatus; //null on client
-        public boolean autoVolume = true;
-
-        public int mouseType;
-
-        public static Screen deserialize(CompoundTag tag) {
-            Screen ret = new Screen();
-            ret.side = BlockSide.values()[tag.getByte("Side")];
-            ret.size = new Vector2i(tag.getInt("Width"), tag.getInt("Height"));
-            ret.resolution = new Vector2i(tag.getInt("ResolutionX"), tag.getInt("ResolutionY"));
-            ret.rotation = Rotation.values()[tag.getByte("Rotation")];
-            ret.url = tag.getString("URL");
-            ret.videoType = VideoType.getTypeFromURL(ret.url);
-
-            if (ret.resolution.x <= 0 || ret.resolution.y <= 0) {
-                float psx = ((float) ret.size.x) * 16.f - 4.f;
-                float psy = ((float) ret.size.y) * 16.f - 4.f;
-                psx *= 8.f; //TODO: Use ratio in config file
-                psy *= 8.f;
-
-                ret.resolution.x = (int) psx;
-                ret.resolution.y = (int) psy;
-            }
-
-            if (tag.contains("OwnerName")) {
-                String name = tag.getString("OwnerName");
-                UUID uuid = tag.getUUID("OwnerUUID");
-                ret.owner = new NameUUIDPair(name, uuid);
-            }
-
-            ListTag friends = tag.getList("Friends", 10);
-            ret.friends = new ArrayList<>(friends.size());
-
-            for (int i = 0; i < friends.size(); i++) {
-                CompoundTag nf = friends.getCompound(i);
-                NameUUIDPair pair = new NameUUIDPair(nf.getString("Name"), nf.getUUID("UUID"));
-                ret.friends.add(pair);
-            }
-
-            ret.friendRights = tag.getByte("FriendRights");
-            ret.otherRights = tag.getByte("OtherRights");
-
-            ListTag upgrades = tag.getList("Upgrades", 10);
-            ret.upgrades = new ArrayList<>();
-
-            for (int i = 0; i < upgrades.size(); i++)
-                ret.upgrades.add(ItemStack.of(upgrades.getCompound(i)));
-
-            if (tag.contains("AutoVolume"))
-                ret.autoVolume = tag.getBoolean("AutoVolume");
-
-            return ret;
-        }
-
-        public CompoundTag serialize() {
-            CompoundTag tag = new CompoundTag();
-            tag.putByte("Side", (byte) side.ordinal());
-            tag.putInt("Width", size.x);
-            tag.putInt("Height", size.y);
-            tag.putInt("ResolutionX", resolution.x);
-            tag.putInt("ResolutionY", resolution.y);
-            tag.putByte("Rotation", (byte) rotation.ordinal());
-            tag.putString("URL", url);
-
-            if (owner == null)
-                Log.warning("Found TES with NO OWNER!!");
-            else {
-                tag.putString("OwnerName", owner.name);
-                tag.putUUID("OwnerUUID", owner.uuid);
-            }
-
-            ListTag list = new ListTag();
-            for (NameUUIDPair f : friends) {
-                CompoundTag nf = new CompoundTag();
-                nf.putString("Name", f.name);
-                nf.putUUID("UUID", f.uuid);
-
-                list.add(nf);
-            }
-
-            tag.put("Friends", list);
-            tag.putByte("FriendRights", (byte) friendRights);
-            tag.putByte("OtherRights", (byte) otherRights);
-
-            list = new ListTag();
-            for (ItemStack is : upgrades)
-                list.add(is.save(new CompoundTag()));
-
-            tag.put("Upgrades", list);
-            tag.putBoolean("AutoVolume", autoVolume);
-            return tag;
-        }
-
-        public int rightsFor(Player ply) {
-            return rightsFor(ply.getGameProfile().getId());
-        }
-
-        public int rightsFor(UUID uuid) {
-            if (owner.uuid.equals(uuid))
-                return ScreenRights.ALL;
-
-            return friends.stream().anyMatch(f -> f.uuid.equals(uuid)) ? friendRights : otherRights;
-        }
-
-        public void setupRedstoneStatus(Level world, BlockPos start) {
-            if (world.isClientSide()) {
-                Log.warning("Called Screen.setupRedstoneStatus() on client.");
-                return;
-            }
-
-            if (redstoneStatus != null) {
-                Log.warning("Called Screen.setupRedstoneStatus() on server, but redstone status is non-null");
-                return;
-            }
-
-            Direction[] VALUES = Direction.values();
-            redstoneStatus = new NibbleArray(size.x * size.y);
-            final Direction facing = VALUES[side.reverse().ordinal()];
-            final ScreenIterator it = new ScreenIterator(start, side, size);
-
-            while (it.hasNext()) {
-                int idx = it.getIndex();
-                redstoneStatus.set(idx, world.getSignal(it.next(), facing));
-            }
-        }
-
-
-        public void clampResolution() {
-            if (resolution.x > CommonConfig.Screen.maxResolutionX) {
-                float newY = ((float) resolution.y) * ((float) CommonConfig.Screen.maxResolutionX) / ((float) resolution.x);
-                resolution.x = CommonConfig.Screen.maxResolutionX;
-                resolution.y = (int) newY;
-            }
-
-            if (resolution.y > CommonConfig.Screen.maxResolutionY) {
-                float newX = ((float) resolution.x) * ((float) CommonConfig.Screen.maxResolutionY) / ((float) resolution.y);
-                resolution.x = (int) newX;
-                resolution.y = CommonConfig.Screen.maxResolutionY;
-            }
-        }
-
-        public void createBrowser(boolean doAnim) {
-            if (WebDisplays.PROXY instanceof ClientProxy clientProxy) {
-                browser = MCEF.createBrowser(WebDisplays.applyBlacklist(url != null ? url : "https://www.google.com"), false);
-
-                if (browser instanceof MCEFBrowser mcefBrowser) {
-                    if (rotation.isVertical)
-                        mcefBrowser.resize(resolution.y, resolution.x);
-                    else
-                        mcefBrowser.resize(resolution.x, resolution.y);
-
-                    // uh yes this is intentional
-                    // basically: on my laptop, this line caused an error inexplicably
-                    // reason: the compiler didn't update this file, so it stayed as a Consumer<Integer> in the bytecode
-                    //noinspection RedundantCast
-                    mcefBrowser.setCursorChangeListener((MCEFCursorChangeListener) (type) -> mouseType = type);
-                }
-
-                doTurnOnAnim = doAnim;
-                turnOnTime = System.currentTimeMillis();
-            }
-        }
-    }
-
     public void forEachScreenBlocks(BlockSide side, Consumer<BlockPos> func) {
-        Screen scr = getScreen(side);
+        ScreenData scr = getScreen(side);
 
         if (scr != null) {
             ScreenIterator it = new ScreenIterator(getBlockPos(), side, scr.size);
@@ -257,7 +75,7 @@ public class TileEntityScreen extends BlockEntity {
         }
     }
 
-    private final ArrayList<Screen> screens = new ArrayList<>();
+    private final ArrayList<ScreenData> screens = new ArrayList<>();
     private net.minecraft.world.phys.AABB renderBB = new net.minecraft.world.phys.AABB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0);
     private boolean loaded = true;
     public float ytVolume = Float.POSITIVE_INFINITY;
@@ -271,7 +89,7 @@ public class TileEntityScreen extends BlockEntity {
     }
 
     public void unload() {
-        for (Screen scr : screens) {
+        for (ScreenData scr : screens) {
             if (scr.browser != null) {
                 scr.browser.close(true);
                 scr.browser = null;
@@ -291,7 +109,7 @@ public class TileEntityScreen extends BlockEntity {
 
         screens.clear();
         for (int i = 0; i < list.size(); i++)
-            screens.add(Screen.deserialize(list.getCompound(i)));
+            screens.add(ScreenData.deserialize(list.getCompound(i)));
     }
 
     @Override
@@ -304,7 +122,7 @@ public class TileEntityScreen extends BlockEntity {
     @Override
     public void handleUpdateTag(CompoundTag tag) {
         load(tag);
-        for (Screen screen : screens) {
+        for (ScreenData screen : screens) {
             if (screen.browser == null) screen.createBrowser(false);
             if (screen.browser != null) screen.browser.loadURL(screen.url);
         }
@@ -316,19 +134,19 @@ public class TileEntityScreen extends BlockEntity {
         super.saveAdditional(tag);
 
         ListTag list = new ListTag();
-        for (Screen scr : screens)
+        for (ScreenData scr : screens)
             list.add(scr.serialize());
 
         tag.put("WDScreens", list);
     }
 
-    public Screen addScreen(BlockSide side, Vector2i size, @Nullable Vector2i resolution, @Nullable Player owner, boolean sendUpdate) {
-        for (Screen scr : screens) {
+    public ScreenData addScreen(BlockSide side, Vector2i size, @Nullable Vector2i resolution, @Nullable Player owner, boolean sendUpdate) {
+        for (ScreenData scr : screens) {
             if (scr.side == side)
                 return scr;
         }
 
-        Screen ret = new Screen();
+        ScreenData ret = new ScreenData();
         ret.side = side;
         ret.size = size;
         ret.url = CommonConfig.Browser.homepage;
@@ -385,8 +203,8 @@ public class TileEntityScreen extends BlockEntity {
         return ret;
     }
 
-    public Screen getScreen(BlockSide side) {
-        for (Screen scr : screens) {
+    public ScreenData getScreen(BlockSide side) {
+        for (ScreenData scr : screens) {
             if (scr.side == side)
                 return scr;
         }
@@ -398,7 +216,7 @@ public class TileEntityScreen extends BlockEntity {
         return screens.size();
     }
 
-    public Screen getScreen(int idx) {
+    public ScreenData getScreen(int idx) {
         return screens.get(idx);
     }
 
@@ -429,7 +247,7 @@ public class TileEntityScreen extends BlockEntity {
     }
 
     public void setScreenURL(BlockSide side, String url) throws IOException {
-        Screen scr = getScreen(side);
+        ScreenData scr = getScreen(side);
         if (scr == null) {
             Log.error("Attempt to change URL of non-existing screen on side %s", side.toString());
             return;
@@ -488,7 +306,7 @@ public class TileEntityScreen extends BlockEntity {
             return;
         }
 
-        Screen scr = getScreen(side);
+        ScreenData scr = getScreen(side);
         if (scr == null) {
             Log.error("Tried to change resolution of non-existing screen on side %s", side.toString());
             return;
@@ -510,7 +328,7 @@ public class TileEntityScreen extends BlockEntity {
         }
     }
 
-    private static Player getLaserUser(Screen scr) {
+    private static Player getLaserUser(ScreenData scr) {
         if (scr.laserUser != null) {
             if (scr.laserUser.isRemoved() || !scr.laserUser.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(ItemInit.LASER_POINTER.get()))
                 scr.laserUser = null;
@@ -519,20 +337,20 @@ public class TileEntityScreen extends BlockEntity {
         return scr.laserUser;
     }
 
-    private static void checkLaserUserRights(Screen scr) {
+    private static void checkLaserUserRights(ScreenData scr) {
         if (scr.laserUser != null && (scr.rightsFor(scr.laserUser) & ScreenRights.INTERACT) == 0)
             scr.laserUser = null;
     }
 
     public void clearLaserUser(BlockSide side) {
-        Screen scr = getScreen(side);
+        ScreenData scr = getScreen(side);
 
         if (scr != null)
             scr.laserUser = null;
     }
 
     public void click(BlockSide side, Vector2i vec) {
-        Screen scr = getScreen(side);
+        ScreenData scr = getScreen(side);
         if (scr == null) {
             Log.error("Attempt click non-existing screen of side %s", side.toString());
             return;
@@ -554,7 +372,7 @@ public class TileEntityScreen extends BlockEntity {
     public void handleMouseEvent(BlockSide side, ClickControl.ControlType event, @Nullable Vector2i vec, int button) {
         if (button > 1) return; // buttons above 1 crash the game
 
-        Screen scr = getScreen(side);
+        ScreenData scr = getScreen(side);
         if (scr == null) {
             Log.error("Attempt inject mouse events on non-existing screen of side %s", side.toString());
             return;
@@ -693,7 +511,7 @@ public class TileEntityScreen extends BlockEntity {
         if (level.isClientSide) {
             WebDisplays.PROXY.trackScreen(this, false);
 
-            for (Screen scr : screens) {
+            for (ScreenData scr : screens) {
                 if (scr.browser != null) {
                     scr.browser.close(true);
                     scr.browser = null;
@@ -706,7 +524,7 @@ public class TileEntityScreen extends BlockEntity {
         Vector3i origin = new Vector3i(getBlockPos());
         MutableAABB box = null;
 
-        for (Screen scr : screens) {
+        for (ScreenData scr : screens) {
             Vector3i f = scr.side.forward;
 
             int fx = Math.max(f.x, 0);
@@ -789,7 +607,7 @@ public class TileEntityScreen extends BlockEntity {
 //	}
 
     public void updateClientSideURL(CefBrowser target, String url) {
-        for (Screen scr : screens) {
+        for (ScreenData scr : screens) {
             if (scr.browser == target) {
                 String webUrl;
                 try {
@@ -820,7 +638,7 @@ public class TileEntityScreen extends BlockEntity {
 
     public void addFriend(ServerPlayer ply, BlockSide side, NameUUIDPair pair) {
         if (!level.isClientSide) {
-            Screen scr = getScreen(side);
+            ScreenData scr = getScreen(side);
             if (scr == null) {
                 Log.error("Tried to add friend to invalid screen side %s", side.toString());
                 return;
@@ -836,7 +654,7 @@ public class TileEntityScreen extends BlockEntity {
 
     public void removeFriend(ServerPlayer ply, BlockSide side, NameUUIDPair pair) {
         if (!level.isClientSide) {
-            Screen scr = getScreen(side);
+            ScreenData scr = getScreen(side);
             if (scr == null) {
                 Log.error("Tried to remove friend from invalid screen side %s", side.toString());
                 return;
@@ -852,7 +670,7 @@ public class TileEntityScreen extends BlockEntity {
 
     public void setRights(ServerPlayer ply, BlockSide side, int fr, int or) {
         if (!level.isClientSide) {
-            Screen scr = getScreen(side);
+            ScreenData scr = getScreen(side);
             if (scr == null) {
                 Log.error("Tried to change rights of invalid screen on side %s", side.toString());
                 return;
@@ -872,7 +690,7 @@ public class TileEntityScreen extends BlockEntity {
     }
 
     public void type(BlockSide side, String text, BlockPos soundPos, @Nullable ServerPlayer sender) {
-        Screen scr = getScreen(side);
+        ScreenData scr = getScreen(side);
         if (scr == null) {
             Log.error("Tried to type on invalid screen on side %s", side.toString());
             return;
@@ -967,7 +785,7 @@ public class TileEntityScreen extends BlockEntity {
     public boolean addUpgrade(BlockSide side, ItemStack is, @Nullable Player player, boolean abortIfExisting) {
         if (level.isClientSide) {
             IUpgrade itemAsUpgrade = (IUpgrade) is.getItem();
-            Screen scr = getScreen(side);
+            ScreenData scr = getScreen(side);
 //            if (abortIfExisting && scr.upgrades.stream().anyMatch(otherStack -> itemAsUpgrade.isSameUpgrade(is, otherStack)))
 //                return false; //Upgrade already exists
             ItemStack isCopy = is.copy(); //FIXME: Duct tape fix, because the original stack will be shrinked
@@ -976,7 +794,7 @@ public class TileEntityScreen extends BlockEntity {
             return false;
         }
 
-        Screen scr = getScreen(side);
+        ScreenData scr = getScreen(side);
         if (scr == null) {
             Log.error("Tried to add an upgrade on invalid screen on side %s", side.toString());
             return false;
@@ -1010,7 +828,7 @@ public class TileEntityScreen extends BlockEntity {
     }
 
     public boolean hasUpgrade(BlockSide side, ItemStack is) {
-        Screen scr = getScreen(side);
+        ScreenData scr = getScreen(side);
         if (scr == null)
             return false;
 
@@ -1022,7 +840,7 @@ public class TileEntityScreen extends BlockEntity {
     }
 
     public boolean hasUpgrade(BlockSide side, DefaultUpgrade du) {
-        Screen scr = getScreen(side);
+        ScreenData scr = getScreen(side);
         if (du == DefaultUpgrade.LASERMOUSE) {
             return scr != null && scr.upgrades.stream().anyMatch(du::matchesLaserMouse);
         } else if (du == DefaultUpgrade.REDINPUT) {
@@ -1040,7 +858,7 @@ public class TileEntityScreen extends BlockEntity {
         if (level.isClientSide)
             return;
 
-        Screen scr = getScreen(side);
+        ScreenData scr = getScreen(side);
         if (scr == null) {
             Log.error("Tried to remove an upgrade on invalid screen on side %s", side.toString());
             return;
@@ -1093,11 +911,11 @@ public class TileEntityScreen extends BlockEntity {
         }
     }
 
-    private Screen getScreenForLaserOp(BlockSide side, Player ply) {
+    private ScreenData getScreenForLaserOp(BlockSide side, Player ply) {
         if (level.isClientSide)
             return null;
 
-        Screen scr = getScreen(side);
+        ScreenData scr = getScreen(side);
         if (scr == null) {
             Log.error("Called laser operation on invalid screen on side %s", side.toString());
             return null;
@@ -1115,7 +933,7 @@ public class TileEntityScreen extends BlockEntity {
     }
 
     public void laserDownMove(BlockSide side, Player ply, Vector2i pos, boolean down, int button) {
-        Screen scr = getScreenForLaserOp(side, ply);
+        ScreenData scr = getScreenForLaserOp(side, ply);
 
         if (scr != null) {
             if (button == -1)
@@ -1128,7 +946,7 @@ public class TileEntityScreen extends BlockEntity {
     }
 
     public void laserUp(BlockSide side, Player ply, int button) {
-        Screen scr = getScreenForLaserOp(side, ply);
+        ScreenData scr = getScreenForLaserOp(side, ply);
 
         if (scr != null) {
             if (getLaserUser(scr) == ply) {
@@ -1139,7 +957,7 @@ public class TileEntityScreen extends BlockEntity {
     }
 
     public void onDestroy(@Nullable Player ply) {
-        for (Screen scr : screens) {
+        for (ScreenData scr : screens) {
             scr.upgrades.forEach(is -> dropUpgrade(is, scr.side, ply));
             scr.upgrades.clear();
         }
@@ -1148,8 +966,8 @@ public class TileEntityScreen extends BlockEntity {
     }
 
     public void disableScreen(BlockSide side) {
-        Screen remove = null;
-        for (Screen screen : screens) {
+        ScreenData remove = null;
+        for (ScreenData screen : screens) {
             if (screen.side == side) {
                 remove = screen;
                 break;
@@ -1159,7 +977,7 @@ public class TileEntityScreen extends BlockEntity {
         if (remove == null) return;
 
         if (level != null && !level.isClientSide) {
-            final Screen scrn = remove;
+            final ScreenData scrn = remove;
             remove.upgrades.forEach(is -> dropUpgrade(is, scrn.side, null));
         }
 
@@ -1180,7 +998,7 @@ public class TileEntityScreen extends BlockEntity {
             return;
         }
 
-        Screen scr = getScreen(side);
+        ScreenData scr = getScreen(side);
         if (scr == null) {
             Log.error("Called TileEntityScreen.setOwner() on invalid screen on side %s", side.toString());
             return;
@@ -1193,7 +1011,7 @@ public class TileEntityScreen extends BlockEntity {
     }
 
     public void setRotation(BlockSide side, Rotation rot) {
-        Screen scr = getScreen(side);
+        ScreenData scr = getScreen(side);
         if (scr == null) {
             Log.error("Trying to change rotation of invalid screen on side %s", side.toString());
             return;
@@ -1231,7 +1049,7 @@ public class TileEntityScreen extends BlockEntity {
 //	}
 
     public void setAutoVolume(BlockSide side, boolean av) {
-        Screen scr = getScreen(side);
+        ScreenData scr = getScreen(side);
         if (scr == null) {
             Log.error("Trying to toggle auto-volume on invalid screen (side %s)", side.toString());
             return;

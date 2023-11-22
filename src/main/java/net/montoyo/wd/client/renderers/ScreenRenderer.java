@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.montoyo.wd.entity.ScreenData;
 import net.montoyo.wd.entity.TileEntityScreen;
 import net.montoyo.wd.utilities.Vector3f;
 import net.montoyo.wd.utilities.Vector3i;
@@ -45,7 +46,7 @@ public class ScreenRenderer implements BlockEntityRenderer<TileEntityScreen> {
 		RenderSystem.disableBlend();
 		
 		for (int i = 0; i < te.screenCount(); i++) {
-			TileEntityScreen.Screen scr = te.getScreen(i);
+			ScreenData scr = te.getScreen(i);
 			if (scr.browser == null) {
 				scr.createBrowser(true);
 			}

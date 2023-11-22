@@ -11,6 +11,7 @@ import net.minecraftforge.network.NetworkEvent;
 import net.montoyo.wd.controls.ScreenControl;
 import net.montoyo.wd.core.MissingPermissionException;
 import net.montoyo.wd.core.ScreenRights;
+import net.montoyo.wd.entity.ScreenData;
 import net.montoyo.wd.entity.TileEntityScreen;
 import net.montoyo.wd.utilities.BlockSide;
 
@@ -89,7 +90,7 @@ public class ManageRightsAndUpdgradesControl extends ScreenControl {
 				else tes.removeUpgrade(side, toRemove, player);
 			}
 			case RIGHTS -> {
-				TileEntityScreen.Screen scr = tes.getScreen(side);
+				ScreenData scr = tes.getScreen(side);
 				
 				int fr = scr.owner.uuid.equals(player.getGameProfile().getId()) ? friendRights : scr.friendRights;
 				int or = (scr.rightsFor(player) & ScreenRights.MANAGE_OTHER_RIGHTS) == 0 ? scr.otherRights : otherRights;
@@ -111,7 +112,7 @@ public class ManageRightsAndUpdgradesControl extends ScreenControl {
 				else tes.removeUpgrade(side, toRemove, player);
 			}
 			case RIGHTS -> {
-				TileEntityScreen.Screen scr = tes.getScreen(side);
+				ScreenData scr = tes.getScreen(side);
 				
 				int fr = friendRights;
 				int or = otherRights;

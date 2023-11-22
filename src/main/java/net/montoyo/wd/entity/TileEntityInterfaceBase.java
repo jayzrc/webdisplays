@@ -211,7 +211,7 @@ public abstract class TileEntityInterfaceBase extends TileEntityPeripheralBase {
         if(owner == null || scr == null)
             return err("notlinked");
         else {
-            TileEntityScreen.Screen scrscr = scr.getScreen(screenSide);
+            ScreenData scrscr = scr.getScreen(screenSide);
 
             if((scrscr.rightsFor(owner.uuid) & ScreenRights.INTERACT) == 0)
                 return err("restrictions");

@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.block.BlockScreen;
 import net.montoyo.wd.config.CommonConfig;
+import net.montoyo.wd.entity.ScreenData;
 import net.montoyo.wd.entity.TileEntityScreen;
 import net.montoyo.wd.utilities.*;
 import org.jetbrains.annotations.NotNull;
@@ -60,7 +61,7 @@ public class ItemOwnershipThief extends Item implements WDItem {
                     return InteractionResult.SUCCESS;
 
                 TileEntityScreen tes = (TileEntityScreen) te;
-                TileEntityScreen.Screen scr = tes.getScreen(side);
+                ScreenData scr = tes.getScreen(side);
                 if(scr == null)
                     return InteractionResult.SUCCESS;
 

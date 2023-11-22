@@ -62,7 +62,7 @@ public class TileEntityRedCtrl extends TileEntityPeripheralBase {
             return InteractionResult.SUCCESS;
         }
 
-        TileEntityScreen.Screen scr = tes.getScreen(screenSide);
+        ScreenData scr = tes.getScreen(screenSide);
         if((scr.rightsFor(player) & ScreenRights.CHANGE_URL) == 0) {
             Util.toast(player, "restrictions");
             return InteractionResult.SUCCESS;

@@ -70,6 +70,7 @@ import net.montoyo.wd.config.ClientConfig;
 import net.montoyo.wd.core.HasAdvancement;
 import net.montoyo.wd.core.JSServerRequest;
 import net.montoyo.wd.data.GuiData;
+import net.montoyo.wd.entity.ScreenData;
 import net.montoyo.wd.entity.TileEntityScreen;
 import net.montoyo.wd.init.BlockInit;
 import net.montoyo.wd.init.ItemInit;
@@ -165,8 +166,8 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 		
 		Multiblock.findOrigin(mc.level, pos, side, null);
 		TileEntityScreen te = (TileEntityScreen) mc.level.getBlockEntity(pos.toBlock());
-		
-		TileEntityScreen.Screen sc = te.getScreen(side);
+
+		ScreenData sc = te.getScreen(side);
 		
 		if (sc == null) return;
 
@@ -665,7 +666,7 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 		} else {
 			double dist = Double.POSITIVE_INFINITY;
 			for (int i = 0; i < tes.screenCount(); i++) {
-				TileEntityScreen.Screen scrn = tes.getScreen(i);
+				ScreenData scrn = tes.getScreen(i);
 				
 				Vector3d pos = new Vector3d(
 						scrn.side.right.x * scrn.size.x + scrn.size.y * scrn.side.up.x,
@@ -864,7 +865,7 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 	public boolean findScreenFromBrowser(CefBrowser browser, ScreenSidePair pair) {
 		for (TileEntityScreen tes : screenTracking) {
 			for (int i = 0; i < tes.screenCount(); i++) {
-				TileEntityScreen.Screen scr = tes.getScreen(i);
+				ScreenData scr = tes.getScreen(i);
 				
 				if (scr.browser == browser) {
 					pair.tes = tes;

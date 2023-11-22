@@ -34,6 +34,7 @@ import net.montoyo.wd.core.DefaultUpgrade;
 import net.montoyo.wd.core.IUpgrade;
 import net.montoyo.wd.core.ScreenRights;
 import net.montoyo.wd.data.SetURLData;
+import net.montoyo.wd.entity.ScreenData;
 import net.montoyo.wd.entity.TileEntityScreen;
 import net.montoyo.wd.init.BlockInit;
 import net.montoyo.wd.item.ItemLaserPointer;
@@ -74,17 +75,6 @@ public class BlockScreen extends BaseEntityBlock {
     @Override
     public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos currentPos, BlockPos neighborPos) {
         return super.updateShape(state, direction, neighborState, level, currentPos, neighborPos);
-    }
-
-    public int getMetaFromState(BlockState state) {
-        int ret = 0;
-        if (state.getValue(hasTE))
-            ret |= 1;
-
-        if (state.getValue(emitting))
-            ret |= 2;
-
-        return ret;
     }
 
     @Override
@@ -135,7 +125,7 @@ public class BlockScreen extends BaseEntityBlock {
         TileEntityScreen te = (TileEntityScreen) world.getBlockEntity(pos.toBlock());
 
         if (te != null && te.getScreen(side) != null) {
-            TileEntityScreen.Screen scr = te.getScreen(side);
+            ScreenData scr = te.getScreen(side);
 
             if (sneaking) { //Right Click
                 if((scr.rightsFor(player) & ScreenRights.CHANGE_URL) == 0)
@@ -234,7 +224,7 @@ public class BlockScreen extends BaseEntityBlock {
         }
     }
     
-    public static boolean hit2pixels(BlockSide side, BlockPos bpos, Vector3i pos, TileEntityScreen.Screen scr, float hitX, float hitY, float hitZ, Vector2i dst) {
+    public static boolean hit2pixels(BlockSide side, BlockPos bpos, Vector3i pos, ScreenData scr, float hitX, float hitY, float hitZ, Vector2i dst) {
         if(side.right.x < 0)
             hitX -= 1.f;
         
@@ -295,12 +285,9 @@ public class BlockScreen extends BaseEntityBlock {
     @org.jetbrains.annotations.Nullable
     @Override
     public BlockEntity newBlockEntity (BlockPos pos, BlockState state){
-        int meta = getMetaFromState(state);
-
-        if ((meta & 1) == 0)
+        if (!state.getValue(hasTE))
             return null;
-
-        return ((meta & 1) == 0) ? null : new TileEntityScreen(pos, state);
+        return new TileEntityScreen(pos, state);
     }
 
     /************************************************* DESTRUCTION HANDLING *************************************************/
