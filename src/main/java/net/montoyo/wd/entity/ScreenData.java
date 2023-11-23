@@ -15,6 +15,10 @@ import net.montoyo.wd.client.ClientProxy;
 import net.montoyo.wd.config.CommonConfig;
 import net.montoyo.wd.core.ScreenRights;
 import net.montoyo.wd.utilities.*;
+import net.montoyo.wd.utilities.data.BlockSide;
+import net.montoyo.wd.utilities.data.Rotation;
+import net.montoyo.wd.utilities.math.Vector2i;
+import net.montoyo.wd.utilities.serialization.NameUUIDPair;
 import org.cef.browser.CefBrowser;
 
 import java.util.ArrayList;

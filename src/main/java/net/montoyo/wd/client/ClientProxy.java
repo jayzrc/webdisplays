@@ -167,7 +167,7 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 		BlockSide side = BlockSide.values()[result.getDirection().ordinal()];
 		
 		Multiblock.findOrigin(mc.level, pos, side, null);
-		TileEntityScreen te = (TileEntityScreen) mc.level.getBlockEntity(pos.toBlock());
+		ScreenBlockEntity te = (ScreenBlockEntity) mc.level.getBlockEntity(pos.toBlock());
 
 		ScreenData sc = te.getScreen(side);
 		

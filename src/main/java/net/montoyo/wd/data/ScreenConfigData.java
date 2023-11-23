@@ -63,12 +63,12 @@ public class ScreenConfigData extends GuiData {
 			return null;
 		
 		BlockEntity te = world.getBlockEntity(pos.toBlock());
-		if (te == null || !(te instanceof TileEntityScreen)) {
+		if (te == null || !(te instanceof ScreenBlockEntity)) {
 			Log.error("TileEntity at %s is not a screen; can't open gui!", pos.toString());
 			return null;
 		}
 		
-		return new GuiScreenConfig(Component.nullToEmpty(""), (TileEntityScreen) te, side, friends, friendRights, otherRights);
+		return new GuiScreenConfig(Component.nullToEmpty(""), (ScreenBlockEntity) te, side, friends, friendRights, otherRights);
 	}
 	
 	@Override

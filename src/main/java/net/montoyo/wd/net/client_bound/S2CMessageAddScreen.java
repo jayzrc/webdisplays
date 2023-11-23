@@ -39,7 +39,7 @@ public class S2CMessageAddScreen extends Packet {
 			screens[i] = tes.getScreen(i);
 	}
 	
-	public S2CMessageAddScreen(TileEntityScreen tes, ScreenData... toSend) {
+	public S2CMessageAddScreen(ScreenBlockEntity tes, ScreenData... toSend) {
 		clear = false;
 		pos = new Vector3i(tes.getBlockPos());
 		screens = toSend;

@@ -9,14 +9,12 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
 import net.montoyo.wd.client.js.WDRouter;
+import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.entity.ScreenData;
-import net.montoyo.wd.entity.TileEntityScreen;
-import net.montoyo.wd.utilities.BlockSide;
-
-import java.util.concurrent.CompletableFuture;
+import net.montoyo.wd.utilities.data.BlockSide;
 
 public class KeyboardCamera {
-    private static TileEntityScreen tes;
+    private static ScreenBlockEntity tes;
     private static BlockSide side;
 
     private static double oxCrd = -1;
@@ -49,7 +47,7 @@ public class KeyboardCamera {
     protected static void pollElement() {
         if (activeTask != null) return;
 
-        TileEntityScreen teTmp = tes;
+        ScreenBlockEntity teTmp = tes;
         BlockSide sdTmp = side;
 
         // async nonsense can occur here
@@ -92,7 +90,6 @@ public class KeyboardCamera {
                                                         }
                             """.replace("\n", "")
             ).thenAccept((o1) -> {
-                System.out.println(o1);
                 updateCrd(o1);
                 activeTask = null;
             });
@@ -187,7 +184,7 @@ public class KeyboardCamera {
         event.setPitch(angle[0]);
     }
 
-    public static void focus(TileEntityScreen screen, BlockSide side) {
+    public static void focus(ScreenBlockEntity screen, BlockSide side) {
         KeyboardCamera.tes = screen;
         KeyboardCamera.side = side;
     }

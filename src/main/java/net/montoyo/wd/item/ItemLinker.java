@@ -96,7 +96,7 @@ public class ItemLinker extends Item implements WDItem {
             return InteractionResult.SUCCESS;
         }
 
-        ScreenData scr = ((TileEntityScreen) te).getScreen(side);
+        ScreenData scr = ((ScreenBlockEntity) te).getScreen(side);
         if(scr == null)
             Util.toast(context.getPlayer(), "turnOn");
         else if ((scr.rightsFor(context.getPlayer()) & ScreenRights.MANAGE_UPGRADES) == 0)

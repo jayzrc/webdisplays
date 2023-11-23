@@ -61,7 +61,7 @@ public class ItemOwnershipThief extends Item implements WDItem {
                 if (te == null || !(te instanceof ScreenBlockEntity))
                     return InteractionResult.SUCCESS;
 
-                TileEntityScreen tes = (TileEntityScreen) te;
+                ScreenBlockEntity tes = (ScreenBlockEntity) te;
                 ScreenData scr = tes.getScreen(side);
                 if(scr == null)
                     return InteractionResult.SUCCESS;

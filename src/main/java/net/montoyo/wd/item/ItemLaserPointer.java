@@ -82,7 +82,7 @@ public class ItemLaserPointer extends Item implements WDItem {
 		deselectScreen();
 	}
 	
-	private static void laserClick(TileEntityScreen tes, BlockSide side, ScreenData scr, Vector2i hit) {
+	private static void laserClick(ScreenBlockEntity tes, BlockSide side, ScreenData scr, Vector2i hit) {
 		tes.handleMouseEvent(side, ClickControl.ControlType.MOVE, hit, -1);
 		if (pointedScreen == tes && pointedScreenSide == side) {
 			long t = System.currentTimeMillis();

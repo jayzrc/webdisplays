@@ -112,7 +112,7 @@ public class ScreenBlockEntity extends BlockEntity {
             return;
 
         // very important to close these
-        for (Screen screen : screens) {
+        for (ScreenData screen : screens) {
             if (screen.browser != null) {
                 screen.browser.close(true);
                 screen.browser = null;
@@ -234,7 +234,7 @@ public class ScreenBlockEntity extends BlockEntity {
 
     public void clear() {
         // very important that these get closed
-        for (Screen screen : screens)
+        for (ScreenData screen : screens)
             if (screen.browser != null) {
                 screen.browser.close(true);
                 screen.browser = null;
