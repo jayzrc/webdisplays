@@ -38,6 +38,7 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.montoyo.wd.client.ClientProxy;
+import net.montoyo.wd.client.gui.camera.KeyboardCamera;
 import net.montoyo.wd.config.ClientConfig;
 import net.montoyo.wd.config.CommonConfig;
 import net.montoyo.wd.controls.ScreenControlRegistry;
@@ -114,6 +115,8 @@ public class WebDisplays {
             // proxies are annoying, so from now on, I'mma be just registering stuff in here
             FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientProxy::onKeybindRegistry);
             MinecraftForge.EVENT_BUS.addListener(ClientProxy::onDrawSelection);
+            MinecraftForge.EVENT_BUS.addListener(KeyboardCamera::updateCamera);
+            MinecraftForge.EVENT_BUS.addListener(KeyboardCamera::gameTick);
             ClientConfig.init();
         }
         

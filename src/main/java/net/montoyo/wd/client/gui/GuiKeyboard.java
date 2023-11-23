@@ -4,7 +4,10 @@
 
 package net.montoyo.wd.client.gui;
 
+import com.cinemamod.mcef.MCEFBrowser;
+import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -13,10 +16,13 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.montoyo.wd.WebDisplays;
+import net.montoyo.wd.client.gui.camera.KeyboardCamera;
 import net.montoyo.wd.client.gui.controls.Button;
 import net.montoyo.wd.client.gui.controls.Control;
 import net.montoyo.wd.client.gui.controls.Label;
 import net.montoyo.wd.client.gui.loading.FillControl;
+import net.montoyo.wd.client.js.WDRouter;
+import net.montoyo.wd.entity.ScreenData;
 import net.montoyo.wd.entity.TileEntityScreen;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.server_bound.C2SMessageScreenCtrl;
@@ -24,16 +30,23 @@ import net.montoyo.wd.utilities.BlockSide;
 import net.montoyo.wd.utilities.Log;
 import net.montoyo.wd.utilities.TypeData;
 import net.montoyo.wd.utilities.Util;
+import org.cef.browser.CefBrowser;
+import org.cef.browser.CefFrame;
+import org.cef.browser.CefMessageRouter;
+import org.cef.callback.CefQueryCallback;
+import org.cef.handler.CefMessageRouterHandlerAdapter;
 import org.lwjgl.glfw.GLFW;
 import org.vivecraft.client_vr.gameplay.VRPlayer;
 import org.vivecraft.client_vr.gameplay.screenhandlers.KeyboardHandler;
 //import org.vivecraft.gameplay.VRPlayer;
 //import org.vivecraft.gameplay.screenhandlers.KeyboardHandler;
 
+import java.awt.*;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @OnlyIn(Dist.CLIENT)
 public class GuiKeyboard extends WDScreen {
@@ -69,7 +82,7 @@ public class GuiKeyboard extends WDScreen {
     }
 
     private static final boolean vivecraftPresent;
-    
+
     static {
         boolean vivePres = false;
         if (ModList.get().isLoaded("vivecraft")) vivePres = true;
@@ -91,7 +104,7 @@ public class GuiKeyboard extends WDScreen {
         }
         vivecraftPresent = vivePres;
     }
-    
+
     @Override
     public void init() {
         super.init();
@@ -137,43 +150,48 @@ public class GuiKeyboard extends WDScreen {
 
         defaultBackground = showWarning;
         syncTicks = 5;
-    
+
         if (vivecraftPresent)
             if (VRPlayer.get() != null)
                 KeyboardHandler.setOverlayShowing(true);
+
+        KeyboardCamera.focus(tes, side);
     }
-    
+
     @Override
     public void onClose() {
         if (vivecraftPresent)
             if (VRPlayer.get() != null)
                 KeyboardHandler.setOverlayShowing(false);
         super.onClose();
+        KeyboardCamera.focus(null, null);
     }
-    
+
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if(quitOnEscape && keyCode == GLFW.GLFW_KEY_ESCAPE)
+        if(quitOnEscape && keyCode == GLFW.GLFW_KEY_ESCAPE) {
             Minecraft.getInstance().setScreen(null);
+            onClose();
+        }
         addKey(new TypeData(TypeData.Action.PRESS, keyCode, modifiers, scanCode));
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
-    
+
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
         addKey(new TypeData(TypeData.Action.TYPE, codePoint, modifiers, 0));
         return super.charTyped(codePoint, modifiers);
     }
-    
+
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         addKey(new TypeData(TypeData.Action.RELEASE, keyCode, modifiers, scanCode));
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
-    
+
     void addKey(TypeData data) {
         tes.type(side, "[" + WebDisplays.GSON.toJson(data) + "]", kbPos);
-        
+
         evStack.add(data);
         if (!evStack.isEmpty() && !syncRequested())
             requestSync();

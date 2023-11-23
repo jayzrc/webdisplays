@@ -65,6 +65,7 @@ import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.block.BlockScreen;
 import net.montoyo.wd.client.gui.*;
 import net.montoyo.wd.client.gui.loading.GuiLoader;
+import net.montoyo.wd.client.js.WDRouter;
 import net.montoyo.wd.client.renderers.*;
 import net.montoyo.wd.config.ClientConfig;
 import net.montoyo.wd.core.HasAdvancement;
@@ -85,7 +86,10 @@ import net.montoyo.wd.utilities.*;
 import org.cef.CefSettings;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
+import org.cef.browser.CefMessageRouter;
+import org.cef.callback.CefQueryCallback;
 import org.cef.handler.CefDisplayHandler;
+import org.cef.handler.CefMessageRouterHandlerAdapter;
 import org.cef.misc.CefCursorType;
 import org.cef.network.CefRequest;
 import org.joml.Vector3d;
@@ -285,6 +289,8 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 //		jsDispatcher = new JSQueryDispatcher(this);
 		MCEF.getClient().addDisplayHandler(this);
 //		mcef.registerJSQueryHandler(this);
+
+		MCEF.getClient().getHandle().addMessageRouter(CefMessageRouter.create(WDRouter.INSTANCE));
 
 		findAdvancementToProgressField();
 	}
