@@ -17,10 +17,14 @@ import net.montoyo.wd.controls.ScreenControlRegistry;
 import net.montoyo.wd.controls.builtin.*;
 import net.montoyo.wd.core.JSServerRequest;
 import net.montoyo.wd.core.MissingPermissionException;
-import net.montoyo.wd.entity.TileEntityScreen;
+import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.net.BufferUtils;
 import net.montoyo.wd.net.Packet;
-import net.montoyo.wd.utilities.*;
+import net.montoyo.wd.utilities.math.Vector2i;
+import net.montoyo.wd.utilities.math.Vector3i;
+import net.montoyo.wd.utilities.data.BlockSide;
+import net.montoyo.wd.utilities.data.Rotation;
+import net.montoyo.wd.utilities.serialization.NameUUIDPair;
 
 // TODO: this is a mess; a registry based approach would likely be more readable
 public class C2SMessageScreenCtrl extends Packet {
@@ -40,13 +44,13 @@ public class C2SMessageScreenCtrl extends Packet {
 	public C2SMessageScreenCtrl() {
 	}
 	
-	public C2SMessageScreenCtrl(TileEntityScreen screen, BlockSide side, ScreenControl control) {
+	public C2SMessageScreenCtrl(ScreenBlockEntity screen, BlockSide side, ScreenControl control) {
 		this.pos = screen.getBlockPos();
 		this.side = side;
 		this.control = control;
 	}
 	
-	protected static C2SMessageScreenCtrl base(TileEntityScreen screen, BlockSide side) {
+	protected static C2SMessageScreenCtrl base(ScreenBlockEntity screen, BlockSide side) {
 		C2SMessageScreenCtrl packet = new C2SMessageScreenCtrl();
 		packet.pos = screen.getBlockPos();
 		packet.side = side;
@@ -54,79 +58,79 @@ public class C2SMessageScreenCtrl extends Packet {
 	}
 	
 	@Deprecated(forRemoval = true)
-	public static C2SMessageScreenCtrl setURL(TileEntityScreen tes, BlockSide side, String url, Vector3i remoteLocation) {
+	public static C2SMessageScreenCtrl setURL(ScreenBlockEntity tes, BlockSide side, String url, Vector3i remoteLocation) {
 		C2SMessageScreenCtrl ret = base(tes, side);
 		ret.control = new SetURLControl(url, remoteLocation);
 		return ret;
 	}
 	
 	@Deprecated(forRemoval = true)
-	public C2SMessageScreenCtrl(TileEntityScreen tes, BlockSide side, NameUUIDPair friend, boolean del) {
+	public C2SMessageScreenCtrl(ScreenBlockEntity tes, BlockSide side, NameUUIDPair friend, boolean del) {
 		this(tes, side, new ModifyFriendListControl(friend, !del));
 	}
 	
 	@Deprecated(forRemoval = true)
-	public C2SMessageScreenCtrl(TileEntityScreen tes, BlockSide side, int fr, int or) {
+	public C2SMessageScreenCtrl(ScreenBlockEntity tes, BlockSide side, int fr, int or) {
 		this(tes, side, new ManageRightsAndUpdgradesControl(fr, or));
 	}
 	
 	@Deprecated(forRemoval = true)
-	public C2SMessageScreenCtrl(TileEntityScreen tes, BlockSide side, ItemStack toRem) {
+	public C2SMessageScreenCtrl(ScreenBlockEntity tes, BlockSide side, ItemStack toRem) {
 		this(tes, side, new ManageRightsAndUpdgradesControl(false, toRem));
 	}
 	
 	@Deprecated(forRemoval = true)
-	public C2SMessageScreenCtrl(TileEntityScreen tes, BlockSide side, Rotation rot) {
+	public C2SMessageScreenCtrl(ScreenBlockEntity tes, BlockSide side, Rotation rot) {
 		this(tes, side, new ScreenModifyControl(rot));
 	}
 	
 	@Deprecated(forRemoval = true)
-	public static C2SMessageScreenCtrl vec2(TileEntityScreen tes, BlockSide side, int ctrl, Vector2i vec) {
+	public static C2SMessageScreenCtrl vec2(ScreenBlockEntity tes, BlockSide side, int ctrl, Vector2i vec) {
 		throw new RuntimeException("Moved: look into ScreenControlRegistry");
 	}
 	
 	@Deprecated(forRemoval = true)
-	public static C2SMessageScreenCtrl resolution(TileEntityScreen tes, BlockSide side, Vector2i vec) {
+	public static C2SMessageScreenCtrl resolution(ScreenBlockEntity tes, BlockSide side, Vector2i vec) {
 		C2SMessageScreenCtrl ret = base(tes, side);
 		ret.control = new ScreenModifyControl(vec);
 		return ret;
 	}
 	
 	@Deprecated(forRemoval = true)
-	public static C2SMessageScreenCtrl type(TileEntityScreen tes, BlockSide side, String text, BlockPos soundPos) {
+	public static C2SMessageScreenCtrl type(ScreenBlockEntity tes, BlockSide side, String text, BlockPos soundPos) {
 		C2SMessageScreenCtrl ret = base(tes, side);
 		ret.control = new KeyTypedControl(text, soundPos);
 		return ret;
 	}
 	
-	public static C2SMessageScreenCtrl laserMove(TileEntityScreen tes, BlockSide side, Vector2i vec) {
+	public static C2SMessageScreenCtrl laserMove(ScreenBlockEntity tes, BlockSide side, Vector2i vec) {
 		C2SMessageScreenCtrl ret = base(tes, side);
 		ret.control = new LaserControl(LaserControl.ControlType.MOVE, vec);
 		return ret;
 	}
 	
-	public static C2SMessageScreenCtrl laserDown(TileEntityScreen tes, BlockSide side, Vector2i vec, int button) {
+	public static C2SMessageScreenCtrl laserDown(ScreenBlockEntity tes, BlockSide side, Vector2i vec, int button) {
 		C2SMessageScreenCtrl ret = base(tes, side);
 		ret.control = new LaserControl(LaserControl.ControlType.DOWN, vec, button);
 		return ret;
 	}
 	
 	@Deprecated(forRemoval = true)
-	public static C2SMessageScreenCtrl laserUp(TileEntityScreen tes, BlockSide side, int button) {
+	public static C2SMessageScreenCtrl laserUp(ScreenBlockEntity tes, BlockSide side, int button) {
 		C2SMessageScreenCtrl ret = base(tes, side);
 		ret.control = new LaserControl(LaserControl.ControlType.UP, null, button);
 		return ret;
 	}
 	
 	@Deprecated(forRemoval = true)
-	public static C2SMessageScreenCtrl jsRequest(TileEntityScreen tes, BlockSide side, int reqId, JSServerRequest reqType, Object... data) {
+	public static C2SMessageScreenCtrl jsRequest(ScreenBlockEntity tes, BlockSide side, int reqId, JSServerRequest reqType, Object... data) {
 		C2SMessageScreenCtrl ret = base(tes, side);
 		ret.control = new JSRequestControl(reqId, reqType, data);
 		return ret;
 	}
 	
 	@Deprecated(forRemoval = true)
-	public static C2SMessageScreenCtrl autoVol(TileEntityScreen tes, BlockSide side, boolean av) {
+	public static C2SMessageScreenCtrl autoVol(ScreenBlockEntity tes, BlockSide side, boolean av) {
 		C2SMessageScreenCtrl ret = base(tes, side);
 		ret.control = new AutoVolumeControl(av);
 		return ret;
@@ -150,7 +154,7 @@ public class C2SMessageScreenCtrl extends Packet {
 		control.write(buf);
 	}
 	
-	public void checkPermission(ServerPlayer sender, TileEntityScreen scr, int right) throws MissingPermissionException {
+	public void checkPermission(ServerPlayer sender, ScreenBlockEntity scr, int right) throws MissingPermissionException {
 		int prights = scr.getScreen(side).rightsFor(sender);
 		if ((prights & right) == 0)
 			throw new MissingPermissionException(right, sender);
@@ -162,7 +166,7 @@ public class C2SMessageScreenCtrl extends Packet {
 				try {
 					Level level = (Level) WebDisplays.PROXY.getWorld(ctx);
 					BlockEntity be = level.getBlockEntity(pos);
-					if (be instanceof TileEntityScreen tes) {
+					if (be instanceof ScreenBlockEntity tes) {
 						control.handleServer(pos, side, tes, ctx, (perm) -> {
 							try {
 								checkPermission(ctx.getSender(), tes, perm);

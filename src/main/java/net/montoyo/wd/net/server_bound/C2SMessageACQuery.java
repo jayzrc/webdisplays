@@ -13,7 +13,7 @@ import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.net.Packet;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.client_bound.S2CMessageACResult;
-import net.montoyo.wd.utilities.NameUUIDPair;
+import net.montoyo.wd.utilities.serialization.NameUUIDPair;
 
 import java.util.Arrays;
 

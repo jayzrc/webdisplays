@@ -9,7 +9,6 @@ import net.minecraft.world.item.Item;
 import java.util.BitSet;
 
 public class ItemMulti extends Item {
-
     protected final Enum[] values;
     protected final BitSet creativeTabItems;
 

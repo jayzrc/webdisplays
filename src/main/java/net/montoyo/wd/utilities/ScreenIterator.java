@@ -5,13 +5,14 @@
 package net.montoyo.wd.utilities;
 
 import net.minecraft.core.BlockPos;
+import net.montoyo.wd.utilities.math.Vector2i;
+import net.montoyo.wd.utilities.math.Vector3i;
+import net.montoyo.wd.utilities.data.BlockSide;
 
 import java.util.Iterator;
 
 public final class ScreenIterator implements Iterator<BlockPos> {
-
-    private final Vector3i vec1;
-    private final Vector3i vec2;
+    private final Vector3i from, to;
     private final BlockSide side;
     private final Vector2i size;
     private final BlockPos.MutableBlockPos blockPos;
@@ -20,31 +21,31 @@ public final class ScreenIterator implements Iterator<BlockPos> {
     private boolean hasNext = true;
 
     public ScreenIterator(BlockPos pos, BlockSide side, Vector2i size) {
-        vec1 = new Vector3i(pos);
-        vec2 = vec1.clone();
+        from = new Vector3i(pos);
+        to = from.clone();
         this.side = side;
         this.size = size;
         blockPos = new BlockPos.MutableBlockPos();
     }
 
     @Override
-    public final boolean hasNext() {
+    public boolean hasNext() {
         return hasNext;
     }
 
     @Override
-    public final BlockPos next() {
-        vec2.toBlock(blockPos);
+    public BlockPos next() {
+        to.toBlock(blockPos);
 
-        if(++x >= size.x) {
-            if(++y >= size.y)
+        if (++x >= size.x) {
+            if (++y >= size.y)
                 hasNext = false;
             else {
                 x = 0;
-                vec2.set(vec1.add(side.up));
+                to.set(from.add(side.up));
             }
         } else
-            vec2.add(side.right);
+            to.add(side.right);
 
         return blockPos;
     }
@@ -60,5 +61,4 @@ public final class ScreenIterator implements Iterator<BlockPos> {
     public int getIndex() {
         return y * size.x + x;
     }
-
 }

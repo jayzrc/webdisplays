@@ -9,8 +9,8 @@ import net.minecraftforge.network.NetworkEvent;
 import net.montoyo.wd.controls.ScreenControl;
 import net.montoyo.wd.core.MissingPermissionException;
 import net.montoyo.wd.core.ScreenRights;
-import net.montoyo.wd.entity.TileEntityScreen;
-import net.montoyo.wd.utilities.BlockSide;
+import net.montoyo.wd.entity.ScreenBlockEntity;
+import net.montoyo.wd.utilities.data.BlockSide;
 
 import java.util.function.Function;
 
@@ -39,14 +39,14 @@ public class KeyTypedControl extends ScreenControl {
 	}
 	
 	@Override
-	public void handleServer(BlockPos pos, BlockSide side, TileEntityScreen tes, NetworkEvent.Context ctx, Function<Integer, Boolean> permissionChecker) throws MissingPermissionException {
+	public void handleServer(BlockPos pos, BlockSide side, ScreenBlockEntity tes, NetworkEvent.Context ctx, Function<Integer, Boolean> permissionChecker) throws MissingPermissionException {
 		checkPerms(ScreenRights.INTERACT, permissionChecker, ctx.getSender());
 		tes.type(side, text, soundPos, ctx.getSender());
 	}
 	
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void handleClient(BlockPos pos, BlockSide side, TileEntityScreen tes, NetworkEvent.Context ctx) {
+	public void handleClient(BlockPos pos, BlockSide side, ScreenBlockEntity tes, NetworkEvent.Context ctx) {
 		tes.type(side, text, soundPos);
 	}
 }

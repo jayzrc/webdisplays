@@ -16,10 +16,9 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.montoyo.wd.client.ClientProxy;
-import net.montoyo.wd.init.ItemInit;
+import net.montoyo.wd.registry.ItemRegistry;
 import net.montoyo.wd.item.ItemLaserPointer;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11;
 
 import static com.mojang.math.Axis.*;
 
@@ -40,7 +39,7 @@ public final class LaserPointerRenderer implements IItemRenderer {
 						ClientProxy.mouseOn ||
 								ItemLaserPointer.isOn()
 				) &&
-				mc.player.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(ItemInit.LASER_POINTER.get()) &&
+				mc.player.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(ItemRegistry.LASER_POINTER.get()) &&
 				(mc.hitResult == null || mc.hitResult.getType() == HitResult.Type.BLOCK || mc.hitResult.getType() == HitResult.Type.MISS);
 	}
 	

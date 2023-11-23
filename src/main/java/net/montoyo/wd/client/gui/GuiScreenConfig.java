@@ -16,11 +16,15 @@ import net.montoyo.wd.client.gui.controls.*;
 import net.montoyo.wd.client.gui.loading.FillControl;
 import net.montoyo.wd.core.ScreenRights;
 import net.montoyo.wd.entity.ScreenData;
-import net.montoyo.wd.entity.TileEntityScreen;
+import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.item.WDItem;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.server_bound.C2SMessageScreenCtrl;
 import net.montoyo.wd.utilities.*;
+import net.montoyo.wd.utilities.math.Vector2i;
+import net.montoyo.wd.utilities.data.BlockSide;
+import net.montoyo.wd.utilities.data.Rotation;
+import net.montoyo.wd.utilities.serialization.NameUUIDPair;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
@@ -31,7 +35,7 @@ import java.util.UUID;
 public class GuiScreenConfig extends WDScreen {
 
     //Screen data
-    private final TileEntityScreen tes;
+    private final ScreenBlockEntity tes;
     private final BlockSide side;
     private NameUUIDPair owner;
     private NameUUIDPair[] friends;
@@ -120,7 +124,7 @@ public class GuiScreenConfig extends WDScreen {
     private CheckBox[] friendBoxes;
     private CheckBox[] otherBoxes;
 
-    public GuiScreenConfig(Component component, TileEntityScreen tes, BlockSide side, NameUUIDPair[] friends, int fr, int or) {
+    public GuiScreenConfig(Component component, ScreenBlockEntity tes, BlockSide side, NameUUIDPair[] friends, int fr, int or) {
         super(component);
         this.tes = tes;
         this.side = side;

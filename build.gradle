@@ -79,7 +79,6 @@ repositories{
         name = "cursemaven"
         url = "https://www.cursemaven.com"
     }
-    flatDir { dirs 'libs' }
     maven { url 'https://mcef-download.cinemamod.com/repositories/releases/' }
 }
 
@@ -101,7 +100,7 @@ dependencies {
 jar {
     manifest {
         attributes([
-                "Specification-Title": "Webdisplays",
+                "Specification-Title": "WebDisplays",
                 "Specification-Vendor": "CinemaMod Group",
                 "Specification-Version": "1", // We are version 1 of ourselves
                 "Implementation-Title": project.name,

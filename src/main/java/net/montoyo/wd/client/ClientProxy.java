@@ -10,13 +10,11 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -24,8 +22,6 @@ import net.minecraft.client.multiplayer.ClientAdvancements;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -62,20 +58,18 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.network.NetworkEvent;
 import net.montoyo.wd.SharedProxy;
 import net.montoyo.wd.WebDisplays;
-import net.montoyo.wd.block.BlockScreen;
+import net.montoyo.wd.block.ScreenBlock;
 import net.montoyo.wd.client.gui.*;
 import net.montoyo.wd.client.gui.loading.GuiLoader;
 import net.montoyo.wd.client.js.WDRouter;
 import net.montoyo.wd.client.renderers.*;
-import net.montoyo.wd.config.ClientConfig;
 import net.montoyo.wd.core.HasAdvancement;
-import net.montoyo.wd.core.JSServerRequest;
 import net.montoyo.wd.data.GuiData;
 import net.montoyo.wd.entity.ScreenData;
-import net.montoyo.wd.entity.TileEntityScreen;
-import net.montoyo.wd.init.BlockInit;
-import net.montoyo.wd.init.ItemInit;
-import net.montoyo.wd.init.TileInit;
+import net.montoyo.wd.entity.ScreenBlockEntity;
+import net.montoyo.wd.registry.BlockRegistry;
+import net.montoyo.wd.registry.ItemRegistry;
+import net.montoyo.wd.registry.TileRegistry;
 import net.montoyo.wd.item.ItemLaserPointer;
 import net.montoyo.wd.item.ItemMinePad2;
 import net.montoyo.wd.item.WDItem;
@@ -83,6 +77,11 @@ import net.montoyo.wd.miniserv.client.Client;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.server_bound.C2SMessageMinepadUrl;
 import net.montoyo.wd.utilities.*;
+import net.montoyo.wd.utilities.math.Vector2i;
+import net.montoyo.wd.utilities.math.Vector3i;
+import net.montoyo.wd.utilities.data.BlockSide;
+import net.montoyo.wd.utilities.data.Rotation;
+import net.montoyo.wd.utilities.serialization.NameUUIDPair;
 import org.cef.CefSettings;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
@@ -91,7 +90,6 @@ import org.cef.callback.CefQueryCallback;
 import org.cef.handler.CefDisplayHandler;
 import org.cef.handler.CefMessageRouterHandlerAdapter;
 import org.cef.misc.CefCursorType;
-import org.cef.network.CefRequest;
 import org.joml.Vector3d;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -155,7 +153,7 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 		
 		BlockPos bpos = result.getBlockPos();
 		
-		if (result.getType() != HitResult.Type.BLOCK || mc.level.getBlockState(bpos).getBlock() != BlockInit.blockScreen.get()) {
+		if (result.getType() != HitResult.Type.BLOCK || mc.level.getBlockState(bpos).getBlock() != BlockRegistry.SCREEN_BLOCk.get()) {
 			RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 
 			poseStack.blit(new ResourceLocation(
@@ -203,7 +201,7 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 		private PadData(String url, UUID id) {
 			String webUrl;
 			try {
-				webUrl = TileEntityScreen.url(url);
+				webUrl = ScreenBlockEntity.url(url);
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
@@ -236,7 +234,7 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 	private Map advancementToProgress;
 	
 	//Tracking
-	private final ArrayList<TileEntityScreen> screenTracking = new ArrayList<>();
+	private final ArrayList<ScreenBlockEntity> screenTracking = new ArrayList<>();
 	private int lastTracked = 0;
 	
 	//MinePads Management
@@ -247,7 +245,7 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 	/**************************************** INHERITED METHODS ****************************************/
 	@SubscribeEvent
 	public static void onClientSetup(FMLClientSetupEvent event) {
-		BlockEntityRenderers.register(TileInit.SCREEN_BLOCK_ENTITY.get(), new ScreenRenderer.ScreenRendererProvider());
+		BlockEntityRenderers.register(TileRegistry.SCREEN_BLOCK_ENTITY.get(), new ScreenRenderer.ScreenRendererProvider());
 	}
 	
 	@SubscribeEvent
@@ -327,7 +325,7 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 	}
 	
 	@Override
-	public void trackScreen(TileEntityScreen tes, boolean track) {
+	public void trackScreen(ScreenBlockEntity tes, boolean track) {
 		int idx = -1;
 		for (int i = 0; i < screenTracking.size(); i++) {
 			if (screenTracking.get(i) == tes) {
@@ -548,7 +546,7 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 				}
 			}
 			
-			for (TileEntityScreen tes : screenTracking)
+			for (ScreenBlockEntity tes : screenTracking)
 				tes.updateClientSideURL(browser, url);
 		}
 	}
@@ -658,7 +656,7 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 		
 		int id = lastTracked % screenTracking.size();
 		
-		TileEntityScreen tes = screenTracking.get(id);
+		ScreenBlockEntity tes = screenTracking.get(id);
 		
 		if (!tes.getLevel().equals(ev.level))
 			return;
@@ -787,10 +785,10 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 		Item item = ev.getItemStack().getItem();
 		IItemRenderer renderer;
 		
-		if (ItemInit.MINEPAD.isPresent() && ItemInit.LASER_POINTER.isPresent()) {
-			if (item == ItemInit.MINEPAD.get())
+		if (ItemRegistry.MINEPAD.isPresent() && ItemRegistry.LASER_POINTER.isPresent()) {
+			if (item == ItemRegistry.MINEPAD.get())
 				renderer = minePadRenderer;
-			else if (item == ItemInit.LASER_POINTER.get())
+			else if (item == ItemRegistry.LASER_POINTER.get())
 				renderer = laserPointerRenderer;
 			else
 				return;
@@ -830,8 +828,8 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 		for (int i = 0; i < cnt; i++) {
 			ItemStack item = inv.get(i);
 			
-			if (ItemInit.MINEPAD.isPresent()) {
-				if (item.getItem() == ItemInit.MINEPAD.get()) {
+			if (ItemRegistry.MINEPAD.isPresent()) {
+				if (item.getItem() == ItemRegistry.MINEPAD.get()) {
 					CompoundTag tag = item.getTag();
 					
 					if (tag != null && tag.contains("PadID"))
@@ -863,13 +861,13 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 	
 	public static final class ScreenSidePair {
 		
-		public TileEntityScreen tes;
+		public ScreenBlockEntity tes;
 		public BlockSide side;
 		
 	}
 	
 	public boolean findScreenFromBrowser(CefBrowser browser, ScreenSidePair pair) {
-		for (TileEntityScreen tes : screenTracking) {
+		for (ScreenBlockEntity tes : screenTracking) {
 			for (int i = 0; i < tes.screenCount(); i++) {
 				ScreenData scr = tes.getScreen(i);
 				
@@ -912,7 +910,7 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 	public static void onDrawSelection(RenderHighlightEvent event) {
 		if (event.getTarget() instanceof BlockHitResult bhr) {
 			BlockState state = Minecraft.getInstance().level.getBlockState(bhr.getBlockPos());
-			if (state.getBlock() instanceof BlockScreen screen) {
+			if (state.getBlock() instanceof ScreenBlock screen) {
 				Vector3i vec = new Vector3i(bhr.getBlockPos().getX(), bhr.getBlockPos().getY(), bhr.getBlockPos().getZ());
 				BlockSide side = BlockSide.fromInt(bhr.getDirection().ordinal());
 				Multiblock.findOrigin(
@@ -924,7 +922,7 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 				BlockEntity be = Minecraft.getInstance().level.getBlockEntity(
 						pos
 				);
-				if (be instanceof TileEntityScreen tes) {
+				if (be instanceof ScreenBlockEntity tes) {
 					if (tes.getScreen(side) != null) {
 						event.setCanceled(true);
 					}

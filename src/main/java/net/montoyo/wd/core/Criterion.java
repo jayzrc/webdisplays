@@ -20,9 +20,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class Criterion implements CriterionTrigger<Criterion.Instance> {
-
     public static class Instance extends AbstractCriterionTriggerInstance {
-
         public Instance(ResourceLocation id, ContextAwarePredicate arg2) {
             super(id, arg2);
         }
@@ -67,10 +65,9 @@ public class Criterion implements CriterionTrigger<Criterion.Instance> {
     public void trigger(PlayerAdvancements ply) {
         ArrayList<Listener<Instance>> listeners = map.get(ply);
 
-        if(listeners != null) {
+        if (listeners != null) {
             Listener[] copy = listeners.toArray(new Listener[0]); //We need to make a copy, otherwise we get a ConcurrentModificationException
             Arrays.stream(copy).forEach(l -> l.run(ply));
         }
     }
-
 }

@@ -6,7 +6,7 @@ package net.montoyo.wd.miniserv.server;
 
 import net.montoyo.wd.miniserv.*;
 import net.montoyo.wd.utilities.Log;
-import net.montoyo.wd.utilities.Util;
+import net.montoyo.wd.utilities.serialization.Util;
 
 import java.io.*;
 import java.nio.channels.ClosedChannelException;

@@ -14,26 +14,25 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.PacketDistributor;
 import net.montoyo.wd.client.gui.GuiScreenConfig;
 import net.montoyo.wd.entity.ScreenData;
-import net.montoyo.wd.entity.TileEntityScreen;
+import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.net.BufferUtils;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.client_bound.S2CMessageOpenGui;
-import net.montoyo.wd.utilities.BlockSide;
+import net.montoyo.wd.utilities.data.BlockSide;
 import net.montoyo.wd.utilities.Log;
-import net.montoyo.wd.utilities.NameUUIDPair;
-import net.montoyo.wd.utilities.Vector3i;
+import net.montoyo.wd.utilities.serialization.NameUUIDPair;
+import net.montoyo.wd.utilities.math.Vector3i;
 
 public class ScreenConfigData extends GuiData {
-	
-	public boolean onlyUpdate;
-	public Vector3i pos;
-	public BlockSide side;
-	public NameUUIDPair[] friends;
-	public int friendRights;
-	public int otherRights;
-	
-	public ScreenConfigData() {
-	}
+    public boolean onlyUpdate;
+    public Vector3i pos;
+    public BlockSide side;
+    public NameUUIDPair[] friends;
+    public int friendRights;
+    public int otherRights;
+
+    public ScreenConfigData() {
+    }
 
 	public ScreenConfigData(Vector3i pos, BlockSide side, ScreenData scr) {
 		this.pos = pos;

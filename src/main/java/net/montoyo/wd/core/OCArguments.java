@@ -10,7 +10,6 @@ import java.util.Optional;
 
 @Optional.Interface(iface = "net.montoyo.wd.core.IComputerArgs", modid = "opencomputers")
 public class OCArguments implements IComputerArgs {
-
     //Keep this as an "Object" so that it doesn't crash if OC is absent
     private final Object args;
 
@@ -41,5 +40,4 @@ public class OCArguments implements IComputerArgs {
     public int count() {
         return ((Arguments) args).count();
     }
-
 } */

@@ -12,8 +12,8 @@ import net.montoyo.wd.controls.ScreenControl;
 import net.montoyo.wd.core.MissingPermissionException;
 import net.montoyo.wd.core.ScreenRights;
 import net.montoyo.wd.entity.ScreenData;
-import net.montoyo.wd.entity.TileEntityScreen;
-import net.montoyo.wd.utilities.BlockSide;
+import net.montoyo.wd.entity.ScreenBlockEntity;
+import net.montoyo.wd.utilities.data.BlockSide;
 
 import java.util.function.Function;
 
@@ -80,7 +80,7 @@ public class ManageRightsAndUpdgradesControl extends ScreenControl {
 	}
 	
 	@Override
-	public void handleServer(BlockPos pos, BlockSide side, TileEntityScreen tes, NetworkEvent.Context ctx, Function<Integer, Boolean> permissionChecker) throws MissingPermissionException {
+	public void handleServer(BlockPos pos, BlockSide side, ScreenBlockEntity tes, NetworkEvent.Context ctx, Function<Integer, Boolean> permissionChecker) throws MissingPermissionException {
 		ServerPlayer player = ctx.getSender();
 		switch (type) {
 			case UPGRADES -> {
@@ -103,7 +103,7 @@ public class ManageRightsAndUpdgradesControl extends ScreenControl {
 	
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void handleClient(BlockPos pos, BlockSide side, TileEntityScreen tes, NetworkEvent.Context ctx) {
+	public void handleClient(BlockPos pos, BlockSide side, ScreenBlockEntity tes, NetworkEvent.Context ctx) {
 		ServerPlayer player = ctx.getSender();
 		switch (type) {
 			case UPGRADES -> {

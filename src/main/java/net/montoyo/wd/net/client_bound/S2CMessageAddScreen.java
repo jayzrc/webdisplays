@@ -11,21 +11,26 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.NetworkEvent;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.entity.ScreenData;
-import net.montoyo.wd.entity.TileEntityScreen;
+import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.net.Packet;
 import net.montoyo.wd.utilities.*;
+import net.montoyo.wd.utilities.math.Vector2i;
+import net.montoyo.wd.utilities.math.Vector3i;
+import net.montoyo.wd.utilities.data.BlockSide;
+import net.montoyo.wd.utilities.data.Rotation;
+import net.montoyo.wd.utilities.serialization.NameUUIDPair;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static net.montoyo.wd.block.BlockScreen.hasTE;
+import static net.montoyo.wd.block.ScreenBlock.hasTE;
 
 public class S2CMessageAddScreen extends Packet {
 	private boolean clear;
 	private Vector3i pos;
 	private ScreenData[] screens;
 	
-	public S2CMessageAddScreen(TileEntityScreen tes) {
+	public S2CMessageAddScreen(ScreenBlockEntity tes) {
 		clear = true;
 		pos = new Vector3i(tes.getBlockPos());
 		screens = new ScreenData[tes.screenCount()];
@@ -96,11 +101,11 @@ public class S2CMessageAddScreen extends Packet {
 			ctx.enqueueWork(() -> {
 				Level lvl = (Level) WebDisplays.PROXY.getWorld(ctx);
 				BlockEntity te = lvl.getBlockEntity(pos.toBlock());
-				if (!(te instanceof TileEntityScreen)) {
+				if (!(te instanceof ScreenBlockEntity)) {
 					lvl.setBlockAndUpdate(pos.toBlock(), lvl.getBlockState(pos.toBlock()).setValue(hasTE, true));
 					te = lvl.getBlockEntity(pos.toBlock());
 					
-					if (!(te instanceof TileEntityScreen)) {
+					if (!(te instanceof ScreenBlockEntity)) {
 						if (clear)
 							Log.error("CMessageAddScreen: Can't add screen to invalid tile entity at %s", pos.toString());
 						
@@ -108,7 +113,7 @@ public class S2CMessageAddScreen extends Packet {
 					}
 				}
 				
-				TileEntityScreen tes = (TileEntityScreen) te;
+				ScreenBlockEntity tes = (ScreenBlockEntity) te;
 				if (clear)
 					tes.clear();
 				
@@ -118,7 +123,7 @@ public class S2CMessageAddScreen extends Packet {
 					String webUrl;
 					
 					try {
-						webUrl = TileEntityScreen.url(entry.url);
+						webUrl = ScreenBlockEntity.url(entry.url);
 					} catch (IOException e) {
 						throw new RuntimeException(e);
 					}
