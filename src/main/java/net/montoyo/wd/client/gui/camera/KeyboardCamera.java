@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
@@ -24,20 +25,30 @@ public class KeyboardCamera {
     private static double yCrd = -1;
     private static double nyCrd = -1;
 
+    private static double nextX = -1;
+    private static double nextY = -1;
+
     protected static void updateCrd(JsonObject obj) {
         if (obj.getAsJsonPrimitive("exists").getAsBoolean()) {
             ScreenData scr = tes.getScreen(side);
             if (scr != null) {
-                nxCrd = obj.getAsJsonPrimitive("x").getAsDouble() + obj.getAsJsonPrimitive("w").getAsDouble() / 2;
-                nyCrd = obj.getAsJsonPrimitive("y").getAsDouble() + obj.getAsJsonPrimitive("h").getAsDouble() / 2;
+                nextX = obj.getAsJsonPrimitive("x").getAsDouble() + obj.getAsJsonPrimitive("w").getAsDouble() / 2;
+                nextY = obj.getAsJsonPrimitive("y").getAsDouble() + obj.getAsJsonPrimitive("h").getAsDouble() / 2;
 
-                nxCrd /= scr.resolution.x;
-                nxCrd *= scr.size.x;
+                nextX /= scr.resolution.x;
+                if (nextX > 1 || nextX < 0) {
+                    nextX = -1;
+                } else nextX *= scr.size.x;
 
-                nyCrd /= scr.resolution.y;
-                nyCrd = 1 - nyCrd;
-                nyCrd *= scr.size.y;
+                nextY /= scr.resolution.y;
+                nextY = 1 - nextY;
+                if (nextY > 1 || nextY < 0) {
+                    nextY = -1;
+                } else nextY *= scr.size.y;
             }
+        } else {
+            nextX = -1;
+            nextY = -1;
         }
     }
 
@@ -55,45 +66,45 @@ public class KeyboardCamera {
 
         ScreenData scr = teTmp.getScreen(sdTmp);
         if (scr != null) {
-            activeTask = WDRouter.INSTANCE.requestJson(
-                    scr.browser, "ActiveElement", """
-                                                        try {
-                                                        let focusedElement = document.activeElement;
-                                                        if (focusedElement == null) {
-                                                            window.cefQuery({
-                                                              request: 'WebDisplays_ActiveElement{exists: false}',
-                                                              onSuccess: function(response) {},
-                                                              onFailure: function(error_code, error_message) {}
-                                                            });
-                                                        } else {
-                                                            let bodyRect = document.body.getBoundingClientRect();
-                                                            let elemRect = focusedElement.getBoundingClientRect();
-                                                            
-                                                            window.cefQuery({
-                                                              request: 'WebDisplays_ActiveElement{exists: true,'+
-                                                                'x: ' + (elemRect.left) + ',' +
-                                                                'y: ' + (elemRect.top) + ',' +
-                                                                'w: ' + ((elemRect.right - elemRect.left)) + ',' +
-                                                                'h: ' + ((elemRect.bottom - elemRect.top)) +
-                                                              '}',
-                                                              onSuccess: function(response) {},
-                                                              onFailure: function(error_code, error_message) {}
-                                                            });
-                                                        }
-                                                        } catch (err) {
-                                                            console.error(err);
-                                                            window.cefQuery({
-                                                              request: 'WebDisplays_ActiveElement{exists: false}',
-                                                              onSuccess: function(response) {},
-                                                              onFailure: function(error_code, error_message) {}
-                                                            });
-                                                        }
-                            """.replace("\n", "")
-            ).thenAccept((o1) -> {
-                updateCrd(o1);
-                activeTask = null;
-            });
-            futureStart = System.currentTimeMillis();
+//@formatter:off
+activeTask = WDRouter.INSTANCE.requestJson(scr.browser, "ActiveElement", """
+try {
+    let focusedElement = document.activeElement;
+    if (focusedElement == null || focusedElement == document.body) {
+        window.cefQuery({
+          request: 'WebDisplays_ActiveElement{exists: false}',
+          onSuccess: function(response) {},
+          onFailure: function(error_code, error_message) {}
+        });
+    } else {
+        let bodyRect = document.body.getBoundingClientRect();
+        let elemRect = focusedElement.getBoundingClientRect();
+        
+        window.cefQuery({
+          request: 'WebDisplays_ActiveElement{exists: true,'+
+            'x: ' + (elemRect.left) + ',' +
+            'y: ' + (elemRect.top) + ',' +
+            'w: ' + ((elemRect.right - elemRect.left)) + ',' +
+            'h: ' + ((elemRect.bottom - elemRect.top)) +
+          '}',
+          onSuccess: function(response) {},
+          onFailure: function(error_code, error_message) {}
+        });
+    }
+} catch (err) {
+    console.error(err);
+    window.cefQuery({
+      request: 'WebDisplays_ActiveElement{exists: false}',
+      onSuccess: function(response) {},
+      onFailure: function(error_code, error_message) {}
+    });
+}""".replace("\n", "")
+).thenAccept((o1) -> {
+    updateCrd(o1);
+    activeTask = null;
+});
+futureStart = System.currentTimeMillis();
+//@formatter:on
         }
     }
 
@@ -126,34 +137,40 @@ public class KeyboardCamera {
 
         // TODO: implement
 
+        double coxCrd = Mth.lerp(0.5 * event.getPartialTick(), oxCrd, xCrd);
+        double cxCrd = Mth.lerp(0.15 * event.getPartialTick(), xCrd, nxCrd);
+
+        double coyCrd = Mth.lerp(0.5 * event.getPartialTick(), oyCrd, yCrd);
+
         double focalX = tes.getBlockPos().getX() +
-                side.right.x * (xCrd - 1) + side.up.x * yCrd;
+                side.right.x * (coxCrd - 1) + side.up.x * coyCrd;
         double focalY = tes.getBlockPos().getY() +
-                side.right.y * (xCrd - 1) + side.up.y * yCrd;
+                side.right.y * (coxCrd - 1) + side.up.y * coyCrd;
         double focalZ = tes.getBlockPos().getZ() +
-                side.right.z * (xCrd - 1) + side.up.z * yCrd;
+                side.right.z * (coxCrd - 1) + side.up.z * coyCrd;
 
-        double pct = (delay - event.getPartialTick()) / 8f;
-        pct *= pct;
-        focalX = Mth.lerp(pct,
-                focalX,
-                tes.getBlockPos().getX() +
-                        side.right.x * (oxCrd - 1) + side.up.x * oyCrd
-        );
-        focalY = Mth.lerp(pct,
-                focalY,
-                tes.getBlockPos().getY() +
-                        side.right.y * (oxCrd - 1) + side.up.y * oyCrd
-        );
-        focalZ = Mth.lerp(pct,
-                focalZ,
-                tes.getBlockPos().getZ() +
-                        side.right.z * (oxCrd - 1) + side.up.z * oyCrd
-        );
+////        double pct = 1 - event.getPartialTick();
+//        double pct = 1;
+////        pct = pct / 5 + (1 / 4f);
+//        focalX = Mth.lerp(pct,
+//                focalX,
+//                tes.getBlockPos().getX() +
+//                        side.right.x * (coxCrd - 1) + side.up.x * coyCrd
+//        );
+//        focalY = Mth.lerp(pct,
+//                focalY,
+//                tes.getBlockPos().getY() +
+//                        side.right.y * (coxCrd - 1) + side.up.y * coyCrd
+//        );
+//        focalZ = Mth.lerp(pct,
+//                focalZ,
+//                tes.getBlockPos().getZ() +
+//                        side.right.z * (coxCrd - 1) + side.up.z * coyCrd
+//        );
 
-//        focalX -= side.forward.x * 0.5f;
-//        focalY -= side.forward.y * 0.5f;
-//        focalZ -= side.forward.z * 0.5f;
+//        focalX += side.forward.x * 0.25f;
+//        focalY += side.forward.y * 0.25f;
+//        focalZ += side.forward.z * 0.25f;
 
         float[] angle = lookAt(
                 event.getCamera().getEntity(),
@@ -161,21 +178,19 @@ public class KeyboardCamera {
                 new Vec3(focalX, focalY, focalZ)
         );
 
-        double scl = 20;
+        float scl = 20;
 
         double mx = Minecraft.getInstance().mouseHandler.xpos();
         mx /= Minecraft.getInstance().getWindow().getWidth();
-        mx *= scl;
-        mx -= (scl / 2);
-        mx = signedSqrt(mx);
-        angle[1] += mx;
 
         double my = Minecraft.getInstance().mouseHandler.ypos();
         my /= Minecraft.getInstance().getWindow().getHeight();
-        my *= scl;
-        my -= (scl / 2);
-        my = signedSqrt(my);
-        angle[0] += my;
+
+        Vec2 v2 = new Vec2((float) mx, (float) my);
+        v2 = v2.normalized().scale(Mth.sqrt(v2.length()));
+
+        angle[1] += (v2.x - 0.5f) * scl;
+        angle[0] += (v2.y - 0.5f) * scl;
 
         float xRot = event.getYaw(); // left right
         float yRot = event.getPitch(); // up down
@@ -218,32 +233,34 @@ public class KeyboardCamera {
                 return;
             }
 
-            if (nxCrd == -1) {
-                if (activeTask == null) {
-                    delay = 1;
-                    pollElement();
+            double anxx = nextX;
+            double anxy = nextY;
+
+            if (
+                    anxx == -1 || anxy == -1 ||
+                            nxCrd == -1 || nyCrd == -1 ||
+                            oxCrd == -1 || oyCrd == -1 ||
+                            xCrd == -1 || yCrd == -1
+            ) {
+                ScreenData data = tes.getScreen(side);
+                if (data == null)
                     return;
-                }
+
+                anxx = data.size.x / 2.0;
+                anxy = data.size.y / 2.0;
             }
 
-            if (oxCrd == xCrd && delay > 2) {
-                delay = 2;
-            }
-
-            delay--;
-            if (delay == 0) {
-                oxCrd = xCrd;
-                xCrd = nxCrd;
-                oyCrd = yCrd;
-                yCrd = nyCrd;
+            if (activeTask == null)
                 pollElement();
-            } else if (delay < 0) {
-                oxCrd = xCrd;
-                xCrd = nxCrd;
-                oyCrd = yCrd;
-                yCrd = nyCrd;
-                delay = 8;
-            }
+
+            nxCrd = anxx;
+            nyCrd = anxy;
+
+            oxCrd = Mth.lerp(0.5, oxCrd, xCrd);
+            xCrd = Mth.lerp(0.15, xCrd, nxCrd);
+
+            oyCrd = Mth.lerp(0.5, oyCrd, yCrd);
+            yCrd = Mth.lerp(0.15, yCrd, nyCrd);
         }
     }
 }
