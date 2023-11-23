@@ -209,6 +209,7 @@ public class ScreenBlock extends BaseEntityBlock {
 
         Vector3f rel = new Vector3f(hitX, hitY, hitZ);
 
+        // this dot is acting as a "get distance from plane" where the plane is the edge of the screen
         float cx = rel.dot(side.right.toFloat()) - 2.f / 16.f;
         float cy = rel.dot(side.up.toFloat()) - 2.f / 16.f;
         float sw = ((float) scr.size.x) - 4.f / 16.f;
