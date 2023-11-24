@@ -67,10 +67,10 @@ public class KeyboardCamera {
         cx *= swInverse;
         cy *= shInverse;
 
-        if(side.right.x > 0 || side.right.z > 0)
+        if (side.right.x > 0 || side.right.z > 0)
             cx += 1.f;
 
-        if(side == BlockSide.TOP || side == BlockSide.BOTTOM)
+        if (side == BlockSide.TOP || side == BlockSide.BOTTOM)
             cy -= 1.f;
 
         return new Vec2(cx + (2 / 16f), cy + (2 / 16f));
@@ -87,6 +87,20 @@ public class KeyboardCamera {
 
                 nextX = c.x;
                 nextY = c.y;
+
+                float scl = Math.max(scr.size.x, scr.size.y) / 1.0f;
+
+                double mx = Minecraft.getInstance().mouseHandler.xpos();
+                mx /= Minecraft.getInstance().getWindow().getWidth();
+
+                double my = Minecraft.getInstance().mouseHandler.ypos();
+                my /= Minecraft.getInstance().getWindow().getHeight();
+
+                Vec2 v2 = new Vec2((float) mx, (float) my).add(-0.5f);
+//                v2 = v2.normalized().scale(Mth.sqrt(v2.length()));
+
+                nextX += v2.x * scl;
+                nextY -= v2.y * scl;
 
 //                if (side.right.x > 0)
 //                    nextX += 1.f;
