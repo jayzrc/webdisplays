@@ -4,10 +4,7 @@
 
 package net.montoyo.wd.client.gui;
 
-import com.cinemamod.mcef.MCEFBrowser;
-import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -21,8 +18,6 @@ import net.montoyo.wd.client.gui.controls.Button;
 import net.montoyo.wd.client.gui.controls.Control;
 import net.montoyo.wd.client.gui.controls.Label;
 import net.montoyo.wd.client.gui.loading.FillControl;
-import net.montoyo.wd.client.js.WDRouter;
-import net.montoyo.wd.entity.ScreenData;
 import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.server_bound.C2SMessageScreenCtrl;
@@ -30,23 +25,16 @@ import net.montoyo.wd.utilities.data.BlockSide;
 import net.montoyo.wd.utilities.Log;
 import net.montoyo.wd.utilities.serialization.TypeData;
 import net.montoyo.wd.utilities.serialization.Util;
-import org.cef.browser.CefBrowser;
-import org.cef.browser.CefFrame;
-import org.cef.browser.CefMessageRouter;
-import org.cef.callback.CefQueryCallback;
-import org.cef.handler.CefMessageRouterHandlerAdapter;
 import org.lwjgl.glfw.GLFW;
 import org.vivecraft.client_vr.gameplay.VRPlayer;
 import org.vivecraft.client_vr.gameplay.screenhandlers.KeyboardHandler;
 //import org.vivecraft.gameplay.VRPlayer;
 //import org.vivecraft.gameplay.screenhandlers.KeyboardHandler;
 
-import java.awt.*;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 @OnlyIn(Dist.CLIENT)
 public class GuiKeyboard extends WDScreen {
