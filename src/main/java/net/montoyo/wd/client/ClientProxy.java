@@ -61,7 +61,8 @@ import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.block.ScreenBlock;
 import net.montoyo.wd.client.gui.*;
 import net.montoyo.wd.client.gui.loading.GuiLoader;
-import net.montoyo.wd.client.js.WDRouter;
+import net.montoyo.wd.client.handlers.DisplayHandler;
+import net.montoyo.wd.client.handlers.js.WDRouter;
 import net.montoyo.wd.client.renderers.*;
 import net.montoyo.wd.core.HasAdvancement;
 import net.montoyo.wd.data.GuiData;
@@ -86,9 +87,7 @@ import org.cef.CefSettings;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
 import org.cef.browser.CefMessageRouter;
-import org.cef.callback.CefQueryCallback;
 import org.cef.handler.CefDisplayHandler;
-import org.cef.handler.CefMessageRouterHandlerAdapter;
 import org.cef.misc.CefCursorType;
 import org.joml.Vector3d;
 import org.lwjgl.glfw.GLFW;
@@ -103,7 +102,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 @Mod.EventBusSubscriber(modid = "webdisplays", value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJSQueryHandler*/, ResourceManagerReloadListener {
+public class ClientProxy extends SharedProxy implements ResourceManagerReloadListener {
 	
 	private static ClientProxy INSTANCE;
 	
@@ -188,12 +187,20 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 
 		ci.cancel();
 	}
-	
+
+	public List<ScreenBlockEntity> getScreens() {
+		return screenTracking;
+	}
+
+	public List<PadData> getPads() {
+		return padList;
+	}
+
 	public class PadData {
 		
 		public CefBrowser view;
+		public final UUID id;
 		private boolean isInHotbar;
-		private final UUID id;
 		private long lastURLSent;
 		
 		public int activeCursor;
@@ -214,6 +221,14 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 			}
 			isInHotbar = true;
 			this.id = id;
+		}
+
+		public void updateTime() {
+			lastURLSent = System.currentTimeMillis();
+		}
+
+		public long lastSent() {
+			return lastURLSent;
 		}
 	}
 	
@@ -285,7 +300,7 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 		);
 
 //		jsDispatcher = new JSQueryDispatcher(this);
-		MCEF.getClient().addDisplayHandler(this);
+		MCEF.getClient().addDisplayHandler(DisplayHandler.INSTANCE);
 //		mcef.registerJSQueryHandler(this);
 
 		MCEF.getClient().getHandle().addMessageRouter(CefMessageRouter.create(WDRouter.INSTANCE));
@@ -523,55 +538,6 @@ public class ClientProxy extends SharedProxy implements CefDisplayHandler/*, IJS
 	public void onResourceManagerReload(ResourceManager resourceManager) {
 		Log.info("Resource manager reload: clearing GUI cache...");
 		GuiLoader.clearCache();
-	}
-	
-	/**************************************** DISPLAY HANDLER METHODS ****************************************/
-	
-	
-	@Override
-	public void onAddressChange(CefBrowser browser, CefFrame cefFrame, String url) {
-		if (browser != null) {
-			long t = System.currentTimeMillis();
-			
-			for (PadData pd : padList) {
-				if (pd.view == browser && t - pd.lastURLSent >= 1000) {
-					if (WebDisplays.isSiteBlacklisted(url))
-						pd.view.loadURL(WebDisplays.BLACKLIST_URL);
-					else {
-						pd.lastURLSent = t; //Avoid spamming the server with porn URLs
-						WDNetworkRegistry.INSTANCE.sendToServer(new C2SMessageMinepadUrl(pd.id, url));
-					}
-					
-					break;
-				}
-			}
-			
-			for (ScreenBlockEntity tes : screenTracking)
-				tes.updateClientSideURL(browser, url);
-		}
-	}
-	
-	@Override
-	public void onTitleChange(CefBrowser cefBrowser, String s) {
-	}
-	
-	@Override
-	public boolean onTooltip(CefBrowser cefBrowser, String s) {
-		return false;
-	}
-	
-	@Override
-	public void onStatusMessage(CefBrowser cefBrowser, String s) {
-	}
-	
-	@Override
-	public boolean onConsoleMessage(CefBrowser cefBrowser, CefSettings.LogSeverity logSeverity, String s, String s1, int i) {
-		return false;
-	}
-	
-	@Override
-	public boolean onCursorChange(CefBrowser cefBrowser, int i) {
-		return false;
 	}
 	
 	/**************************************** JS HANDLER METHODS ****************************************/

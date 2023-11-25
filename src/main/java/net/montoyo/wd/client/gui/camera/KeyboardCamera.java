@@ -9,12 +9,10 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
-import net.montoyo.wd.client.js.WDRouter;
-import net.montoyo.wd.config.CommonConfig;
+import net.montoyo.wd.client.handlers.js.WDRouter;
 import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.entity.ScreenData;
 import net.montoyo.wd.utilities.data.BlockSide;
-import net.montoyo.wd.utilities.data.Rotation;
 
 public class KeyboardCamera {
     private static ScreenBlockEntity tes;

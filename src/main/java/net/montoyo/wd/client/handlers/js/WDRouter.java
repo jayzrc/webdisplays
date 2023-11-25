@@ -1,20 +1,16 @@
-package net.montoyo.wd.client.js;
+package net.montoyo.wd.client.handlers.js;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import net.minecraft.client.Minecraft;
-import net.montoyo.wd.entity.ScreenData;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
 import org.cef.callback.CefQueryCallback;
-import org.cef.handler.CefMessageRouterHandler;
 import org.cef.handler.CefMessageRouterHandlerAdapter;
 
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class WDRouter extends CefMessageRouterHandlerAdapter {
     public static final WDRouter INSTANCE = new WDRouter();
