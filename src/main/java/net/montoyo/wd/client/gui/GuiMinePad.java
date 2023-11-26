@@ -4,74 +4,84 @@
 
 package net.montoyo.wd.client.gui;
 
+import com.cinemamod.mcef.MCEF;
 import com.cinemamod.mcef.MCEFBrowser;
+import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.MouseHandler;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.client.ClientProxy;
+import net.montoyo.wd.client.handlers.js.Scripts;
+import net.montoyo.wd.client.handlers.js.WDRouter;
+import net.montoyo.wd.entity.ScreenBlockEntity;
+import net.montoyo.wd.entity.ScreenData;
 import net.montoyo.wd.utilities.data.BlockSide;
 import org.cef.misc.CefCursorType;
 import org.lwjgl.glfw.GLFW;
 
+import java.awt.*;
 import java.util.Optional;
 
 import static net.minecraftforge.api.distmarker.Dist.CLIENT;
 
 @OnlyIn(CLIENT)
 public class GuiMinePad extends WDScreen {
-	
+
 	private ClientProxy.PadData pad;
 	private double vx;
 	private double vy;
 	private double vw;
 	private double vh;
-	
+
 	public GuiMinePad() {
 		super(Component.nullToEmpty(null));
 	}
-	
+
 	public GuiMinePad(ClientProxy.PadData pad) {
 		this();
 		this.pad = pad;
 	}
-	
+
 	int trueWidth, trueHeight;
-	
+
 	@Override
 	public void init() {
 		vw = ((double) width) - 32.0f;
 		vh = vw / WebDisplays.PAD_RATIO;
 		vx = 16.0f;
 		vy = (((double) height) - vh) / 2.0f;
-		
+
 		trueWidth = width;
 		trueHeight = height;
-		
+
 		this.width = (int) vw;
 		this.height = (int) vh;
-		
+
 		super.init();
-		
+
 		((MCEFBrowser) pad.view).setCursor(CefCursorType.fromId(pad.activeCursor));
 		((MCEFBrowser) pad.view).setCursorChangeListener((id) -> {
 			pad.activeCursor = id;
 			((MCEFBrowser) pad.view).setCursor(CefCursorType.fromId(id));
 		});
 	}
-	
+
 	private static void addRect(BufferBuilder bb, double x, double y, double w, double h) {
 		bb.vertex(x, y, 0.0).color(255, 255, 255, 255).endVertex();
 		bb.vertex(x + w, y, 0.0).color(255, 255, 255, 255).endVertex();
 		bb.vertex(x + w, y + h, 0.0).color(255, 255, 255, 255).endVertex();
 		bb.vertex(x, y + h, 0.0).color(255, 255, 255, 255).endVertex();
 	}
-	
+
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float ptt) {
 		width = trueWidth;
@@ -79,10 +89,10 @@ public class GuiMinePad extends WDScreen {
 		renderBackground(graphics);
 		width = (int) vw;
 		height = (int) vh;
-		
+
 		RenderSystem.disableCull();
 		RenderSystem.setShaderColor(0.73f, 0.73f, 0.73f, 1.0f);
-		
+
 		Tesselator t = Tesselator.getInstance();
 		BufferBuilder bb = t.getBuilder();
 		bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
@@ -91,7 +101,7 @@ public class GuiMinePad extends WDScreen {
 		addRect(bb, vx - 16, vy, 16, vh);
 		addRect(bb, vx + vw, vy, 16, vh);
 		t.end();
-		
+
 		if (pad.view != null) {
 //            pad.view.draw(poseStack, vx, vy + vh, vx + vw, vy);
 			RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -112,20 +122,25 @@ public class GuiMinePad extends WDScreen {
 			t.end();
 			RenderSystem.enableDepthTest();
 		}
-		
+
 		RenderSystem.enableCull();
+
+		graphics.drawString(
+				minecraft.font, "Press Shift and Escape to close",
+				(int) vx + 4, (int) vy - minecraft.font.lineHeight - 3, 16777215, true
+		);
 	}
-	
+
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		return this.keyChanged(keyCode, scanCode, modifiers, true) || super.keyPressed(keyCode, scanCode, modifiers);
 	}
-	
+
 	@Override
 	public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
 		return this.keyChanged(keyCode, scanCode, modifiers, false) || super.keyReleased(keyCode, scanCode, modifiers);
 	}
-	
+
 	@Override
 	public boolean charTyped(char codePoint, int modifiers) {
 		if (pad.view != null) {
@@ -135,60 +150,60 @@ public class GuiMinePad extends WDScreen {
 			return super.charTyped(codePoint, modifiers);
 		}
 	}
-	
+
 	/* copied from MCEF */
 	public boolean keyChanged(int keyCode, int scanCode, int modifiers, boolean pressed) {
 		assert minecraft != null;
-		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+		if ((modifiers & GLFW.GLFW_MOD_SHIFT) == GLFW.GLFW_MOD_SHIFT && keyCode == GLFW.GLFW_KEY_ESCAPE) {
 			minecraft.setScreen(null);
 			return true;
 		}
-		
+
 		InputConstants.Key iuKey = InputConstants.getKey(keyCode, scanCode);
 		String keystr = iuKey.getDisplayName().getString();
 //        System.out.println("KEY STR " + keystr);
 		if (keystr.length() == 0)
 			return false;
-		
+
 		char key = keystr.charAt(keystr.length() - 1);
-		
+
 		if (keystr.equals("Enter")) {
 			keyCode = 10;
 			key = '\n';
 		}
-		
+
 		if (pad.view != null) {
 			if (pressed)
 				((MCEFBrowser) pad.view).sendKeyPress(keyCode, scanCode, modifiers);
 			else
 				((MCEFBrowser) pad.view).sendKeyRelease(keyCode, scanCode, modifiers);
-			
+
 			if (pressed && key == '\n')
 				if (modifiers != 0) ((MCEFBrowser) pad.view).sendKeyTyped('\r', modifiers);
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	@Override
 	public void mouseMoved(double mouseX, double mouseY) {
 		super.mouseMoved(mouseX, mouseY);
 		mouse(-1, false, (int) mouseX, (int) mouseY, 0);
 	}
-	
+
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		mouse(button, true, (int) mouseX, (int) mouseY, 0);
 		return super.mouseClicked(mouseX, mouseY, button);
 	}
-	
+
 	@Override
 	public boolean mouseReleased(double mouseX, double mouseY, int button) {
 		mouse(button, false, (int) mouseX, (int) mouseY, 0);
 		return super.mouseReleased(mouseX, mouseY, button);
 	}
-	
+
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
 		double mx = (mouseX - vx) / vw;
@@ -197,29 +212,63 @@ public class GuiMinePad extends WDScreen {
 		int sy = (int) (my * WebDisplays.INSTANCE.padResY);
 		// TODO: this doesn't work, and I don't understand why?
 		((MCEFBrowser) pad.view).sendMouseWheel(sx, sy, amount, (hasControlDown() && !hasAltDown() && !hasShiftDown()) ? GLFW.GLFW_MOD_CONTROL : 0);
-		
+
 		return super.mouseScrolled(mouseX, mouseY, amount);
 	}
-	
+
+	public void capturedMouse(int scaledX, int scaledY, int sx, int sy) {
+		double centerX = 0.5 * (double)this.minecraft.getWindow().getGuiScaledWidth();
+		double centerY = 0.5 * (double)this.minecraft.getWindow().getGuiScaledHeight();
+
+		if (sx == (int) centerX && sy == (int) centerY) return;
+
+		double mx = (centerX - vx) / vw;
+		double my = (centerY - vy) / vh;
+		int scaledCentX = (int) (mx * WebDisplays.INSTANCE.padResX);
+		int scaledCentY = (int) (my * WebDisplays.INSTANCE.padResY);
+
+		int deltX = scaledX - scaledCentX;
+		int deltY = scaledY - scaledCentY;
+
+		String scr = Scripts.MOUSE_EVENT;
+		pad.view.executeJavaScript(
+				scr
+						.replace("%xCoord%", "" + (int) centerX)
+						.replace("%yCoord%", "" + (int) centerY)
+						.replace("%xDelta%", "" + deltX)
+						.replace("%yDelta%", "" + deltY),
+				"WebDisplays", 0
+		);
+
+		// lock mouse
+		try {
+			double xpos = (this.minecraft.getWindow().getScreenWidth() / 2);
+			double ypos = (this.minecraft.getWindow().getScreenHeight() / 2);
+			GLFW.glfwSetCursorPos(minecraft.getWindow().getWindow(), xpos, ypos);
+		} catch (Throwable ignored) {
+		}
+	}
+
 	public void mouse(int btn, boolean pressed, int sx, int sy, double scrollAmount) {
 		double mx = (sx - vx) / vw;
 		double my = (sy - vy) / vh;
-		
+
 		if (pad.view != null && mx >= 0 && mx <= 1) {
 			//Scale again according to the webview
-			sx = (int) (mx * WebDisplays.INSTANCE.padResX);
-			sy = (int) (my * WebDisplays.INSTANCE.padResY);
-			
-			if (btn == -1)
-				((MCEFBrowser) pad.view).sendMouseMove(sx, sy);
-			else if (pressed)
-				((MCEFBrowser) pad.view).sendMousePress(sx, sy, btn);
-			else
-				((MCEFBrowser) pad.view).sendMouseRelease(sx, sy, btn);
+			int scaledX = (int) (mx * WebDisplays.INSTANCE.padResX);
+			int scaledY = (int) (my * WebDisplays.INSTANCE.padResY);
+
+			if (btn == -1) {
+				if (locked)
+					capturedMouse(scaledX, scaledY, sx, sy);
+				else ((MCEFBrowser) pad.view).sendMouseMove(scaledX, scaledY);
+			} else if (pressed)
+				((MCEFBrowser) pad.view).sendMousePress(scaledX, scaledY, btn);
+			else ((MCEFBrowser) pad.view).sendMouseRelease(scaledX, scaledY, btn);
 			pad.view.setFocus(true);
 		}
 	}
-	
+
 	public static Optional<Character> getChar(int keyCode, int scanCode) {
 		String keystr = GLFW.glfwGetKeyName(keyCode, scanCode);
 		if (keystr == null) {
@@ -231,21 +280,22 @@ public class GuiMinePad extends WDScreen {
 		if (keystr.length() == 0) {
 			return Optional.empty();
 		}
-		
+
 		return Optional.of(keystr.charAt(keystr.length() - 1));
 	}
-	
+
 	@Override
 	public void tick() {
 		if (pad.view == null)
 			minecraft.setScreen(null); //In case the user dies with the pad in the hand
+		pollElement();
 	}
-	
+
 	@Override
 	public boolean isForBlock(BlockPos bp, BlockSide side) {
 		return false;
 	}
-	
+
 	@Override
 	public void removed() {
 		super.removed();
@@ -256,10 +306,97 @@ public class GuiMinePad extends WDScreen {
 			});
 		}
 	}
-	
+
 	@Override
 	public void onClose() {
 		super.onClose();
+		InputConstants.updateRawMouseInput(
+				minecraft.getWindow().getWindow(),
+				Minecraft.getInstance().options.rawMouseInput().get()
+		);
 		removed();
+	}
+
+	boolean locked = false;
+	double lockCenterX = -1;
+	double lockCenterY = -1;
+
+	protected void updateCrd(JsonObject obj) {
+		if (obj.getAsJsonPrimitive("exists").getAsBoolean()) {
+			locked = true;
+			RenderSystem.recordRenderCall(() -> {
+				InputConstants.updateRawMouseInput(
+						minecraft.getWindow().getWindow(),
+						obj.getAsJsonPrimitive("unadjust").getAsBoolean()
+				);
+				GLFW.glfwSetInputMode(Minecraft.getInstance().getWindow().getWindow(), 208897, GLFW.GLFW_CURSOR_DISABLED);
+			});
+			lockCenterX = obj.getAsJsonPrimitive("x").getAsDouble() + obj.getAsJsonPrimitive("w").getAsDouble() / 2;
+			lockCenterY = obj.getAsJsonPrimitive("y").getAsDouble() + obj.getAsJsonPrimitive("h").getAsDouble() / 2;
+		} else {
+			if (locked) {
+				locked = false;
+				RenderSystem.recordRenderCall(()->{
+					InputConstants.updateRawMouseInput(
+							minecraft.getWindow().getWindow(),
+							Minecraft.getInstance().options.rawMouseInput().get()
+					);
+					GLFW.glfwSetInputMode(Minecraft.getInstance().getWindow().getWindow(), 208897, GLFW.GLFW_CURSOR_NORMAL);
+					GLFW.glfwSetCursor(Minecraft.getInstance().getWindow().getWindow(), CefCursorType.fromId(pad.activeCursor).glfwId);
+				});
+			}
+		}
+	}
+
+	private static WDRouter.Task<JsonObject> activeTask;
+	private static long futureStart = 0;
+	protected void pollElement() {
+		if (activeTask != null) {
+			if (System.currentTimeMillis() - 1000 > futureStart) {
+				activeTask.cancel();
+				activeTask = null;
+			} else return;
+		}
+
+//@formatter:off
+activeTask = WDRouter.INSTANCE.requestJson(pad.view, "PointerElement", """
+try {
+    let focusedElement = document.pointerLockElement;
+    if (focusedElement == null || focusedElement == document.body) {
+        window.cefQuery({
+          request: 'WebDisplays_PointerElement{exists: false}',
+          onSuccess: function(response) {},
+          onFailure: function(error_code, error_message) {}
+        });
+    } else {
+        let bodyRect = document.body.getBoundingClientRect();
+        let elemRect = focusedElement.getBoundingClientRect();
+        
+        window.cefQuery({
+          request: 'WebDisplays_PointerElement{exists: true,'+
+            'x: ' + (elemRect.left) + ',' +
+            'y: ' + (elemRect.top) + ',' +
+            'w: ' + ((elemRect.right - elemRect.left)) + ',' +
+            'h: ' + ((elemRect.bottom - elemRect.top)) + ',' +
+            'unadjust: ' + document.webdisplays__unadjustPointerMotion +
+          '}',
+          onSuccess: function(response) {},
+          onFailure: function(error_code, error_message) {}
+        });
+    }
+} catch (err) {
+    console.error(err);
+    window.cefQuery({
+      request: 'WebDisplays_PointerElement{exists: false}',
+      onSuccess: function(response) {},
+      onFailure: function(error_code, error_message) {}
+    });
+}""".replace("\n", "")
+		).thenAccept((o1) -> {
+			updateCrd(o1);
+			activeTask = null;
+		});
+		futureStart = System.currentTimeMillis();
+//@formatter:on
 	}
 }

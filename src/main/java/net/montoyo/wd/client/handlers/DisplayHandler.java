@@ -2,6 +2,7 @@ package net.montoyo.wd.client.handlers;
 
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.client.ClientProxy;
+import net.montoyo.wd.client.handlers.js.Scripts;
 import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.server_bound.C2SMessageMinepadUrl;
@@ -16,18 +17,6 @@ public class DisplayHandler implements CefDisplayHandler {
 
 
     public static final CefDisplayHandler INSTANCE = new DisplayHandler();
-
-    private static final String pointerLock;
-
-    static {
-        try {
-            InputStream is = DisplayHandler.class.getClassLoader().getResourceAsStream("assets/webdisplays/js/pointer_lock.js");
-            pointerLock = new String(is.readAllBytes());
-            is.close();
-        } catch (Throwable err) {
-            throw new RuntimeException(err);
-        }
-    }
 
     @Override
     public void onAddressChange(CefBrowser browser, CefFrame cefFrame, String url) {
@@ -54,7 +43,7 @@ public class DisplayHandler implements CefDisplayHandler {
         }
 
         // enables a custom pointer lock api
-        browser.executeJavaScript(pointerLock, "WebDisplays", 0);
+        browser.executeJavaScript(Scripts.POINTER_LOCK, "WebDisplays", 0);
     }
 
     @Override
