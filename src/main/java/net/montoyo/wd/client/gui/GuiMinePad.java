@@ -4,31 +4,25 @@
 
 package net.montoyo.wd.client.gui;
 
-import com.cinemamod.mcef.MCEF;
 import com.cinemamod.mcef.MCEFBrowser;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.MouseHandler;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.client.ClientProxy;
-import net.montoyo.wd.client.handlers.js.Scripts;
-import net.montoyo.wd.client.handlers.js.WDRouter;
-import net.montoyo.wd.entity.ScreenBlockEntity;
-import net.montoyo.wd.entity.ScreenData;
+import net.montoyo.wd.utilities.browser.handlers.js.Scripts;
+import net.montoyo.wd.utilities.browser.handlers.WDRouter;
 import net.montoyo.wd.utilities.data.BlockSide;
 import org.cef.misc.CefCursorType;
 import org.lwjgl.glfw.GLFW;
 
-import java.awt.*;
 import java.util.Optional;
 
 import static net.minecraftforge.api.distmarker.Dist.CLIENT;

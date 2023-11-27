@@ -1,6 +1,6 @@
-package net.montoyo.wd.client.handlers.js;
+package net.montoyo.wd.utilities.browser.handlers.js;
 
-import net.montoyo.wd.client.handlers.DisplayHandler;
+import net.montoyo.wd.utilities.browser.handlers.DisplayHandler;
 
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -12,6 +12,8 @@ public class Scripts {
     public static final String POINTER_LOCK = get();
     @FileName("assets/webdisplays/js/mouse_event.js")
     public static final String MOUSE_EVENT = get();
+    @FileName("assets/webdisplays/js/query_element.js")
+    public static final String QUERY_ELEMENT = get();
 
     private static String get() {
         Field field = Scripts.class.getDeclaredFields()[index++];

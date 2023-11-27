@@ -9,9 +9,11 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
-import net.montoyo.wd.client.handlers.js.WDRouter;
+import net.montoyo.wd.utilities.browser.handlers.js.queries.ElementCenterQuery;
+import net.montoyo.wd.utilities.browser.handlers.WDRouter;
 import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.entity.ScreenData;
+import net.montoyo.wd.utilities.browser.WDBrowser;
 import net.montoyo.wd.utilities.data.BlockSide;
 
 public class KeyboardCamera {
@@ -74,19 +76,19 @@ public class KeyboardCamera {
         return new Vec2(cx + (2 / 16f), cy + (2 / 16f));
     }
 
-    protected static void updateCrd(JsonObject obj) {
-        if (obj.getAsJsonPrimitive("exists").getAsBoolean()) {
+    protected static void updateCrd(ElementCenterQuery lock) {
+        if (lock.hasFocused()) {
             ScreenData scr = tes.getScreen(side);
             if (scr != null) {
-                nextX = obj.getAsJsonPrimitive("x").getAsDouble() + obj.getAsJsonPrimitive("w").getAsDouble() / 2;
-                nextY = obj.getAsJsonPrimitive("y").getAsDouble() + obj.getAsJsonPrimitive("h").getAsDouble() / 2;
+                nextX = lock.getX();
+                nextY = lock.getY();
 
                 Vec2 c = pxToHit(scr, new Vec2((float) nextX, (float) nextY));
 
                 nextX = c.x;
                 nextY = c.y;
 
-                float scl = Math.max(scr.size.x, scr.size.y) / 1.0f;
+                float scl = Math.max(scr.size.x, scr.size.y);
 
                 double mx = Minecraft.getInstance().mouseHandler.xpos();
                 mx /= Minecraft.getInstance().getWindow().getWidth();
@@ -95,17 +97,9 @@ public class KeyboardCamera {
                 my /= Minecraft.getInstance().getWindow().getHeight();
 
                 Vec2 v2 = new Vec2((float) mx, (float) my).add(-0.5f);
-//                v2 = v2.normalized().scale(Mth.sqrt(v2.length()));
 
                 nextX += v2.x * scl;
                 nextY -= v2.y * scl;
-
-//                if (side.right.x > 0)
-//                    nextX += 1.f;
-//                if (side.right.z > 0)
-//                    nextX += 1.f;
-//                if (side == BlockSide.BOTTOM)
-//                    nextY -= 1.f;
             }
         } else {
             nextX = -1;
@@ -113,12 +107,7 @@ public class KeyboardCamera {
         }
     }
 
-    private static WDRouter.Task<JsonObject> activeTask;
-    private static long futureStart = 0;
-
     protected static void pollElement() {
-        if (activeTask != null) return;
-
         ScreenBlockEntity teTmp = tes;
         BlockSide sdTmp = side;
 
@@ -127,66 +116,14 @@ public class KeyboardCamera {
 
         ScreenData scr = teTmp.getScreen(sdTmp);
         if (scr != null) {
-//@formatter:off
-activeTask = WDRouter.INSTANCE.requestJson(scr.browser, "ActiveElement", """
-try {
-    let focusedElement = document.activeElement;
-    if (focusedElement == null || focusedElement == document.body) {
-        window.cefQuery({
-          request: 'WebDisplays_ActiveElement{exists: false}',
-          onSuccess: function(response) {},
-          onFailure: function(error_code, error_message) {}
-        });
-    } else {
-        let bodyRect = document.body.getBoundingClientRect();
-        let elemRect = focusedElement.getBoundingClientRect();
-        
-        window.cefQuery({
-          request: 'WebDisplays_ActiveElement{exists: true,'+
-            'x: ' + (elemRect.left) + ',' +
-            'y: ' + (elemRect.top) + ',' +
-            'w: ' + ((elemRect.right - elemRect.left)) + ',' +
-            'h: ' + ((elemRect.bottom - elemRect.top)) +
-          '}',
-          onSuccess: function(response) {},
-          onFailure: function(error_code, error_message) {}
-        });
-    }
-} catch (err) {
-    console.error(err);
-    window.cefQuery({
-      request: 'WebDisplays_ActiveElement{exists: false}',
-      onSuccess: function(response) {},
-      onFailure: function(error_code, error_message) {}
-    });
-}""".replace("\n", "")
-).thenAccept((o1) -> {
-    updateCrd(o1);
-    activeTask = null;
-});
-futureStart = System.currentTimeMillis();
-//@formatter:on
+            if (scr.browser instanceof WDBrowser wdBrowser) {
+                wdBrowser.pointerLock().dispatch(scr.browser);
+                updateCrd(((WDBrowser) scr.browser).pointerLock());
+            }
         }
-    }
-
-    protected static double signedSqrt(double v) {
-        double sv = Math.signum(v);
-        v *= sv;
-        return Math.sqrt(v) * sv;
     }
 
     public static void updateCamera(ViewportEvent.ComputeCameraAngles event) {
-        if (futureStart != 0) {
-            if (futureStart < System.currentTimeMillis() - 5000 || tes == null) {
-                WDRouter.Task<?> active = activeTask;
-                if (active != null) {
-                    active.cancel();
-                    activeTask = null;
-                    futureStart = 0;
-                }
-            }
-        }
-
         if (tes == null) {
             xCrd = -1;
             yCrd = -1;
@@ -218,23 +155,10 @@ futureStart = System.currentTimeMillis();
                 new Vec3(focalX, focalY, focalZ)
         );
 
-        float scl = 20;
+//        float xRot = event.getYaw(); // left right
+//        float yRot = event.getPitch(); // up down
 
-        double mx = Minecraft.getInstance().mouseHandler.xpos();
-        mx /= Minecraft.getInstance().getWindow().getWidth();
-
-        double my = Minecraft.getInstance().mouseHandler.ypos();
-        my /= Minecraft.getInstance().getWindow().getHeight();
-
-        Vec2 v2 = new Vec2((float) mx, (float) my);
-        v2 = v2.normalized().scale(Mth.sqrt(v2.length()));
-
-//        angle[1] += (v2.x - 0.5f) * scl;
-//        angle[0] += (v2.y - 0.5f) * scl;
-
-        float xRot = event.getYaw(); // left right
-        float yRot = event.getPitch(); // up down
-
+        // TODO: smooth in/out
         event.setYaw(angle[1]);
         event.setPitch(angle[0]);
     }
@@ -259,9 +183,6 @@ futureStart = System.currentTimeMillis();
 
     public static void gameTick(TickEvent.ClientTickEvent event) {
         if (event.phase.equals(TickEvent.Phase.END)) {
-            if (activeTask != null)
-                return;
-
             if (side == null) {
                 delay = 1;
                 oxCrd = -1;
@@ -272,6 +193,8 @@ futureStart = System.currentTimeMillis();
                 nyCrd = -1;
                 return;
             }
+
+            pollElement();
 
             double anxx = nextX;
             double anxy = nextY;
@@ -290,13 +213,10 @@ futureStart = System.currentTimeMillis();
                 anxy = data.size.y / 2.0;
 
                 if (nxCrd == -1) {
-                    oxCrd = xCrd = nxCrd = anxx;
-                    oyCrd = yCrd = nyCrd = anxy;
+                    oxCrd = xCrd = anxx;
+                    oyCrd = yCrd = anxy;
                 }
             }
-
-            if (activeTask == null)
-                pollElement();
 
             nxCrd = anxx;
             nyCrd = anxy;

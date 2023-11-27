@@ -1,8 +1,8 @@
-package net.montoyo.wd.client.handlers;
+package net.montoyo.wd.utilities.browser.handlers;
 
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.client.ClientProxy;
-import net.montoyo.wd.client.handlers.js.Scripts;
+import net.montoyo.wd.utilities.browser.handlers.js.Scripts;
 import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.server_bound.C2SMessageMinepadUrl;
@@ -10,8 +10,6 @@ import org.cef.CefSettings;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
 import org.cef.handler.CefDisplayHandler;
-
-import java.io.InputStream;
 
 public class DisplayHandler implements CefDisplayHandler {
 

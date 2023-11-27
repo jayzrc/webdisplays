@@ -41,7 +41,7 @@ public class SharedProxy {
     public void postInit() {
     }
 
-    public void onCefInit(/*CefInitEvent event*/) {
+    public void onCefInit() {
     }
 
     @Deprecated(forRemoval = true)

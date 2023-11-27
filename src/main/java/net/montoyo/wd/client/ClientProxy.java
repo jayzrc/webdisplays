@@ -61,8 +61,8 @@ import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.block.ScreenBlock;
 import net.montoyo.wd.client.gui.*;
 import net.montoyo.wd.client.gui.loading.GuiLoader;
-import net.montoyo.wd.client.handlers.DisplayHandler;
-import net.montoyo.wd.client.handlers.js.WDRouter;
+import net.montoyo.wd.utilities.browser.handlers.DisplayHandler;
+import net.montoyo.wd.utilities.browser.handlers.WDRouter;
 import net.montoyo.wd.client.renderers.*;
 import net.montoyo.wd.core.HasAdvancement;
 import net.montoyo.wd.data.GuiData;
@@ -75,19 +75,14 @@ import net.montoyo.wd.item.ItemLaserPointer;
 import net.montoyo.wd.item.ItemMinePad2;
 import net.montoyo.wd.item.WDItem;
 import net.montoyo.wd.miniserv.client.Client;
-import net.montoyo.wd.net.WDNetworkRegistry;
-import net.montoyo.wd.net.server_bound.C2SMessageMinepadUrl;
 import net.montoyo.wd.utilities.*;
 import net.montoyo.wd.utilities.math.Vector2i;
 import net.montoyo.wd.utilities.math.Vector3i;
 import net.montoyo.wd.utilities.data.BlockSide;
 import net.montoyo.wd.utilities.data.Rotation;
 import net.montoyo.wd.utilities.serialization.NameUUIDPair;
-import org.cef.CefSettings;
 import org.cef.browser.CefBrowser;
-import org.cef.browser.CefFrame;
 import org.cef.browser.CefMessageRouter;
-import org.cef.handler.CefDisplayHandler;
 import org.cef.misc.CefCursorType;
 import org.joml.Vector3d;
 import org.lwjgl.glfw.GLFW;
@@ -285,7 +280,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 	}
 	
 	@Override
-	public void onCefInit(/*CefInitEvent event*/) {
+	public void onCefInit() {
 		minePadRenderer = new MinePadRenderer();
 		laserPointerRenderer = new LaserPointerRenderer();
 
@@ -299,10 +294,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 				}
 		);
 
-//		jsDispatcher = new JSQueryDispatcher(this);
 		MCEF.getClient().addDisplayHandler(DisplayHandler.INSTANCE);
-//		mcef.registerJSQueryHandler(this);
-
 		MCEF.getClient().getHandle().addMessageRouter(CefMessageRouter.create(WDRouter.INSTANCE));
 
 		findAdvancementToProgressField();
@@ -579,38 +571,9 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 //	@Override
 //	public void cancelQuery(IBrowser browser, long queryId) {
 //	}
-	
+
 	/**************************************** EVENT METHODS ****************************************/
-	
-//    @SubscribeEvent
-//    public void onBakeModel(ModelBakeEvent ev) {
-//        for(ResourceModelPair pair : modelBakers)
-//            ev.getModelRegistry().put(pair.getResourceLocation(), pair.getModel());
-//    }
 
- /*   @SubscribeEvent
-    public void onRegisterModels(ModelRegistryEvent ev) {
-        final WebDisplays wd = WebDisplays.INSTANCE;
-
-        //I hope I'm doing this right because it doesn't seem like it...
-       registerItemModel(wd.blockScreen.getItem(), 0, "inventory");
-       ModelLoaderRegistry.setCustomModelResourceLocation(wd.blockPeripheral.getItem(), 0, new ModelResourceLocation("webdisplays:kb_inv", "normal"));
-       registerItemModel(wd.blockPeripheral.getItem(), 1, "facing=2,type=ccinterface");
-       registerItemModel(wd.blockPeripheral.getItem(), 2, "facing=2,type=cointerface");
-       registerItemModel(wd.blockPeripheral.getItem(), 3, "facing=0,type=remotectrl");
-       registerItemModel(wd.blockPeripheral.getItem(), 7, "facing=0,type=redstonectrl");
-       registerItemModel(wd.blockPeripheral.getItem(), 11, "facing=0,type=server");
-       registerItemModel(wd.itemScreenCfg, 0, "normal");
-       registerItemModel(wd.itemOwnerThief, 0, "normal");
-       registerItemModel(wd.itemLinker, 0, "normal");
-       registerItemModel(wd.itemMinePad, 0, "normal");
-       registerItemModel(wd.itemMinePad, 1, "normal");
-       registerItemModel(wd.itemLaserPointer, 0, "normal");
-       registerItemMultiModels(wd.itemUpgrade);
-       registerItemMultiModels(wd.itemCraftComp);
-       registerItemMultiModels(wd.itemAdvIcon);
-    } */
-	
 	@SubscribeEvent
 	public void onLevelTick(TickEvent.LevelTickEvent ev) {
 		if (!ev.side.equals(LogicalSide.CLIENT)) return;
@@ -735,9 +698,6 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		} else {
 			ItemLaserPointer.deselect(mc);
 		}
-
-//        //Handle JS queries
-//        jsDispatcher.handleQueries();
 		
 		//Miniserv
 		if (msClientStarted && mc.player == null) {

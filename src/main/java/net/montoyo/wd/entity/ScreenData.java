@@ -15,6 +15,7 @@ import net.montoyo.wd.client.ClientProxy;
 import net.montoyo.wd.config.CommonConfig;
 import net.montoyo.wd.core.ScreenRights;
 import net.montoyo.wd.utilities.*;
+import net.montoyo.wd.utilities.browser.WDBrowser;
 import net.montoyo.wd.utilities.data.BlockSide;
 import net.montoyo.wd.utilities.data.Rotation;
 import net.montoyo.wd.utilities.math.Vector2i;
@@ -25,7 +26,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class ScreenData {
-
     public BlockSide side;
     public Vector2i size;
     public Vector2i resolution;
@@ -185,7 +185,7 @@ public class ScreenData {
 
     public void createBrowser(boolean doAnim) {
         if (WebDisplays.PROXY instanceof ClientProxy clientProxy) {
-            browser = MCEF.createBrowser(WebDisplays.applyBlacklist(url != null ? url : "https://www.google.com"), false);
+            browser = WDBrowser.createBrowser(WebDisplays.applyBlacklist(url != null ? url : "https://www.google.com"), false);
 
             if (browser instanceof MCEFBrowser mcefBrowser) {
                 if (rotation.isVertical)

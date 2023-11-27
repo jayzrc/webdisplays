@@ -1,4 +1,4 @@
-package net.montoyo.wd.client.handlers.js;
+package net.montoyo.wd.utilities.browser.handlers.js;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

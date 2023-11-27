@@ -1,13 +1,16 @@
-package net.montoyo.wd.client.handlers.js;
+package net.montoyo.wd.utilities.browser.handlers;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import net.montoyo.wd.utilities.browser.WDBrowser;
+import net.montoyo.wd.utilities.browser.handlers.js.JSQueryHandler;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
 import org.cef.callback.CefQueryCallback;
 import org.cef.handler.CefMessageRouterHandlerAdapter;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -57,7 +60,33 @@ public class WDRouter extends CefMessageRouterHandlerAdapter {
                 awaitingQueries.remove(target);
                 callback.success("");
             } else {
-                callback.failure(-1, "Query " + queryId + " with data " + request + " completed, but there was no active request waiting for the result.");
+                if (browser instanceof WDBrowser wdBrowser) {
+                    Map<String, JSQueryHandler> handlerMap = wdBrowser.queryHandlers();
+
+                    int i0 = request.indexOf('('); // legacy, TODO: support
+                    int i1 = request.indexOf('{');
+                    if (i0 == -1) i0 = i1;
+                    if (i1 == -1) {
+                        if (handlerMap.containsKey(request)) {
+                            if (!handlerMap.get(request).handle(browser, frame, null, persistent, callback)) {
+                                callback.failure(-1, "Query " + queryId + " with data " + request + " completed, but wasn't marked as successful.");
+                            }
+                        }
+                    }
+
+                    int min = Math.min(i0, i1);
+                    String text = request.substring(0, min);
+                    if (handlerMap.containsKey(text)) {
+                        JsonObject obj = null;
+                        if (request.charAt(min) == '{')
+                            obj = gson.fromJson(request.substring(min), JsonObject.class);
+
+                        if (!handlerMap.get(text).handle(browser, frame, obj, persistent, callback)) {
+                            callback.failure(-1, "Query " + queryId + " with data " + request + " completed, but wasn't marked as successful.");
+                        }
+                    }
+                    callback.failure(-1, "Query " + queryId + " with data " + request + " completed, but there was no active request waiting for the result.");
+                }
             }
 
             return true;
