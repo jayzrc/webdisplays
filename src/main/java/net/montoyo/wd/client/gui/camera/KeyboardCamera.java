@@ -8,6 +8,7 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
+import net.montoyo.wd.config.ClientConfig;
 import net.montoyo.wd.utilities.browser.handlers.js.queries.ElementCenterQuery;
 import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.entity.ScreenData;
@@ -78,13 +79,21 @@ public class KeyboardCamera {
         if (lock.hasFocused()) {
             ScreenData scr = tes.getScreen(side);
             if (scr != null) {
-                nextX = lock.getX();
-                nextY = lock.getY();
+                Vec2 c;
+                if (ClientConfig.Input.keyboardCamera) {
+                    nextX = lock.getX();
+                    nextY = lock.getY();
 
-                Vec2 c = pxToHit(scr, new Vec2((float) nextX, (float) nextY));
+                    c = pxToHit(scr, new Vec2((float) nextX, (float) nextY));
+                } else c = new Vec2(scr.size.x / 2f, scr.size.y / 2f);
 
                 nextX = c.x;
                 nextY = c.y;
+
+                if (nextX < 0) nextX = 0;
+                else if (nextX > scr.size.x) nextX = scr.size.x;
+                if (nextY < 0) nextY = 0;
+                else if (nextY > scr.size.y) nextY = scr.size.y;
 
                 float scl = Math.max(scr.size.x, scr.size.y);
 

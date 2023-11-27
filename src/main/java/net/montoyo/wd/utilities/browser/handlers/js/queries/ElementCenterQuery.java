@@ -12,7 +12,7 @@ public class ElementCenterQuery extends JSQueryHandler {
     double x, y;
     JsonObject obj;
     long start = -1;
-    String extra;
+    String extra = "";
 
     String elementName;
     String script = null;
@@ -23,7 +23,7 @@ public class ElementCenterQuery extends JSQueryHandler {
     }
 
     public ElementCenterQuery addAdditional(String key, String value) {
-        extra += "'" + key + "':" + value + " + ";
+        extra += "'," + key + ":' + " + value + " +";
         script = null;
         return this;
     }

@@ -78,7 +78,7 @@ public class ItemOwnershipThief extends Item implements WDItem {
             return InteractionResult.SUCCESS;
 
         Vector3i pos = new Vector3i(context.getClickedPos());
-        BlockSide side = BlockSide.values()[context.getHorizontalDirection().ordinal()];
+        BlockSide side = BlockSide.values()[context.getClickedFace().ordinal()];
         Multiblock.findOrigin(context.getLevel(), pos, side, null);
 
         BlockEntity te = context.getLevel().getBlockEntity(pos.toBlock());

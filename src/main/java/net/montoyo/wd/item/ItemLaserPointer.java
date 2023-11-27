@@ -106,7 +106,7 @@ public class ItemLaserPointer extends Item implements WDItem {
 	}
 	
 	public static void press(boolean press, int button) {
-		if (button <= 1 && ClientConfig.switchButtons)
+		if (button <= 1 && ClientConfig.Input.switchButtons)
 			button = 1 - button;
 		
 		if (button == 0) left = press;
