@@ -51,7 +51,7 @@ public class ScreenRenderer implements BlockEntityRenderer<ScreenBlockEntity> {
 			if (scr.browser == null) {
 				double dist = WebDisplays.PROXY.distanceTo(te, Minecraft.getInstance().getEntityRenderDispatcher().camera.getPosition());
 				if (dist <= WebDisplays.INSTANCE.loadDistance2 * 16)
-					scr.createBrowser(true);
+					scr.createBrowser(te, true);
 				else continue;
 			}
 			

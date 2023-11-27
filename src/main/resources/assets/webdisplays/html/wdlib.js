@@ -5,7 +5,7 @@
  */
 
 function wdExecRequest(name, func) {
-	window.mcefQuery({	request: "WebDisplays_" + name,
+	window.cefQuery({	request: "WebDisplays_" + name,
 						persistent: true,
 						onSuccess: function(response) {
 							try {

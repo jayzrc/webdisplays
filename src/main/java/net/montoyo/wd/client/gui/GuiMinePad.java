@@ -17,6 +17,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.client.ClientProxy;
+import net.montoyo.wd.utilities.browser.WDBrowser;
 import net.montoyo.wd.utilities.browser.handlers.js.Scripts;
 import net.montoyo.wd.utilities.browser.handlers.WDRouter;
 import net.montoyo.wd.utilities.data.BlockSide;
@@ -342,55 +343,10 @@ public class GuiMinePad extends WDScreen {
 		}
 	}
 
-	private static WDRouter.Task<JsonObject> activeTask;
-	private static long futureStart = 0;
 	protected void pollElement() {
-		if (activeTask != null) {
-			if (System.currentTimeMillis() - 1000 > futureStart) {
-				activeTask.cancel();
-				activeTask = null;
-			} else return;
+		if (pad.view instanceof WDBrowser browser) {
+			JsonObject object = browser.pointerLockElement().getObj();
+			if (object != null) updateCrd(object);
 		}
-
-//@formatter:off
-activeTask = WDRouter.INSTANCE.requestJson(pad.view, "PointerElement", """
-try {
-    let focusedElement = document.pointerLockElement;
-    if (focusedElement == null || focusedElement == document.body) {
-        window.cefQuery({
-          request: 'WebDisplays_PointerElement{exists: false}',
-          onSuccess: function(response) {},
-          onFailure: function(error_code, error_message) {}
-        });
-    } else {
-        let bodyRect = document.body.getBoundingClientRect();
-        let elemRect = focusedElement.getBoundingClientRect();
-        
-        window.cefQuery({
-          request: 'WebDisplays_PointerElement{exists: true,'+
-            'x: ' + (elemRect.left) + ',' +
-            'y: ' + (elemRect.top) + ',' +
-            'w: ' + ((elemRect.right - elemRect.left)) + ',' +
-            'h: ' + ((elemRect.bottom - elemRect.top)) + ',' +
-            'unadjust: ' + document.webdisplays__unadjustPointerMotion +
-          '}',
-          onSuccess: function(response) {},
-          onFailure: function(error_code, error_message) {}
-        });
-    }
-} catch (err) {
-    console.error(err);
-    window.cefQuery({
-      request: 'WebDisplays_PointerElement{exists: false}',
-      onSuccess: function(response) {},
-      onFailure: function(error_code, error_message) {}
-    });
-}""".replace("\n", "")
-		).thenAccept((o1) -> {
-			updateCrd(o1);
-			activeTask = null;
-		});
-		futureStart = System.currentTimeMillis();
-//@formatter:on
 	}
 }

@@ -10,11 +10,13 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.client.ClientProxy;
 import net.montoyo.wd.config.CommonConfig;
 import net.montoyo.wd.core.ScreenRights;
 import net.montoyo.wd.utilities.*;
+import net.montoyo.wd.utilities.browser.InWorldQueries;
 import net.montoyo.wd.utilities.browser.WDBrowser;
 import net.montoyo.wd.utilities.data.BlockSide;
 import net.montoyo.wd.utilities.data.Rotation;
@@ -183,21 +185,23 @@ public class ScreenData {
         }
     }
 
-    public void createBrowser(boolean doAnim) {
-        if (WebDisplays.PROXY instanceof ClientProxy clientProxy) {
+    public void createBrowser(ScreenBlockEntity be, boolean doAnim) {
+        if (WebDisplays.PROXY instanceof ClientProxy) {
             browser = WDBrowser.createBrowser(WebDisplays.applyBlacklist(url != null ? url : "https://www.google.com"), false);
 
+            // set screen
             if (browser instanceof MCEFBrowser mcefBrowser) {
                 if (rotation.isVertical)
                     mcefBrowser.resize(resolution.y, resolution.x);
                 else
                     mcefBrowser.resize(resolution.x, resolution.y);
 
-                // uh yes this is intentional
-                // basically: on my laptop, this line caused an error inexplicably
-                // reason: the compiler didn't update this file, so it stayed as a Consumer<Integer> in the bytecode
-                //noinspection RedundantCast
-                mcefBrowser.setCursorChangeListener((MCEFCursorChangeListener) (type) -> mouseType = type);
+                mcefBrowser.setCursorChangeListener((type) -> mouseType = type);
+            }
+
+            // setup screen as in world
+            if (browser instanceof WDBrowser wdBrowser) {
+                InWorldQueries.attach(be, side, wdBrowser);
             }
 
             doTurnOnAnim = doAnim;

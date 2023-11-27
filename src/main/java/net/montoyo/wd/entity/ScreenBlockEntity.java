@@ -135,7 +135,7 @@ public class ScreenBlockEntity extends BlockEntity {
     public void handleUpdateTag(CompoundTag tag) {
         load(tag);
         for (ScreenData screen : screens) {
-            if (screen.browser == null) screen.createBrowser(false);
+            if (screen.browser == null) screen.createBrowser(this, false);
             if (screen.browser != null) screen.browser.loadURL(screen.url);
         }
         updateAABB();
@@ -1085,7 +1085,7 @@ public class ScreenBlockEntity extends BlockEntity {
     public void activate() {
         for (ScreenData screen : screens) {
             if (screen.browser == null)
-                screen.createBrowser(false);
+                screen.createBrowser(this, false);
         }
     }
 

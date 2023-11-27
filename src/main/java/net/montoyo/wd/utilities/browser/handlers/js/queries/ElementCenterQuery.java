@@ -10,13 +10,22 @@ import org.cef.callback.CefQueryCallback;
 public class ElementCenterQuery extends JSQueryHandler {
     boolean exists = false;
     double x, y;
+    JsonObject obj;
     long start = -1;
+    String extra;
 
     String elementName;
+    String script = null;
 
     public ElementCenterQuery(String queryName, String name) {
         super(queryName);
         elementName = name;
+    }
+
+    public ElementCenterQuery addAdditional(String key, String value) {
+        extra += "'" + key + "':" + value + " + ";
+        script = null;
+        return this;
     }
 
     @Override
@@ -26,18 +35,25 @@ public class ElementCenterQuery extends JSQueryHandler {
             x = data.getAsJsonPrimitive("x").getAsDouble() + data.getAsJsonPrimitive("w").getAsDouble() / 2;
             y = data.getAsJsonPrimitive("y").getAsDouble() + data.getAsJsonPrimitive("h").getAsDouble() / 2;
         }
+        obj = data;
 
         start = -1;
-        callback.success("");
+        callback.success("Success");
         return true;
     }
 
     public void dispatch(CefBrowser browser) {
+        if (script == null) {
+            script = Scripts.QUERY_ELEMENT
+                    .replace("%type%", elementName)
+                    .replace("%Type%", name)
+                    .replace("%extra%", extra)
+            ;
+        }
+
         if (start == -1) {
             browser.executeJavaScript(
-                    Scripts.QUERY_ELEMENT
-                            .replace("%type%", elementName)
-                            .replace("%Type%", name),
+                    script,
                     "CenterQuery",
                     0
             );
@@ -46,10 +62,8 @@ public class ElementCenterQuery extends JSQueryHandler {
             long ms = System.currentTimeMillis();
             if (start + 1000 < ms) {
                 browser.executeJavaScript(
-                        Scripts.QUERY_ELEMENT
-                                .replace("%type%", elementName)
-                                .replace("%Type%", name),
-                        "KeyboardCamera",
+                        script,
+                        "CenterQuery",
                         0
                 );
                 start = System.currentTimeMillis();
@@ -67,5 +81,9 @@ public class ElementCenterQuery extends JSQueryHandler {
 
     public double getY() {
         return y;
+    }
+
+    public JsonObject getObj() {
+        return obj;
     }
 }

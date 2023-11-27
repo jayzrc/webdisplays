@@ -66,26 +66,28 @@ public class WDRouter extends CefMessageRouterHandlerAdapter {
                     int i0 = request.indexOf('('); // legacy, TODO: support
                     int i1 = request.indexOf('{');
                     if (i0 == -1) i0 = i1;
+                    if (i1 == -1) i1 = i0;
+
                     if (i1 == -1) {
                         if (handlerMap.containsKey(request)) {
                             if (!handlerMap.get(request).handle(browser, frame, null, persistent, callback)) {
                                 callback.failure(-1, "Query " + queryId + " with data " + request + " completed, but wasn't marked as successful.");
                             }
                         }
-                    }
+                    } else {
+                        int min = Math.min(i0, i1);
+                        String text = request.substring(0, min);
+                        if (handlerMap.containsKey(text)) {
+                            JsonObject obj = null;
+                            if (request.charAt(min) == '{')
+                                obj = gson.fromJson(request.substring(min), JsonObject.class);
 
-                    int min = Math.min(i0, i1);
-                    String text = request.substring(0, min);
-                    if (handlerMap.containsKey(text)) {
-                        JsonObject obj = null;
-                        if (request.charAt(min) == '{')
-                            obj = gson.fromJson(request.substring(min), JsonObject.class);
-
-                        if (!handlerMap.get(text).handle(browser, frame, obj, persistent, callback)) {
-                            callback.failure(-1, "Query " + queryId + " with data " + request + " completed, but wasn't marked as successful.");
+                            if (!handlerMap.get(text).handle(browser, frame, obj, persistent, callback)) {
+                                callback.failure(-1, "Query " + queryId + " with data " + request + " completed, but wasn't marked as successful.");
+                            }
                         }
+                        callback.failure(-1, "Query " + queryId + " with data " + request + " completed, but there was no active request waiting for the result.");
                     }
-                    callback.failure(-1, "Query " + queryId + " with data " + request + " completed, but there was no active request waiting for the result.");
                 }
             }
 
