@@ -37,7 +37,7 @@ public class ItemScreenConfigurator extends Item implements WDItem {
             return InteractionResult.SUCCESS;
 
         Vector3i origin = new Vector3i(context.getClickedPos());
-        BlockSide side = BlockSide.values()[context.getHorizontalDirection().getOpposite().ordinal()];
+        BlockSide side = BlockSide.values()[context.getClickedFace().ordinal()];
 
         Multiblock.findOrigin(context.getLevel(), origin, side, null);
         BlockEntity te = context.getLevel().getBlockEntity(origin.toBlock());
