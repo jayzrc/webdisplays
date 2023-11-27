@@ -1073,6 +1073,21 @@ public class ScreenBlockEntity extends BlockEntity {
         }
     }
 
+    public void deactivate() {
+        for (ScreenData screen : screens) {
+            if (screen.browser != null) {
+                screen.browser.close(true);
+                screen.browser = null;
+            }
+        }
+    }
+
+    public void activate() {
+        for (ScreenData screen : screens) {
+            if (screen.browser == null)
+                screen.createBrowser(false);
+        }
+    }
 
 //    @Override
 //    public boolean shouldRefresh(Level world, BlockPos pos, @Nonnull BlockState oldState, @Nonnull BlockState newState) {

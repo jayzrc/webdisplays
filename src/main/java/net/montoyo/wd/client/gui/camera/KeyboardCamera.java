@@ -1,6 +1,5 @@
 package net.montoyo.wd.client.gui.camera;
 
-import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.util.Mth;
@@ -10,7 +9,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
 import net.montoyo.wd.utilities.browser.handlers.js.queries.ElementCenterQuery;
-import net.montoyo.wd.utilities.browser.handlers.WDRouter;
 import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.entity.ScreenData;
 import net.montoyo.wd.utilities.browser.WDBrowser;
@@ -117,8 +115,8 @@ public class KeyboardCamera {
         ScreenData scr = teTmp.getScreen(sdTmp);
         if (scr != null) {
             if (scr.browser instanceof WDBrowser wdBrowser) {
-                wdBrowser.pointerLock().dispatch(scr.browser);
-                updateCrd(((WDBrowser) scr.browser).pointerLock());
+                wdBrowser.focusedElement().dispatch(scr.browser);
+                updateCrd(((WDBrowser) scr.browser).focusedElement());
             }
         }
     }

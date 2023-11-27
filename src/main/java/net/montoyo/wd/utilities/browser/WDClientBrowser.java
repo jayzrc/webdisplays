@@ -8,7 +8,7 @@ import net.montoyo.wd.utilities.browser.handlers.js.JSQueryHandler;
 import java.util.HashMap;
 
 public class WDClientBrowser extends MCEFBrowser implements WDBrowser {
-    ElementCenterQuery lock = new ElementCenterQuery("ActiveElement","document.activeElement");
+    ElementCenterQuery focusedEl = new ElementCenterQuery("ActiveElement", "document.activeElement");
     HashMap<String, JSQueryHandler> handlerHashMap = new HashMap<>();
 
     public WDClientBrowser(MCEFClient client, String url, boolean transparent) {
@@ -21,7 +21,7 @@ public class WDClientBrowser extends MCEFBrowser implements WDBrowser {
     }
 
     @Override
-    public ElementCenterQuery pointerLock() {
-        return lock;
+    public ElementCenterQuery focusedElement() {
+        return focusedEl;
     }
 }

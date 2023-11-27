@@ -7,10 +7,12 @@ package net.montoyo.wd.client.renderers;
 import com.cinemamod.mcef.MCEFBrowser;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.entity.ScreenData;
 import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.utilities.math.Vector3f;
@@ -38,16 +40,19 @@ public class ScreenRenderer implements BlockEntityRenderer<ScreenBlockEntity> {
 	public void render(ScreenBlockEntity te, float partialTick, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
 		if (!te.isLoaded())
 			return;
-		
+
 		//Disable lighting
 //		RenderSystem.enableTexture();
-//        RenderSystem.disableCull();
+//      RenderSystem.disableCull();
 		RenderSystem.disableBlend();
 		
 		for (int i = 0; i < te.screenCount(); i++) {
 			ScreenData scr = te.getScreen(i);
 			if (scr.browser == null) {
-				scr.createBrowser(true);
+				double dist = WebDisplays.PROXY.distanceTo(te, Minecraft.getInstance().getEntityRenderDispatcher().camera.getPosition());
+				if (dist <= WebDisplays.INSTANCE.loadDistance2 * 16)
+					scr.createBrowser(true);
+				else continue;
 			}
 			
 			// TODO: manually backface cull the screens

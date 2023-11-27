@@ -61,6 +61,7 @@ import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.block.ScreenBlock;
 import net.montoyo.wd.client.gui.*;
 import net.montoyo.wd.client.gui.loading.GuiLoader;
+import net.montoyo.wd.utilities.browser.WDBrowser;
 import net.montoyo.wd.utilities.browser.handlers.DisplayHandler;
 import net.montoyo.wd.utilities.browser.handlers.WDRouter;
 import net.montoyo.wd.client.renderers.*;
@@ -207,7 +208,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
-			view = MCEF.createBrowser(WebDisplays.applyBlacklist(webUrl), false);
+			view = WDBrowser.createBrowser(WebDisplays.applyBlacklist(webUrl), false);
 			if (view instanceof MCEFBrowser browser) {
 				browser.resize((int) WebDisplays.INSTANCE.padResX, (int) WebDisplays.INSTANCE.padResY);
 				browser.setCursorChangeListener((cursor) -> {
@@ -229,7 +230,6 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 	
 	private Minecraft mc;
 	private MinePadRenderer minePadRenderer;
-//	private JSQueryDispatcher jsDispatcher;
 	private LaserPointerRenderer laserPointerRenderer;
 	private Screen nextScreen;
 	private boolean isF1Down;
@@ -263,20 +263,11 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		event.register(ScreenModelLoader.SCREEN_LOADER.getPath(), new ScreenModelLoader());
 	}
 	
-	private static void registerBlockRenderLayers(RenderType layer, Block... blocks) {
-		Stream.of(blocks).forEach(block -> ItemBlockRenderTypes.setRenderLayer(block, layer));
-	}
-	
 	@Override
 	public void preInit() {
 		super.preInit();
 		mc = Minecraft.getInstance();
 		MinecraftForge.EVENT_BUS.register(this);
-	}
-	
-	@Override
-	public void init() {
-		super.init();
 	}
 	
 	@Override
@@ -580,7 +571,7 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 		if (ev.phase != TickEvent.Phase.END) return;
 		
 		//Unload/load screens depending on client player distance
-		if (mc.player != null || !screenTracking.isEmpty())
+		if (mc.player == null || screenTracking.isEmpty())
 			return;
 		
 		int id = lastTracked % screenTracking.size();
@@ -597,27 +588,15 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 			if (!tes.isLoaded())
 				tes.load();
 		} else {
-			double dist = Double.POSITIVE_INFINITY;
-			for (int i = 0; i < tes.screenCount(); i++) {
-				ScreenData scrn = tes.getScreen(i);
-				
-				Vector3d pos = new Vector3d(
-						scrn.side.right.x * scrn.size.x + scrn.size.y * scrn.side.up.x,
-						scrn.side.right.y * scrn.size.x + scrn.size.y * scrn.side.up.y,
-						scrn.side.right.z * scrn.size.x + scrn.size.y * scrn.side.up.z
-				);
-				
-				double dist2 = mc.player.distanceToSqr(pos.x, pos.y, pos.z);
-				dist = Math.min(dist, dist2);
-			}
+			double dist = distanceTo(tes, mc.getEntityRenderDispatcher().camera.getPosition());
 			
 			if (tes.isLoaded()) {
-				if (dist > WebDisplays.INSTANCE.unloadDistance2)
-					tes.unload();
+				if (dist > WebDisplays.INSTANCE.unloadDistance2 * 16)
+					tes.deactivate();
 //				else if (ClientConfig.AutoVolumeControl.enableAutoVolume)
 //					tes.updateTrackDistance(dist, 80); //ToDo find master volume
-			} else if (dist <= WebDisplays.INSTANCE.loadDistance2)
-				tes.load();
+			} else if (dist <= WebDisplays.INSTANCE.loadDistance2 * 16)
+				tes.activate();
 		}
 	}
 	

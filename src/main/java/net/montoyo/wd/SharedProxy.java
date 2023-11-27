@@ -14,18 +14,21 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import net.montoyo.wd.core.HasAdvancement;
 import net.montoyo.wd.core.JSServerRequest;
 import net.montoyo.wd.data.GuiData;
 import net.montoyo.wd.entity.ScreenBlockEntity;
+import net.montoyo.wd.entity.ScreenData;
 import net.montoyo.wd.utilities.*;
 import net.montoyo.wd.utilities.math.Vector2i;
 import net.montoyo.wd.utilities.math.Vector3i;
 import net.montoyo.wd.utilities.data.BlockSide;
 import net.montoyo.wd.utilities.data.Rotation;
 import net.montoyo.wd.utilities.serialization.NameUUIDPair;
+import org.joml.Vector3d;
 
 import javax.annotation.Nonnull;
 import java.util.UUID;
@@ -124,5 +127,22 @@ public class SharedProxy {
 
     public boolean isShiftDown() {
         return false;
+    }
+
+    public double distanceTo(ScreenBlockEntity tes, Vec3 position) {
+        double dist = Double.POSITIVE_INFINITY;
+        for (int i = 0; i < tes.screenCount(); i++) {
+            ScreenData scrn = tes.getScreen(i);
+
+            Vector3d pos = new Vector3d(
+                    scrn.side.right.x * scrn.size.x / 2d + scrn.size.y * scrn.side.up.x / 2d,
+                    scrn.side.right.y * scrn.size.x / 2d + scrn.size.y * scrn.side.up.y / 2d,
+                    scrn.side.right.z * scrn.size.x / 2d + scrn.size.y * scrn.side.up.z / 2d
+            ).add(tes.getBlockPos().getX(), tes.getBlockPos().getY(), tes.getBlockPos().getZ());
+
+            double dist2 = position.distanceToSqr(pos.x, pos.y, pos.z);
+            dist = Math.min(dist, dist2);
+        }
+        return dist;
     }
 }

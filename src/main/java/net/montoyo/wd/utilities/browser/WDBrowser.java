@@ -20,10 +20,10 @@ public interface WDBrowser {
     static void registerQueries(WDBrowser browser) {
         Map<String, JSQueryHandler> handlerMap = browser.queryHandlers();
 
-        JSQueryHandler handler = browser.pointerLock();
+        JSQueryHandler handler = browser.focusedElement();
         handlerMap.put(handler.getName(), handler);
     }
 
     HashMap<String, JSQueryHandler> queryHandlers();
-    ElementCenterQuery pointerLock();
+    ElementCenterQuery focusedElement();
 }
