@@ -4,12 +4,20 @@
 
 package net.montoyo.wd.client.gui;
 
+import com.cinemamod.mcef.MCEFBrowser;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.montoyo.wd.WebDisplays;
@@ -18,23 +26,29 @@ import net.montoyo.wd.client.gui.controls.Button;
 import net.montoyo.wd.client.gui.controls.Control;
 import net.montoyo.wd.client.gui.controls.Label;
 import net.montoyo.wd.client.gui.loading.FillControl;
+import net.montoyo.wd.controls.builtin.ClickControl;
 import net.montoyo.wd.entity.ScreenBlockEntity;
+import net.montoyo.wd.entity.ScreenData;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.server_bound.C2SMessageScreenCtrl;
-import net.montoyo.wd.utilities.data.BlockSide;
 import net.montoyo.wd.utilities.Log;
+import net.montoyo.wd.utilities.data.BlockSide;
+import net.montoyo.wd.utilities.math.Vector2i;
 import net.montoyo.wd.utilities.serialization.TypeData;
 import net.montoyo.wd.utilities.serialization.Util;
+import org.cef.browser.CefBrowser;
+import org.cef.misc.CefCursorType;
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
 import org.vivecraft.client_vr.gameplay.VRPlayer;
 import org.vivecraft.client_vr.gameplay.screenhandlers.KeyboardHandler;
-//import org.vivecraft.gameplay.VRPlayer;
-//import org.vivecraft.gameplay.screenhandlers.KeyboardHandler;
 
 import java.io.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.function.Consumer;
 
 @OnlyIn(Dist.CLIENT)
 public class GuiKeyboard extends WDScreen {
@@ -43,6 +57,7 @@ public class GuiKeyboard extends WDScreen {
 
     private ScreenBlockEntity tes;
     private BlockSide side;
+    private ScreenData data;
     private final ArrayList<TypeData> evStack = new ArrayList<>();
     private BlockPos kbPos;
     private boolean showWarning = true;
@@ -144,22 +159,42 @@ public class GuiKeyboard extends WDScreen {
                 KeyboardHandler.setOverlayShowing(true);
 
         KeyboardCamera.focus(tes, side);
+
+        data = tes.getScreen(side);
+        CefBrowser browser = data.browser;
+        ((MCEFBrowser) browser).setCursor(CefCursorType.fromId(data.mouseType));
+        ((MCEFBrowser) browser).setCursorChangeListener((id) -> {
+            data.mouseType = id;
+            ((MCEFBrowser) browser).setCursor(CefCursorType.fromId(id));
+        });
+    }
+
+    @Override
+    public void removed() {
+        super.removed();
+        if (vivecraftPresent)
+            if (VRPlayer.get() != null)
+                KeyboardHandler.setOverlayShowing(false);
+        KeyboardCamera.focus(null, null);
+        CefBrowser browser = data.browser;
+        if (browser instanceof MCEFBrowser mcef) {
+            mcef.setCursor(CefCursorType.POINTER);
+            mcef.setCursorChangeListener((cursor) -> data.mouseType = cursor);
+        }
     }
 
     @Override
     public void onClose() {
-        if (vivecraftPresent)
-            if (VRPlayer.get() != null)
-                KeyboardHandler.setOverlayShowing(false);
+        removed();
         super.onClose();
-        KeyboardCamera.focus(null, null);
+        this.minecraft.popGuiLayer();
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if(quitOnEscape && keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            Minecraft.getInstance().setScreen(null);
+        if (quitOnEscape && keyCode == GLFW.GLFW_KEY_ESCAPE) {
             onClose();
+            return true;
         }
         addKey(new TypeData(TypeData.Action.PRESS, keyCode, modifiers, scanCode));
         return super.keyPressed(keyCode, scanCode, modifiers);
@@ -249,4 +284,89 @@ public class GuiKeyboard extends WDScreen {
         return bp.equals(kbPos) || (bp.equals(tes.getBlockPos()) && side == this.side);
     }
 
+    protected void mouse(double mouseX, double mouseY, Consumer<Vector2i> func) {
+        float pct = Minecraft.getInstance().getPartialTick();
+
+        ViewportEvent.ComputeFov fov = new ViewportEvent.ComputeFov(
+                Minecraft.getInstance().gameRenderer,
+                Minecraft.getInstance().getEntityRenderDispatcher().camera,
+                pct, Minecraft.getInstance().options.fov().get(),
+                true
+        );
+
+        mouseX /= width;
+        mouseY /= height;
+
+        mouseX -= 0.5;
+        mouseY -= 0.5;
+        mouseY = -mouseY;
+
+        Matrix4f proj = Minecraft.getInstance().gameRenderer.getProjectionMatrix(fov.getFOV());
+
+        Entity e = Minecraft.getInstance().getEntityRenderDispatcher().camera.getEntity();
+
+        PoseStack camera = new PoseStack();
+        float[] angle = KeyboardCamera.getAngle(e, pct);
+        camera.mulPose(Axis.XP.rotationDegrees(angle[0]));
+        camera.mulPose(Axis.YP.rotationDegrees(angle[1] + 180.0F));
+
+        Vector4f coord = new Vector4f(0, 0, 0, 0);
+        coord.add(proj.invert().transform(new Vector4f(2f * (float) mouseX, 2 * (float) mouseY, 0, 1f)));
+        coord = camera.last().pose().invert().transform(coord);
+        coord.w = 0;
+        coord.normalize();
+
+        Vec3 vec3 = e.getEyePosition(pct);
+        Vec3 vec31 = new Vec3(coord.x, coord.y, coord.z);
+
+        BlockHitResult result = tes.trace(side, vec3, vec31);
+        if (result.getType() != HitResult.Type.MISS) {
+            tes.interact(result, func);
+        }
+    }
+
+    @Override
+    public void mouseMoved(double mouseX, double mouseY) {
+        mouse(mouseX, mouseY, (hit) -> {
+            tes.handleMouseEvent(side, ClickControl.ControlType.MOVE, hit, -1);
+            WDNetworkRegistry.INSTANCE.sendToServer(C2SMessageScreenCtrl.laserMove(tes, side, hit));
+        });
+
+        super.mouseMoved(mouseX, mouseY);
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        mouse(mouseX, mouseY, (hit) -> {
+            tes.handleMouseEvent(side, ClickControl.ControlType.MOVE, hit, -1);
+            tes.handleMouseEvent(side, ClickControl.ControlType.DOWN, hit, button);
+            WDNetworkRegistry.INSTANCE.sendToServer(C2SMessageScreenCtrl.laserDown(tes, side, hit, button));
+        });
+
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        mouse(mouseX, mouseY, (hit) -> {
+            tes.handleMouseEvent(side, ClickControl.ControlType.MOVE, hit, -1);
+            tes.handleMouseEvent(side, ClickControl.ControlType.UP, hit, button);
+            WDNetworkRegistry.INSTANCE.sendToServer(C2SMessageScreenCtrl.laserUp(tes, side, button));
+        });
+
+        return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
+    public void tick() {
+        double mouseX = Minecraft.getInstance().mouseHandler.xpos() / Minecraft.getInstance().getWindow().getWidth();
+        double mouseY = Minecraft.getInstance().mouseHandler.ypos() / Minecraft.getInstance().getWindow().getHeight();
+
+        mouse(mouseX * width, mouseY * height, (hit) -> {
+            tes.handleMouseEvent(side, ClickControl.ControlType.MOVE, hit, -1);
+            WDNetworkRegistry.INSTANCE.sendToServer(C2SMessageScreenCtrl.laserMove(tes, side, hit));
+        });
+
+        super.tick();
+    }
 }

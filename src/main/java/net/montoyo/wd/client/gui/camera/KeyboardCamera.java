@@ -4,15 +4,17 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
+import net.montoyo.wd.client.gui.GuiKeyboard;
 import net.montoyo.wd.config.ClientConfig;
-import net.montoyo.wd.utilities.browser.handlers.js.queries.ElementCenterQuery;
 import net.montoyo.wd.entity.ScreenBlockEntity;
 import net.montoyo.wd.entity.ScreenData;
 import net.montoyo.wd.utilities.browser.WDBrowser;
+import net.montoyo.wd.utilities.browser.handlers.js.queries.ElementCenterQuery;
 import net.montoyo.wd.utilities.data.BlockSide;
 
 public class KeyboardCamera {
@@ -76,41 +78,39 @@ public class KeyboardCamera {
     }
 
     protected static void updateCrd(ElementCenterQuery lock) {
-        if (lock.hasFocused()) {
-            ScreenData scr = tes.getScreen(side);
-            if (scr != null) {
-                Vec2 c;
+        ScreenData scr = tes.getScreen(side);
+        if (scr != null) {
+            Vec2 c;
+
+            if (lock.hasFocused()) {
                 if (ClientConfig.Input.keyboardCamera) {
                     nextX = lock.getX();
                     nextY = lock.getY();
 
                     c = pxToHit(scr, new Vec2((float) nextX, (float) nextY));
                 } else c = new Vec2(scr.size.x / 2f, scr.size.y / 2f);
+            } else c = new Vec2(scr.size.x / 2f, scr.size.y / 2f);
 
-                nextX = c.x;
-                nextY = c.y;
+            nextX = c.x;
+            nextY = c.y;
 
-                if (nextX < 0) nextX = 0;
-                else if (nextX > scr.size.x) nextX = scr.size.x;
-                if (nextY < 0) nextY = 0;
-                else if (nextY > scr.size.y) nextY = scr.size.y;
+            if (nextX < 0) nextX = 0;
+            else if (nextX > scr.size.x) nextX = scr.size.x;
+            if (nextY < 0) nextY = 0;
+            else if (nextY > scr.size.y) nextY = scr.size.y;
 
-                float scl = Math.max(scr.size.x, scr.size.y);
+            float scl = Math.max(scr.size.x, scr.size.y);
 
-                double mx = Minecraft.getInstance().mouseHandler.xpos();
-                mx /= Minecraft.getInstance().getWindow().getWidth();
+            double mx = Minecraft.getInstance().mouseHandler.xpos();
+            mx /= Minecraft.getInstance().getWindow().getWidth();
 
-                double my = Minecraft.getInstance().mouseHandler.ypos();
-                my /= Minecraft.getInstance().getWindow().getHeight();
+            double my = Minecraft.getInstance().mouseHandler.ypos();
+            my /= Minecraft.getInstance().getWindow().getHeight();
 
-                Vec2 v2 = new Vec2((float) mx, (float) my).add(-0.5f);
+            Vec2 v2 = new Vec2((float) mx, (float) my).add(-0.5f);
 
-                nextX += v2.x * scl;
-                nextY -= v2.y * scl;
-            }
-        } else {
-            nextX = -1;
-            nextY = -1;
+            nextX += v2.x * scl;
+            nextY -= v2.y * scl;
         }
     }
 
@@ -130,20 +130,14 @@ public class KeyboardCamera {
         }
     }
 
-    public static void updateCamera(ViewportEvent.ComputeCameraAngles event) {
-        if (tes == null) {
-            xCrd = -1;
-            yCrd = -1;
-            return; // nothing to do
-        }
+    public static float[] getAngle(Entity e, double pct) {
+        BlockEntity tes = KeyboardCamera.tes;
+        BlockSide side = KeyboardCamera.side;
+        if (tes == null) return new float[]{Float.NaN, 0};
+        if (side == null) return new float[]{Float.NaN, 0};
 
-        if (xCrd == -1) return;
-        if (yCrd == -1) return;
-
-        // TODO: implement
-
-        double coxCrd = Mth.lerp(0.5 * event.getPartialTick(), oxCrd, xCrd);
-        double coyCrd = Mth.lerp(0.5 * event.getPartialTick(), oyCrd, yCrd);
+        double coxCrd = Mth.lerp(0.5 * pct, oxCrd, xCrd);
+        double coyCrd = Mth.lerp(0.5 * pct, oyCrd, yCrd);
 
         double focalX = tes.getBlockPos().getX() +
                 side.right.x * (coxCrd - 1) + side.up.x * coyCrd + Math.abs(side.forward.x) * 0.5;
@@ -157,10 +151,26 @@ public class KeyboardCamera {
         focalZ += side.forward.z * 0.5f;
 
         float[] angle = lookAt(
-                event.getCamera().getEntity(),
-                EntityAnchorArgument.Anchor.EYES,
+                e, EntityAnchorArgument.Anchor.EYES,
                 new Vec3(focalX, focalY, focalZ)
         );
+
+        return angle;
+    }
+
+    public static void updateCamera(ViewportEvent.ComputeCameraAngles event) {
+        if (tes == null) {
+            xCrd = -1;
+            yCrd = -1;
+            return; // nothing to do
+        }
+
+        if (xCrd == -1) return;
+        if (yCrd == -1) return;
+
+        float[] angle = getAngle(event.getCamera().getEntity(), event.getPartialTick());
+
+        if (Float.isNaN(angle[0])) return;
 
 //        float xRot = event.getYaw(); // left right
 //        float yRot = event.getPitch(); // up down
@@ -198,6 +208,12 @@ public class KeyboardCamera {
                 yCrd = -1;
                 nxCrd = -1;
                 nyCrd = -1;
+                return;
+            }
+
+            if (!(Minecraft.getInstance().screen instanceof GuiKeyboard)) {
+                tes = null;
+                side = null;
                 return;
             }
 

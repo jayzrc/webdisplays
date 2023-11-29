@@ -4,9 +4,8 @@
 
 package net.montoyo.wd.entity;
 
-import com.cinemamod.mcef.MCEF;
 import com.cinemamod.mcef.MCEFBrowser;
-import com.cinemamod.mcef.listeners.MCEFCursorChangeListener;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -19,10 +18,12 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.block.ScreenBlock;
@@ -33,20 +34,23 @@ import net.montoyo.wd.core.DefaultUpgrade;
 import net.montoyo.wd.core.IUpgrade;
 import net.montoyo.wd.core.ScreenRights;
 import net.montoyo.wd.data.ScreenConfigData;
-import net.montoyo.wd.registry.BlockRegistry;
-import net.montoyo.wd.registry.ItemRegistry;
-import net.montoyo.wd.registry.TileRegistry;
 import net.montoyo.wd.miniserv.SyncPlugin;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.client_bound.S2CMessageAddScreen;
 import net.montoyo.wd.net.client_bound.S2CMessageScreenUpdate;
-import net.montoyo.wd.utilities.*;
+import net.montoyo.wd.registry.BlockRegistry;
+import net.montoyo.wd.registry.ItemRegistry;
+import net.montoyo.wd.registry.TileRegistry;
+import net.montoyo.wd.utilities.Log;
+import net.montoyo.wd.utilities.Multiblock;
+import net.montoyo.wd.utilities.ScreenIterator;
+import net.montoyo.wd.utilities.VideoType;
+import net.montoyo.wd.utilities.data.BlockSide;
+import net.montoyo.wd.utilities.data.Rotation;
 import net.montoyo.wd.utilities.math.MutableAABB;
 import net.montoyo.wd.utilities.math.Vector2i;
 import net.montoyo.wd.utilities.math.Vector3f;
 import net.montoyo.wd.utilities.math.Vector3i;
-import net.montoyo.wd.utilities.data.BlockSide;
-import net.montoyo.wd.utilities.data.Rotation;
 import net.montoyo.wd.utilities.serialization.NameUUIDPair;
 import net.montoyo.wd.utilities.serialization.TypeData;
 import org.cef.browser.CefBrowser;
@@ -55,8 +59,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 import static net.montoyo.wd.block.PeripheralBlock.point;
@@ -1087,6 +1091,57 @@ public class ScreenBlockEntity extends BlockEntity {
             if (screen.browser == null)
                 screen.createBrowser(this, false);
         }
+    }
+
+    public void interact(BlockHitResult result, Consumer<Vector2i> func) {
+        BlockState state = getBlockState();
+        if (state.getBlock() instanceof ScreenBlock) {
+            Vector3i pos = new Vector3i(result.getBlockPos());
+            BlockSide side = BlockSide.values()[result.getDirection().ordinal()];
+
+            Multiblock.findOrigin(Minecraft.getInstance().level, pos, side, null);
+
+            //Since rights aren't synchronized, let the server check them for us...
+            ScreenData scr = this.getScreen(side);
+
+            if (scr.browser != null) {
+                float hitX = ((float) result.getLocation().x) - (float) pos.x;
+                float hitY = ((float) result.getLocation().y) - (float) pos.y;
+                float hitZ = ((float) result.getLocation().z) - (float) pos.z;
+                Vector2i tmp = new Vector2i();
+
+                if (ScreenBlock.hit2pixels(side, result.getBlockPos(), new Vector3i(result.getBlockPos()), scr, hitX, hitY, hitZ, tmp)) {
+                    func.accept(tmp);
+                }
+            }
+        }
+    }
+
+    public BlockHitResult trace(BlockSide side, Vec3 start, Vec3 look) {
+        AABB box = getRenderBoundingBox();
+        double pHitDistance = box.distanceToSqr(start) + 2;
+
+        Vec3 vec32 = start.add(look.x * pHitDistance, look.y * pHitDistance, look.z * pHitDistance);
+
+        box = box.move(
+                -getBlockPos().getX(),
+                -getBlockPos().getY(),
+                -getBlockPos().getZ()
+        );
+
+        BlockHitResult bhr = AABB.clip(Arrays.asList(box), start, vec32, getBlockPos());
+        if (bhr == null || bhr.getType() != HitResult.Type.BLOCK || bhr.getDirection().ordinal() != side.ordinal()) {
+            bhr = AABB.clip(Arrays.asList(box), vec32, start, getBlockPos());
+            if (bhr == null || bhr.getType() != HitResult.Type.BLOCK || bhr.getDirection().ordinal() != side.ordinal()) {
+                return BlockHitResult.miss(
+                        vec32,
+                        bhr == null ? Direction.getNearest(look.x, look.y, look.z).getOpposite() : bhr.getDirection(),
+                        getBlockPos()
+                );
+            }
+        }
+
+        return bhr;
     }
 
 //    @Override

@@ -8,18 +8,21 @@ import com.cinemamod.mcef.MCEFBrowser;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.client.ClientProxy;
 import net.montoyo.wd.utilities.browser.WDBrowser;
 import net.montoyo.wd.utilities.browser.handlers.js.Scripts;
-import net.montoyo.wd.utilities.browser.handlers.WDRouter;
 import net.montoyo.wd.utilities.data.BlockSide;
 import org.cef.misc.CefCursorType;
 import org.lwjgl.glfw.GLFW;
@@ -121,8 +124,9 @@ public class GuiMinePad extends WDScreen {
 		RenderSystem.enableCull();
 
 		graphics.drawString(
-				minecraft.font, "Press Shift and Escape to close",
-				(int) vx + 4, (int) vy - minecraft.font.lineHeight - 3, 16777215, true
+				minecraft.font, Language.getInstance().getOrDefault(
+						"webdisplays.gui.minepad.close"
+				), (int) vx + 4, (int) vy - minecraft.font.lineHeight - 3, 16777215, true
 		);
 	}
 
@@ -150,7 +154,7 @@ public class GuiMinePad extends WDScreen {
 	public boolean keyChanged(int keyCode, int scanCode, int modifiers, boolean pressed) {
 		assert minecraft != null;
 		if ((modifiers & GLFW.GLFW_MOD_SHIFT) == GLFW.GLFW_MOD_SHIFT && keyCode == GLFW.GLFW_KEY_ESCAPE) {
-			minecraft.setScreen(null);
+			onClose();
 			return true;
 		}
 
@@ -211,27 +215,27 @@ public class GuiMinePad extends WDScreen {
 		return super.mouseScrolled(mouseX, mouseY, amount);
 	}
 
-	public void capturedMouse(int scaledX, int scaledY, int sx, int sy) {
-		double centerX = 0.5 * (double)this.minecraft.getWindow().getGuiScaledWidth();
-		double centerY = 0.5 * (double)this.minecraft.getWindow().getGuiScaledHeight();
+	public void capturedMouse(double scaledX, double scaledY, int sx, int sy) {
+		double centerX = (int) (0.5 * (double) this.minecraft.getWindow().getGuiScaledWidth());
+		double centerY = (int) (0.5 * (double) this.minecraft.getWindow().getGuiScaledHeight());
 
 		if (sx == (int) centerX && sy == (int) centerY) return;
 
 		double mx = (centerX - vx) / vw;
 		double my = (centerY - vy) / vh;
-		int scaledCentX = (int) (mx * WebDisplays.INSTANCE.padResX);
-		int scaledCentY = (int) (my * WebDisplays.INSTANCE.padResY);
+		double scaledCentX = (mx * WebDisplays.INSTANCE.padResX);
+		double scaledCentY = (my * WebDisplays.INSTANCE.padResY);
 
-		int deltX = scaledX - scaledCentX;
-		int deltY = scaledY - scaledCentY;
+		double deltX = scaledX - scaledCentX;
+		double deltY = scaledY - scaledCentY;
 
 		String scr = Scripts.MOUSE_EVENT;
 		pad.view.executeJavaScript(
 				scr
 						.replace("%xCoord%", "" + (int) centerX)
 						.replace("%yCoord%", "" + (int) centerY)
-						.replace("%xDelta%", "" + deltX)
-						.replace("%yDelta%", "" + deltY),
+						.replace("%xDelta%", "" + (deltX))
+						.replace("%yDelta%", "" + (deltY)),
 				"WebDisplays", 0
 		);
 
@@ -255,7 +259,7 @@ public class GuiMinePad extends WDScreen {
 
 			if (btn == -1) {
 				if (locked)
-					capturedMouse(scaledX, scaledY, sx, sy);
+					capturedMouse(mx * WebDisplays.INSTANCE.padResX, my * WebDisplays.INSTANCE.padResY, sx, sy);
 				else ((MCEFBrowser) pad.view).sendMouseMove(scaledX, scaledY);
 			} else if (pressed)
 				((MCEFBrowser) pad.view).sendMousePress(scaledX, scaledY, btn);
@@ -294,6 +298,10 @@ public class GuiMinePad extends WDScreen {
 	@Override
 	public void removed() {
 		super.removed();
+		InputConstants.updateRawMouseInput(
+				minecraft.getWindow().getWindow(),
+				Minecraft.getInstance().options.rawMouseInput().get()
+		);
 		if (pad.view instanceof MCEFBrowser browser) {
 			browser.setCursor(CefCursorType.POINTER);
 			browser.setCursorChangeListener((cursor) -> {
@@ -305,11 +313,8 @@ public class GuiMinePad extends WDScreen {
 	@Override
 	public void onClose() {
 		super.onClose();
-		InputConstants.updateRawMouseInput(
-				minecraft.getWindow().getWindow(),
-				Minecraft.getInstance().options.rawMouseInput().get()
-		);
 		removed();
+		this.minecraft.popGuiLayer();
 	}
 
 	boolean locked = false;
