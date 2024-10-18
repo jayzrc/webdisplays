@@ -16,8 +16,8 @@ import org.cef.misc.StringRef;
 import org.cef.network.CefRequest;
 import org.cef.network.CefResponse;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class WDScheme implements CefResourceHandler {
@@ -36,61 +36,67 @@ public class WDScheme implements CefResourceHandler {
     public boolean processRequest(CefRequest cefRequest, CefCallback cefCallback) {
         url = cefRequest.getURL();
 
+        url = url.substring("webdisplays://".length());
+
         int pos = url.indexOf('/');
-        if(pos < 0)
+        if (pos < 0)
             return false;
 
         String uuidStr = url.substring(0, pos);
         String fileStr = url.substring(pos + 1);
 
-        try {
-            fileStr = URLDecoder.decode(fileStr, "UTF-8");
-        } catch(UnsupportedEncodingException ex) {
-            Log.warningEx("UTF-8 isn't supported... yeah... and I'm a billionaire...", ex);
-        }
+        fileStr = URLDecoder.decode(fileStr, StandardCharsets.UTF_8);
 
-        if(uuidStr.isEmpty() || Util.isFileNameInvalid(fileStr))
+        if (uuidStr.isEmpty() || Util.isFileNameInvalid(fileStr))
             return false;
 
         UUID uuid;
         try {
             uuid = UUID.fromString(uuidStr);
-        } catch(IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             return false; //Invalid UUID
         }
 
         task = new ClientTaskGetFile(uuid, fileStr);
-        return Client.getInstance().addTask(task) ? true : false;
+        boolean doContinue = Client.getInstance().addTask(task);
+        if (doContinue) cefCallback.Continue();
+        return doContinue;
     }
 
     @Override
-    public void getResponseHeaders(CefResponse cefResponse, IntRef intRef, StringRef stringRef) {
+    public void getResponseHeaders(CefResponse cefResponse, IntRef contentLength, StringRef redir) {
         Log.info("Waiting for response...");
         int status = task.waitForResponse();
         Log.info("Got response %d", status);
 
-        if(status == 0) {
+        if (status == 0) {
             //OK
             int extPos = task.getFileName().lastIndexOf('.');
-            if(extPos >= 0) {
+            if (extPos >= 0) {
                 String mime = mapMime(task.getFileName().substring(extPos + 1));
 
-                if(mime != null)
+                if (mime != null)
                     cefResponse.setMimeType(mime);
             }
 
             cefResponse.setStatus(200);
             cefResponse.setStatusText("OK");
-            cefResponse.setHeaderByName("content-length", "" + -1, true);
+            contentLength.set(0);
             return;
         }
 
         int errCode;
         String errStr;
 
-        if(status == Constants.GETF_STATUS_NOT_FOUND) {
+        if (status == Constants.GETF_STATUS_NOT_FOUND) {
             errCode = 404;
             errStr = "Not Found";
+        } else if (status == Constants.GETF_STATUS_TIMED_OUT) {
+            errCode = 408;
+            errStr = "Timed Out";
+        } else if (status == Constants.GETF_STATUS_BAD_NAME) {
+            errCode = 418;
+            errStr = "I'm a teapot";
         } else {
             errCode = 500;
             errStr = "Internal Server Error";
@@ -99,16 +105,11 @@ public class WDScheme implements CefResourceHandler {
         cefResponse.setStatus(errCode);
         cefResponse.setStatusText(errStr);
 
-        try {
-            dataToWrite = String.format(ERROR_PAGE, errCode, errStr).getBytes("UTF-8");
-            dataOffset = 0;
-            amountToWrite = dataToWrite.length;
-            isErrorPage = true;
-            cefResponse.setHeaderByName("content-length", "" + amountToWrite, true);
-        } catch(UnsupportedEncodingException ex) {
-            cefResponse.setHeaderByName("content-length", "" + 0, true);
-//            cefResponse.setResponseLength(0);
-        }
+        dataToWrite = String.format(ERROR_PAGE, errCode, errStr).getBytes(StandardCharsets.UTF_8);
+        dataOffset = 0;
+        amountToWrite = dataToWrite.length;
+        isErrorPage = true;
+        contentLength.set(amountToWrite);
     }
 
     private byte[] dataToWrite;
@@ -116,36 +117,37 @@ public class WDScheme implements CefResourceHandler {
     private int amountToWrite;
 
     @Override
-    public boolean readResponse(byte[] bytes, int i, IntRef intRef, CefCallback cefCallback) {
-        if(dataToWrite == null) {
-            if(isErrorPage) {
-//                data.setAmountRead(0);
-                return false;
+    public boolean readResponse(byte[] output, int bytesToRead, IntRef bytesRead, CefCallback cefCallback) {
+        if (dataToWrite == null) {
+            if (isErrorPage) {
+                dataToWrite = null;
+                bytesRead.set(0);
+                return true;
             }
 
             dataToWrite = task.waitForData();
             dataOffset = 3; //packet ID + size
             amountToWrite = task.getDataLength();
 
-            if(amountToWrite <= 0) {
+            if (amountToWrite <= 0) {
                 dataToWrite = null;
-//                data.setAmountRead(0);
-                return false;
+                bytesRead.set(0);
+                return true;
             }
         }
 
-//        int toWrite = data.getBytesToRead();
-//        if(toWrite > amountToWrite)
-//            toWrite = amountToWrite;
+        int toWrite = bytesToRead;
+        if (toWrite > amountToWrite)
+            toWrite = amountToWrite;
 
-//        System.arraycopy(dataToWrite, dataOffset, data.getDataArray(), 0, toWrite);
-//        data.setAmountRead(toWrite);
+        System.arraycopy(dataToWrite, dataOffset, output, 0, toWrite);
+        bytesRead.set(toWrite);
 
-//        dataOffset += toWrite;
-//        amountToWrite -= toWrite;
+        dataOffset += toWrite;
+        amountToWrite -= toWrite;
 
-        if(amountToWrite <= 0) {
-            if(!isErrorPage)
+        if (amountToWrite <= 0) {
+            if (!isErrorPage)
                 task.nextData();
 
             dataToWrite = null;
@@ -156,6 +158,8 @@ public class WDScheme implements CefResourceHandler {
 
     @Override
     public void cancel() {
+        System.out.println("Scheme query canceled.");
+        task.cancel();
     }
 
     public static String mapMime(String ext) {

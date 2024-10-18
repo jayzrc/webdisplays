@@ -51,7 +51,7 @@ public class ClientTaskCheckFile extends ClientTask<ClientTaskCheckFile> {
 
     public String getURL() {
         try {
-            return ((new StringBuilder("wd://"))).append(uuid.toString()).append('/').append(URLEncoder.encode(fname, "UTF-8")).toString();
+            return ((new StringBuilder("webdisplays://"))).append(uuid.toString()).append('/').append(URLEncoder.encode(fname, "UTF-8")).toString();
         } catch(UnsupportedEncodingException ex) {
             ex.printStackTrace();
             return "hi";
