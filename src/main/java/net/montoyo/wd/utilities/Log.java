@@ -4,31 +4,33 @@
 
 package net.montoyo.wd.utilities;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
+import com.mojang.logging.LogUtils;
+import org.slf4j.Logger;
 
 public abstract class Log {
+    private static final Logger logger = LogUtils.getLogger();
+
     public static void info(String what, Object... data) {
-        LogManager.getLogger("WebDisplays").log(Level.INFO, String.format(what, data));
+        logger.info(String.format(what, data));
     }
 
     public static void warning(String what, Object... data) {
-        LogManager.getLogger("WebDisplays").log(Level.WARN, String.format(what, data));
+        logger.warn(String.format(what, data));
     }
 
     public static void error(String what, Object... data) {
-        LogManager.getLogger("WebDisplays").log(Level.ERROR, String.format(what, data));
+        logger.error(String.format(what, data));
     }
 
     public static void infoEx(String what, Throwable e, Object... data) {
-        LogManager.getLogger("WebDisplays").log(Level.INFO, String.format(what, data), e);
+        logger.info(String.format(what, data), e);
     }
 
     public static void warningEx(String what, Throwable e, Object... data) {
-        LogManager.getLogger("WebDisplays").log(Level.WARN, String.format(what, data), e);
+        logger.warn(String.format(what, data), e);
     }
 
     public static void errorEx(String what, Throwable e, Object... data) {
-        LogManager.getLogger("WebDisplays").log(Level.ERROR, String.format(what, data), e);
+        logger.error(String.format(what, data), e);
     }
 }

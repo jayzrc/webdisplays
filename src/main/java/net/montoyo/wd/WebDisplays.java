@@ -43,13 +43,13 @@ import net.montoyo.wd.config.ClientConfig;
 import net.montoyo.wd.config.CommonConfig;
 import net.montoyo.wd.controls.ScreenControlRegistry;
 import net.montoyo.wd.core.*;
-import net.montoyo.wd.registry.BlockRegistry;
-import net.montoyo.wd.registry.ItemRegistry;
-import net.montoyo.wd.registry.WDTabs;
-import net.montoyo.wd.registry.TileRegistry;
 import net.montoyo.wd.miniserv.server.Server;
 import net.montoyo.wd.net.WDNetworkRegistry;
 import net.montoyo.wd.net.client_bound.S2CMessageServerInfo;
+import net.montoyo.wd.registry.BlockRegistry;
+import net.montoyo.wd.registry.ItemRegistry;
+import net.montoyo.wd.registry.TileRegistry;
+import net.montoyo.wd.registry.WDTabs;
 import net.montoyo.wd.utilities.DistSafety;
 import net.montoyo.wd.utilities.Log;
 import net.montoyo.wd.utilities.serialization.Util;
@@ -291,6 +291,10 @@ public class WebDisplays {
 
     @SubscribeEvent
     public void onLogIn(PlayerEvent.PlayerLoggedInEvent ev) {
+        if (!CommonConfig.joinMessage) {
+            return;
+        }
+
         if(!ev.getEntity().level().isClientSide && ev.getEntity() instanceof ServerPlayer) {
             IWDDCapability cap = ev.getEntity().getCapability(WDDCapability.Provider.cap, null).orElseThrow(RuntimeException::new);
 

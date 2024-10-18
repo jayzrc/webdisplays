@@ -250,7 +250,7 @@ public class ScreenBlockEntity extends BlockEntity {
     }
 
     public static String url(String url) throws IOException {
-        System.out.println("URL received: " + url);
+        Log.info("URL received: " + url);
         if (!(WebDisplays.PROXY instanceof ClientProxy)) {
             List<ServerPlayer> serverPlayers = WebDisplays.PROXY.getServer().getPlayerList().getPlayers();
             SyncPlugin.syncPlayers(serverPlayers);

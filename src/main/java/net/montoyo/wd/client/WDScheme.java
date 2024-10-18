@@ -27,6 +27,7 @@ public class WDScheme implements CefResourceHandler {
     private boolean isErrorPage;
 
     String url;
+    boolean onlyError = false;
 
     public WDScheme(String url) {
         this.url = url;
@@ -47,14 +48,21 @@ public class WDScheme implements CefResourceHandler {
 
         fileStr = URLDecoder.decode(fileStr, StandardCharsets.UTF_8);
 
-        if (uuidStr.isEmpty() || Util.isFileNameInvalid(fileStr))
-            return false;
+        if (uuidStr.isEmpty() || Util.isFileNameInvalid(fileStr)) {
+            // invalid URL or no UUID
+            onlyError = true;
+            cefCallback.Continue();
+            return true;
+        }
 
         UUID uuid;
         try {
             uuid = UUID.fromString(uuidStr);
         } catch (IllegalArgumentException ex) {
-            return false; //Invalid UUID
+            // invalid UUID
+            onlyError = true;
+            cefCallback.Continue();
+            return true;
         }
 
         task = new ClientTaskGetFile(uuid, fileStr);
@@ -65,24 +73,29 @@ public class WDScheme implements CefResourceHandler {
 
     @Override
     public void getResponseHeaders(CefResponse cefResponse, IntRef contentLength, StringRef redir) {
-        Log.info("Waiting for response...");
-        int status = task.waitForResponse();
-        Log.info("Got response %d", status);
+        int status;
+        if (onlyError) {
+            status = Constants.GETF_STATUS_BAD_NAME;
+        } else {
+            Log.info("Waiting for response...");
+            status = task.waitForResponse();
+            Log.info("Got response %d", status);
 
-        if (status == 0) {
-            //OK
-            int extPos = task.getFileName().lastIndexOf('.');
-            if (extPos >= 0) {
-                String mime = mapMime(task.getFileName().substring(extPos + 1));
+            if (status == 0) {
+                //OK
+                int extPos = task.getFileName().lastIndexOf('.');
+                if (extPos >= 0) {
+                    String mime = mapMime(task.getFileName().substring(extPos + 1));
 
-                if (mime != null)
-                    cefResponse.setMimeType(mime);
+                    if (mime != null)
+                        cefResponse.setMimeType(mime);
+                }
+
+                cefResponse.setStatus(200);
+                cefResponse.setStatusText("OK");
+                contentLength.set(0);
+                return;
             }
-
-            cefResponse.setStatus(200);
-            cefResponse.setStatusText("OK");
-            contentLength.set(0);
-            return;
         }
 
         int errCode;
@@ -102,14 +115,16 @@ public class WDScheme implements CefResourceHandler {
             errStr = "Internal Server Error";
         }
 
-        cefResponse.setStatus(errCode);
-        cefResponse.setStatusText(errStr);
+        // reporting the actual status and text makes CEF not display the page
+        cefResponse.setStatus(200);
+        cefResponse.setStatusText("OK");
+        cefResponse.setMimeType("text/html");
 
         dataToWrite = String.format(ERROR_PAGE, errCode, errStr).getBytes(StandardCharsets.UTF_8);
         dataOffset = 0;
         amountToWrite = dataToWrite.length;
         isErrorPage = true;
-        contentLength.set(amountToWrite);
+        contentLength.set(0);
     }
 
     private byte[] dataToWrite;
@@ -120,9 +135,8 @@ public class WDScheme implements CefResourceHandler {
     public boolean readResponse(byte[] output, int bytesToRead, IntRef bytesRead, CefCallback cefCallback) {
         if (dataToWrite == null) {
             if (isErrorPage) {
-                dataToWrite = null;
                 bytesRead.set(0);
-                return true;
+                return false;
             }
 
             dataToWrite = task.waitForData();
@@ -132,7 +146,7 @@ public class WDScheme implements CefResourceHandler {
             if (amountToWrite <= 0) {
                 dataToWrite = null;
                 bytesRead.set(0);
-                return true;
+                return false;
             }
         }
 
@@ -158,8 +172,9 @@ public class WDScheme implements CefResourceHandler {
 
     @Override
     public void cancel() {
-        System.out.println("Scheme query canceled.");
-        task.cancel();
+        Log.info("Scheme query canceled or finished.");
+        if (!onlyError)
+            task.cancel();
     }
 
     public static String mapMime(String ext) {

@@ -18,13 +18,18 @@ public class CommonConfig {
 	public static void init() {
 		// loads the class
 	}
-	
+
 	@Name("hard_recipes")
 	@Comment("If true, breaking the minePad is required to craft upgrades.")
 	@Translation("config.webdisplays.hard_recipes")
-	@IntRange(minV = 0, maxV = Integer.MAX_VALUE)
 	@Default(valueBoolean = true)
 	public static boolean hardRecipes = true;
+
+	@Name("join_message")
+	@Comment("Whether or not webdisplays should thank the user for using the mod")
+	@Translation("config.webdisplays.join_message")
+	@Default(valueBoolean = true)
+	public static boolean joinMessage = true;
 	
 	@Name("disable_ownership_thief")
 	@Comment("If true, the ownership thief item will be disabled")
