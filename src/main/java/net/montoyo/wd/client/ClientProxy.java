@@ -12,6 +12,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementProgress;
+import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
@@ -19,8 +20,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.multiplayer.ClientAdvancements;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
@@ -32,6 +31,7 @@ import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
@@ -40,14 +40,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.*;
+import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.client.event.RenderHandEvent;
+import net.minecraftforge.client.event.RenderHighlightEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.level.LevelEvent;
@@ -61,31 +63,31 @@ import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.block.ScreenBlock;
 import net.montoyo.wd.client.gui.*;
 import net.montoyo.wd.client.gui.loading.GuiLoader;
-import net.montoyo.wd.utilities.browser.WDBrowser;
-import net.montoyo.wd.utilities.browser.handlers.DisplayHandler;
-import net.montoyo.wd.utilities.browser.handlers.WDRouter;
 import net.montoyo.wd.client.renderers.*;
 import net.montoyo.wd.core.HasAdvancement;
 import net.montoyo.wd.data.GuiData;
-import net.montoyo.wd.entity.ScreenData;
 import net.montoyo.wd.entity.ScreenBlockEntity;
-import net.montoyo.wd.registry.BlockRegistry;
-import net.montoyo.wd.registry.ItemRegistry;
-import net.montoyo.wd.registry.TileRegistry;
+import net.montoyo.wd.entity.ScreenData;
 import net.montoyo.wd.item.ItemLaserPointer;
 import net.montoyo.wd.item.ItemMinePad2;
 import net.montoyo.wd.item.WDItem;
 import net.montoyo.wd.miniserv.client.Client;
-import net.montoyo.wd.utilities.*;
-import net.montoyo.wd.utilities.math.Vector2i;
-import net.montoyo.wd.utilities.math.Vector3i;
+import net.montoyo.wd.registry.BlockRegistry;
+import net.montoyo.wd.registry.ItemRegistry;
+import net.montoyo.wd.registry.TileRegistry;
+import net.montoyo.wd.utilities.Log;
+import net.montoyo.wd.utilities.Multiblock;
+import net.montoyo.wd.utilities.browser.WDBrowser;
+import net.montoyo.wd.utilities.browser.handlers.DisplayHandler;
+import net.montoyo.wd.utilities.browser.handlers.WDRouter;
 import net.montoyo.wd.utilities.data.BlockSide;
 import net.montoyo.wd.utilities.data.Rotation;
+import net.montoyo.wd.utilities.math.Vector2i;
+import net.montoyo.wd.utilities.math.Vector3i;
 import net.montoyo.wd.utilities.serialization.NameUUIDPair;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefMessageRouter;
 import org.cef.misc.CefCursorType;
-import org.joml.Vector3d;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -95,7 +97,6 @@ import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.*;
-import java.util.stream.Stream;
 
 @Mod.EventBusSubscriber(modid = "webdisplays", value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientProxy extends SharedProxy implements ResourceManagerReloadListener {
@@ -588,15 +589,29 @@ public class ClientProxy extends SharedProxy implements ResourceManagerReloadLis
 			if (!tes.isLoaded())
 				tes.load();
 		} else {
-			double dist = distanceTo(tes, mc.getEntityRenderDispatcher().camera.getPosition());
-			
-			if (tes.isLoaded()) {
-				if (dist > WebDisplays.INSTANCE.unloadDistance2 * 16)
-					tes.deactivate();
-//				else if (ClientConfig.AutoVolumeControl.enableAutoVolume)
-//					tes.updateTrackDistance(dist, 80); //ToDo find master volume
-			} else if (dist <= WebDisplays.INSTANCE.loadDistance2 * 16)
-				tes.activate();
+			Camera camera = mc.getEntityRenderDispatcher().camera;
+			Entity entity = null;
+
+			// ide inspection says this is a bunch of constant expressions
+			// THIS IS NOT THE CASE
+			// a crash HAS occurred because of this going unchecked, and I'm confused about it
+
+			//noinspection ConstantValue
+			if (camera != null) entity = camera.getEntity();
+			//noinspection ConstantValue
+			if (entity == null) entity = mc.player;
+			//noinspection ConstantValue
+			if (entity != null) {
+				double dist = distanceTo(tes, entity.getPosition(0));
+
+				if (tes.isLoaded()) {
+					if (dist > WebDisplays.INSTANCE.unloadDistance2 * 16)
+						tes.deactivate();
+//					else if (ClientConfig.AutoVolumeControl.enableAutoVolume)
+//						tes.updateTrackDistance(dist, 80); //ToDo find master volume
+				} else if (dist <= WebDisplays.INSTANCE.loadDistance2 * 16)
+					tes.activate();
+			}
 		}
 	}
 	
