@@ -30,6 +30,10 @@ public class KeyboardCamera {
 
     private static double nextX = -1;
     private static double nextY = -1;
+    private static double focalX = -1;
+    private static double focalY = -1;
+
+    private static final boolean[] mouseStatus = new boolean[2];
 
     protected static Vec2 pxToHit(ScreenData scr, Vec2 dst) {
         float cx, cy;
@@ -82,14 +86,20 @@ public class KeyboardCamera {
         if (scr != null) {
             Vec2 c;
 
-            if (lock.hasFocused()) {
-                if (ClientConfig.Input.keyboardCamera) {
-                    nextX = lock.getX();
-                    nextY = lock.getY();
+            if (!mouseStatus[0] && !mouseStatus[1]) {
+                if (lock.hasFocused()) {
+                    if (ClientConfig.Input.keyboardCamera) {
+                        nextX = lock.getX();
+                        nextY = lock.getY();
 
-                    c = pxToHit(scr, new Vec2((float) nextX, (float) nextY));
+                        c = pxToHit(scr, new Vec2((float) nextX, (float) nextY));
+                    } else c = new Vec2(scr.size.x / 2f, scr.size.y / 2f);
                 } else c = new Vec2(scr.size.x / 2f, scr.size.y / 2f);
-            } else c = new Vec2(scr.size.x / 2f, scr.size.y / 2f);
+//            } else c = new Vec2((float) focalX, (float) focalY);
+            } else return;
+
+            focalX = c.x;
+            focalY = c.y;
 
             nextX = c.x;
             nextY = c.y;
@@ -158,6 +168,10 @@ public class KeyboardCamera {
         return angle;
     }
 
+    public static void setMouse(int side, boolean pressed) {
+        mouseStatus[side] = pressed;
+    }
+
     public static void updateCamera(ViewportEvent.ComputeCameraAngles event) {
         if (tes == null) {
             xCrd = -1;
@@ -199,6 +213,11 @@ public class KeyboardCamera {
     protected static int delay = 8;
 
     public static void gameTick(TickEvent.ClientTickEvent event) {
+        if (mouseStatus[0] || mouseStatus[1]) {
+            oxCrd = Mth.lerp(0.5, oxCrd, xCrd);
+            oyCrd = Mth.lerp(0.5, oyCrd, yCrd);
+            return;
+        }
         if (event.phase.equals(TickEvent.Phase.END)) {
             if (side == null) {
                 delay = 1;

@@ -17,7 +17,6 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.montoyo.wd.WebDisplays;
@@ -287,11 +286,9 @@ public class GuiKeyboard extends WDScreen {
     protected void mouse(double mouseX, double mouseY, Consumer<Vector2i> func) {
         float pct = Minecraft.getInstance().getPartialTick();
 
-        ViewportEvent.ComputeFov fov = new ViewportEvent.ComputeFov(
-                Minecraft.getInstance().gameRenderer,
+        double fov = Minecraft.getInstance().gameRenderer.getFov(
                 Minecraft.getInstance().getEntityRenderDispatcher().camera,
-                pct, Minecraft.getInstance().options.fov().get(),
-                true
+                pct, true
         );
 
         mouseX /= width;
@@ -301,7 +298,7 @@ public class GuiKeyboard extends WDScreen {
         mouseY -= 0.5;
         mouseY = -mouseY;
 
-        Matrix4f proj = Minecraft.getInstance().gameRenderer.getProjectionMatrix(fov.getFOV());
+        Matrix4f proj = Minecraft.getInstance().gameRenderer.getProjectionMatrix(fov);
 
         Entity e = Minecraft.getInstance().getEntityRenderDispatcher().camera.getEntity();
 
@@ -310,14 +307,12 @@ public class GuiKeyboard extends WDScreen {
         camera.mulPose(Axis.XP.rotationDegrees(angle[0]));
         camera.mulPose(Axis.YP.rotationDegrees(angle[1] + 180.0F));
 
-        Vector4f coord = new Vector4f(0, 0, 0, 0);
-        coord.add(proj.invert().transform(new Vector4f(2f * (float) mouseX, 2 * (float) mouseY, 0, 1f)));
+        Vector4f coord = new Vector4f(2f * (float) mouseX, 2 * (float) mouseY, 0, 1f);
+        coord.add(proj.invert().transform(coord));
         coord = camera.last().pose().invert().transform(coord);
-        coord.w = 0;
-        coord.normalize();
 
         Vec3 vec3 = e.getEyePosition(pct);
-        Vec3 vec31 = new Vec3(coord.x, coord.y, coord.z);
+        Vec3 vec31 = new Vec3(coord.x, coord.y, coord.z).normalize();
 
         BlockHitResult result = tes.trace(side, vec3, vec31);
         if (result.getType() != HitResult.Type.MISS) {
@@ -343,6 +338,8 @@ public class GuiKeyboard extends WDScreen {
             WDNetworkRegistry.INSTANCE.sendToServer(C2SMessageScreenCtrl.laserDown(tes, side, hit, button));
         });
 
+        KeyboardCamera.setMouse(button, true);
+
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
@@ -353,6 +350,8 @@ public class GuiKeyboard extends WDScreen {
             tes.handleMouseEvent(side, ClickControl.ControlType.UP, hit, button);
             WDNetworkRegistry.INSTANCE.sendToServer(C2SMessageScreenCtrl.laserUp(tes, side, button));
         });
+
+        KeyboardCamera.setMouse(button, false);
 
         return super.mouseReleased(mouseX, mouseY, button);
     }
