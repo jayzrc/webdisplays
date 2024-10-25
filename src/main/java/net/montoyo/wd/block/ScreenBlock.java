@@ -26,6 +26,9 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.montoyo.wd.WebDisplays;
 import net.montoyo.wd.config.CommonConfig;
 import net.montoyo.wd.core.DefaultUpgrade;
@@ -48,9 +51,29 @@ public class ScreenBlock extends BaseEntityBlock {
     public static final BooleanProperty emitting = BooleanProperty.create("emitting");
     private static final Property<?>[] properties = new Property<?>[]{hasTE, emitting};
 
+    private static final VoxelShape SHAPE = Shapes.box(0.0, 0.0, 0.0, 1.0, 1.0, 1.0 / 16.0); // 1/16 depth
+
+//    public ScreenBlock(Properties properties) {
+//        super(properties.strength(1.5f, 10.f));
+//        this.registerDefaultState(this.defaultBlockState().setValue(hasTE, false).setValue(emitting, false));
+//    }
+
     public ScreenBlock(Properties properties) {
-        super(properties.strength(1.5f, 10.f));
-        this.registerDefaultState(this.defaultBlockState().setValue(hasTE, false).setValue(emitting, false));
+        super(properties
+                .strength(1.5f, 10.f)
+                .lightLevel((state) -> 0)
+                .noOcclusion()
+                .dynamicShape());
+                //.noCollission()); // Fix typo: noCollision instead of noCollission
+        this.registerDefaultState(this.defaultBlockState()
+                .setValue(hasTE, false)
+                .setValue(emitting, false));
+    }
+
+
+    @Override
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+        return SHAPE; // Set custom shape for 16x16x1 bounding box
     }
 
     @Override
@@ -199,7 +222,7 @@ public class ScreenBlock extends BaseEntityBlock {
             }
         }
     }
-    
+
     public static boolean hit2pixels(BlockSide side, BlockPos bpos, Vector3i pos, ScreenData scr, float hitX, float hitY, float hitZ, Vector2i dst) {
         if(side.right.x < 0)
             hitX -= 1.f;

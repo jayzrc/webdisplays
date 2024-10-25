@@ -67,9 +67,11 @@ public class ScreenRenderer implements BlockEntityRenderer<ScreenBlockEntity> {
 			mid.addMul(tmpf, 0.5f);
 			tmpf.set(scr.side.down);
 			mid.addMul(tmpf, 0.5f);
-			
+
+			float backwardOffset = -0.93f;
+
 			poseStack.pushPose();
-			poseStack.translate(mid.x, mid.y, mid.z);
+			poseStack.translate(mid.x, mid.y, mid.z + backwardOffset);
 			
 			switch (scr.side) {
 				case BOTTOM:
