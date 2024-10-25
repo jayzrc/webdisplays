@@ -298,13 +298,13 @@ public class WebDisplays {
         if(!ev.getEntity().level().isClientSide && ev.getEntity() instanceof ServerPlayer) {
             IWDDCapability cap = ev.getEntity().getCapability(WDDCapability.Provider.cap, null).orElseThrow(RuntimeException::new);
 
-            if(cap.isFirstRun()) {
-                Util.toast(ev.getEntity(), ChatFormatting.LIGHT_PURPLE, "welcome1");
-                Util.toast(ev.getEntity(), ChatFormatting.LIGHT_PURPLE, "welcome2");
-                Util.toast(ev.getEntity(), ChatFormatting.LIGHT_PURPLE, "welcome3");
-
-                cap.clearFirstRun();
-            }
+//            if(cap.isFirstRun()) {
+//                Util.toast(ev.getEntity(), ChatFormatting.LIGHT_PURPLE, "welcome1");
+//                Util.toast(ev.getEntity(), ChatFormatting.LIGHT_PURPLE, "welcome2");
+//                Util.toast(ev.getEntity(), ChatFormatting.LIGHT_PURPLE, "welcome3");
+//
+//                cap.clearFirstRun();
+//            }
 
             PacketDistributor.PacketTarget packetDistrutor = PacketDistributor.PLAYER.with(
                     () -> (ServerPlayer) ev.getEntity()

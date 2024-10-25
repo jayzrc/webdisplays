@@ -51,30 +51,10 @@ public class ScreenBlock extends BaseEntityBlock {
     public static final BooleanProperty emitting = BooleanProperty.create("emitting");
     private static final Property<?>[] properties = new Property<?>[]{hasTE, emitting};
 
-    private static final VoxelShape SHAPE = Shapes.box(0.0, 0.0, 0.0, 1.0, 1.0, 1.0 / 16.0); // 1/16 depth
-
-//    public ScreenBlock(Properties properties) {
-//        super(properties.strength(1.5f, 10.f));
-//        this.registerDefaultState(this.defaultBlockState().setValue(hasTE, false).setValue(emitting, false));
-//    }
-
-    public ScreenBlock(Properties properties) {
-        super(properties
-                .strength(1.5f, 10.f)
-                .lightLevel((state) -> 0)
-                .noOcclusion()
-                .dynamicShape());
-                //.noCollission()); // Fix typo: noCollision instead of noCollission
-        this.registerDefaultState(this.defaultBlockState()
-                .setValue(hasTE, false)
-                .setValue(emitting, false));
-    }
-
-
-    @Override
-    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
-        return SHAPE; // Set custom shape for 16x16x1 bounding box
-    }
+   public ScreenBlock(Properties properties) {
+        super(properties.strength(1.5f, 10.f));
+        this.registerDefaultState(this.defaultBlockState().setValue(hasTE, false).setValue(emitting, false));
+   }
 
     @Override
     public void onRemove(BlockState p_60515_, Level p_60516_, BlockPos p_60517_, BlockState p_60518_, boolean p_60519_) {
